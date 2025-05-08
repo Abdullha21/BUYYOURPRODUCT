@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ALL TOP UP BUY SENTER</title>
+
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f0f0; }
+    header { background: #111; color: white; text-align: center; padding: 20px; font-size: 26px; letter-spacing: 2px; }
+    .categories { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; padding: 30px; }
+    .category-box, .box-option {
+      background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 250px; text-align: center; cursor: pointer; padding: 20px; transition: 0.3s; border: 2px solid transparent;
+    }
+    .category-box:hover, .box-option:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .box-option.active { border-color: #38bdf8; }
+
+    .products { display: none; max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .products.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    input, textarea {
+      display: block; width: 100%; margin-top: 10px; padding: 10px;
+      border-radius: 6px; border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 15px; background: #28a745; color: white;
+      padding: 12px; border: none; border-radius: 6px;
+      cursor: pointer; font-weight: bold; width: 100%;
+    }
+
+    .label-title { margin-top: 20px; font-weight: bold; }
+
+    .payment-number {
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 8px;
+      margin: 5px 0 15px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<header>ALL TOP UP BUY SENTER</header>
+
+<div class="categories">
+  <div class="category-box" onclick="showProducts('Free Fire UID Top Up')"><h3>Free Fire UID Top Up</h3></div>
+  <div class="category-box" onclick="showProducts('Ton Buy')"><h3>Ton Buy</h3></div>
+  <div class="category-box" onclick="showProducts('Star Buy')"><h3>Star Buy</h3></div>
+</div>
+
+<div class="products" id="product-form">
+  <h2 id="selected-category">Select Category</h2>
+
+  <div class="label-title">Select Product:</div>
+  <div id="product-options"></div>
+
+  <div class="label-title">Select Payment Method:</div>
+  <div class="box-option" onclick="selectPayment('bKash')">bKash</div>
+  <div class="payment-number">bKash Number: 01796693813 copy</div>
+
+  <div class="box-option" onclick="selectPayment('Nagad')">Nagad</div>
+  <div class="payment-number">Nagad Number: 01796693813 copy</div>
+
+  <form id="topupForm">
+    <input type="text" id="product" name="product" placeholder="Selected Product" readonly required />
+    <input type="text" id="price" name="price" placeholder="Price" readonly required />
+    <input type="text" id="payment" name="payment" placeholder="Payment Method" readonly required />
+    <input type="text" name="txid" placeholder=" Payment Transaction ID" required />
+    <textarea name="uid" placeholder="Your UID / Wallet Address" required></textarea>
+    <input type="hidden" name="category" id="category" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<script>
+  const productData = {
+    "Free Fire UID Top Up": [
+      { name: "25 Diamonds", price: "25 TK" },
+      { name: "50 Diamonds", price: "45 TK" },
+      { name: "115 Diamonds", price: "80 TK" },
+      { name: "240 Diamonds", price: "160 TK" },
+      { name: "480 Diamonds", price: "320 TK" },
+      { name: "610 Diamonds", price: "410 TK" },
+      { name: "1240 Diamonds", price: "770 TK" },
+      { name: "Weekly membership Diamonds", price: "160 TK" },
+      { name: "Monthly membership Diamonds", price: "760 TK" },
+      { name: "Level up pass Diamonds", price: "160 TK" }
+    ],
+    "Ton Buy": [
+      { name: "0.5 TON", price: "69 TK" },
+      { name: "1 TON", price: "137" },
+      { name: "2 TON", price: "275" },
+      { name: "4 TON", price: "545" }
+    ],
+    "Star Buy": [
+      { name: "Star 50", price: "105 TK" },
+      { name: "Star 75", price: "155" },
+      { name: "Star 100", price: "205 TK" },
+      { name: "Star 150", price: "305 TK" },
+      { name: "Star 250", price: "505 TK" }
+    ]
+  };
+
+  function showProducts(category) {
+    document.getElementById('product-form').classList.add('active');
+    document.getElementById('selected-category').textContent = category;
+    document.getElementById('category').value = category;
+
+    const container = document.getElementById('product-options');
+    container.innerHTML = '';
+
+    productData[category].forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'box-option';
+      div.textContent = `${p.name} - ${p.price}`;
+      div.onclick = () => selectProduct(p.name, p.price, div);
+      container.appendChild(div);
+    });
+  }
+
+  function selectProduct(name, price, element) {
+    document.getElementById('product').value = name;
+    document.getElementById('price').value = price;
+    clearActiveBoxes();
+    element.classList.add('active');
+  }
+
+  function selectPayment(method) {
+    document.getElementById('payment').value = method;
+    clearActiveBoxes();
+    event.target.classList.add('active');
+  }
+
+  function clearActiveBoxes() {
+    document.querySelectorAll('.box-option').forEach(el => el.classList.remove('active'));
+  }
+
+  document.getElementById('topupForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('https://script.google.com/macros/s/AKfycbwnW0cSnRj6XuycZQ3_r29ndKLKkaWGokmrlbXD9mcJrLcbs1xrIFbuu8Y3xIMTXf3H/exec', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.text())
+    .then(data => {
+      alert("Your order was submitted successfully!");
+      this.reset();
+      document.getElementById('price').value = '';
+      clearActiveBoxes();
+    })
+    .catch(err => alert("Error submitting: " + err));
+  });
+</script>
+
+</body>
+</html>
