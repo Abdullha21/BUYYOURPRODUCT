@@ -1,0 +1,155 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UID Topup [BD SERVER]</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #333; }
+    .section { margin-bottom: 20px; }
+    .section h3 { margin-bottom: 10px; color: #B300B3; }
+    .products button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #eee;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+    .products button.selected {
+      border-color: red;
+      background-color: #ffe6e6;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      box-sizing: border-box;
+    }
+    .payment-methods img {
+      height: 40px;
+      cursor: pointer;
+      margin-right: 10px;
+      border: 2px solid transparent;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .payment-methods img.selected {
+      border-color: red;
+    }
+    .info-box {
+      margin-top: 10px;
+      font-size: 14px;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .btn { background: purple; color: white; padding: 12px; border: none; width: 100%; border-radius: 5px; cursor: pointer; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Uid Topup [BD SERVER]</h2>
+    <form id="topupForm" action="https://script.google.com/macros/s/AKfycbyFL5ylzTA3wGoCbB5ZQ6ikJ51Upskdw2P08OQ9UvSWuBjnVs1AGde3vGwJTT_Lh-zfAw/exec" method="POST">
+      <div class="section">
+        <h3>1. Select Recharge</h3>
+        <div class="products" id="productList">
+          <button type="button" value="25 Diamond - 25 TK">25 Diamond - 25 TK</button>
+          <button type="button" value="50 Diamond - 40 TK">50 Diamond - 40 TK</button>
+          <button type="button" value="115 Diamond - 80 TK">115 Diamond - 80 TK</button>
+          <button type="button" value="240 Diamond - 160 TK">240 Diamond - 160 TK</button>
+          <button type="button" value="480 Diamond - 320 TK">480 Diamond - 320 TK</button>
+          <button type="button" value="610 Diamond - 410 TK">610 Diamond - 410 TK</button>
+          <button type="button" value="1240 Diamond - 760 TK">1240 Diamond - 760 TK</button>
+          <button type="button" value="2530 Diamond - 1550 TK">2530 Diamond - 1550 TK</button>
+          <button type="button" value="Weekly - 160 TK">Weekly - 160 TK</button>
+          <button type="button" value="Monthly - 760 TK">Monthly - 760 TK</button>
+          <button type="button" value="Level Up Pass - 160 TK">Level Up Pass - 160 TK</button>
+        </div>
+        <input type="hidden" name="selected_product" id="selected_product" required>
+      </div><div class="section">
+    <h3>2. Account Info</h3>
+    <input type="text" name="uid" placeholder="Player UID" required>
+  </div>
+
+  <div class="section">
+    <h3>3. Select one option</h3>
+    <div class="payment-methods">
+      <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
+      <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
+    </div>
+    <input type="hidden" name="payment_method" id="payment_method" required>
+    <div class="info-box" id="paymentInfo" style="display:none;"></div>
+  </div>
+
+  <div class="section">
+    <h3>4. Transaction ID</h3>
+    <input type="text" name="trx_id" placeholder="Enter your payment Transaction ID" required>
+  </div>
+
+  <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
+  <button type="submit" class="btn">Buy Now</button>
+</form>
+
+  </div>  <script>
+    const productButtons = document.querySelectorAll('#productList button');
+    const selectedProductInput = document.getElementById('selected_product');
+    const priceDisplay = document.getElementById('price-display');
+
+    productButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        productButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedProductInput.value = btn.value;
+
+        const parts = btn.value.split('-');
+        const price = parts[1]?.trim();
+        priceDisplay.textContent = "Price: " + price;
+        priceDisplay.style.color = '#d60000';
+      });
+    });
+
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+
+    bkashBtn.addEventListener('click', () => {
+      bkashBtn.classList.add('selected');
+      nagadBtn.classList.remove('selected');
+      paymentMethod.value = 'bKash';
+      paymentInfo.style.display = 'block';
+      paymentInfo.textContent = 'bKash Number: 01796693813';
+    });
+
+    nagadBtn.addEventListener('click', () => {
+      nagadBtn.classList.add('selected');
+      bkashBtn.classList.remove('selected');
+      paymentMethod.value = 'Nagad';
+      paymentInfo.style.display = 'block';
+      paymentInfo.textContent = 'Nagad Number: 01796693813';
+    });
+
+    const form = document.getElementById("topupForm");
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form)
+      }).then(response => {
+        priceDisplay.textContent = "Your order has been submitted!";
+        priceDisplay.style.color = "green";
+        form.reset();
+
+        productButtons.forEach(b => b.classList.remove('selected'));
+        bkashBtn.classList.remove('selected');
+        nagadBtn.classList.remove('selected');
+        paymentInfo.style.display = 'none';
+      }).catch(error => {
+        alert("Something went wrong!");
+      });
+    });
+  </script></body>
+</html>
