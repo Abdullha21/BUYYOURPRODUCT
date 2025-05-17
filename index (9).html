@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Giveaway Entry</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      font-family: Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #ffd700;
+    }
+    .tasks-section {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .task-btn {
+      background: #00ffcc;
+      color: #1e3c72;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      margin: 5px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .task-btn:hover {
+      background: #00ccaa;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+    input::placeholder {
+      color: #ccc;
+    }
+    #submit-btn {
+      background: #ffd700;
+      color: #1e3c72;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #submit-btn:hover {
+      background: #ffcc00;
+    }
+    .error {
+      color: #ff4444;
+      font-size: 0.9em;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Giveaway Entry</h1>
+
+    <div class="tasks-section">
+      <button class="task-btn" onclick="window.open('https://t.me/example', '_blank')">Join Telegram</button>
+      <button class="task-btn" onclick="window.open('https://twitter.com/example', '_blank')">Follow Twitter</button>
+      <button class="task-btn" onclick="window.open('https://discord.gg/example', '_blank')">Join Discord</button>
+    </div>
+
+    <form id="giveaway-form">
+      <div class="form-group">
+        <label for="username">Telegram Username</label>
+        <input type="text" id="username" placeholder="e.g. @yourname" required>
+        <div id="username-error" class="error">Username is required</div>
+      </div>
+
+      <div class="form-group">
+        <label for="bsc-address">BSC Address / UID</label>
+        <input type="text" id="bsc-address" placeholder="e.g. 0x1234... or UID" required>
+        <div id="bsc-error" class="error">BSC Address is required</div>
+      </div>
+
+      <button type="submit" id="submit-btn">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('giveaway-form');
+    const usernameInput = document.getElementById('username');
+    const bscInput = document.getElementById('bsc-address');
+    const usernameError = document.getElementById('username-error');
+    const bscError = document.getElementById('bsc-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      usernameError.style.display = 'none';
+      bscError.style.display = 'none';
+
+      let valid = true;
+
+      if (!usernameInput.value.trim()) {
+        usernameError.style.display = 'block';
+        valid = false;
+      }
+
+      if (!bscInput.value.trim()) {
+        bscError.style.display = 'block';
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      const formData = new FormData();
+      formData.append('username', usernameInput.value.trim());
+      formData.append('bscAddress', bscInput.value.trim());
+
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxtKm5sjnSjsYv0I63f9QblLnpP5BY7LZdkRZLN9Xkis6sjxwoBSJEc5Q-jdPkNLUpG/exec', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          alert('Entry submitted successfully!');
+          form.reset();
+        } else {
+          alert('Submission failed: ' + result.message);
+        }
+
+      } catch (error) {
+        alert('Network error: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
