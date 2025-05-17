@@ -121,10 +121,62 @@
             <img src="https://assets.onecompiler.app/42weeh2u8/43hswpykf/1000017652.png" alt="Cart Icon">
         </div>
     </div>
+<!-- Marquee Text Start -->
+<style>
+  .marquee-container {
+    overflow: hidden;
+    background: linear-gradient(90deg, #1e1e2f, #2a2a4e); /* Dark gradient for digital look */
+    padding: 8px 0; /* Reduced padding for a slimmer look */
+    position: relative;
+    border: 2px solid #00ffcc; /* Neon cyan border */
+    border-radius: 8px; /* Slightly smaller border radius */
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.5); /* Neon glow effect */
+    width: 100%;
+    max-width: 1200px; /* Max width for better presentation */
+    margin: 0 auto;
+  }
 
+  .marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    color: #00ffcc; /* Neon cyan text color */
+    font-size: 20px; /* Reduced font size for a slimmer look */
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif; /* Digital font */
+    text-shadow: 0 0 8px rgba(0, 255, 204, 0.8), 0 0 15px rgba(0, 255, 204, 0.5); /* Adjusted neon glow */
+    animation: scroll-left 20s linear infinite; /* Kept the dynamic scroll */
+    background: linear-gradient(90deg, #00ffcc, #ff00ff); /* Gradient text */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1; /* Reduced line height for a tighter fit */
+  }
+
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .marquee-text:hover {
+    animation-play-state: paused; /* Pause on hover */
+    text-shadow: 0 0 12px rgba(0, 255, 204, 1), 0 0 25px rgba(255, 0, 255, 0.8); /* Enhanced glow on hover */
+  }
+</style>
+
+<!-- Load a digital font -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<div class="marquee-container">
+  <div class="marquee-text">
+    অর্ডার দেওয়ার পর দশ মিনিটের মধ্যেও পেমেন্ট না পেলে সাপোর্টে ক্লিক করে আমার সাথে যোগাযোগ করুন।
+  </div>
+</div>
+<!-- Marquee Text End -->
     <!-- Banner -->
     <div class="banner">
-        <h1>অর্ডার দেওয়ার পর দশ মিনিটের মধ্যেও পেমেন্ট পেয়ে যাবেনন</h1>
         <img src="https://assets.onecompiler.app/42weeh2u8/43hswpykf/1000017650.png" alt="App Image">
     </div>
 
