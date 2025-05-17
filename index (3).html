@@ -1,5 +1,36 @@
 <!DOCTYPE html><html lang="en">
 <head>
+  <!-- Back Button Start -->
+<style>
+  #back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 25px;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: background-color 0.3s;
+    z-index: 999;
+  }
+
+  #back-button:hover {
+    background-color: #e60000;
+  }
+</style>
+
+<button id="back-button" onclick="goBack()">← Back</button>
+
+<script>
+  function goBack() {
+    window.location.href = "https://abdullha21.github.io/ALLTOPUPBUY/index%20(4).html"; // হোমপেজের লিংক এখানে দিন
+  }
+</script>
+<!-- Back Button End -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UID Topup [BD SERVER]</title>
