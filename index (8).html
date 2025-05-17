@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stylish Giveaway</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffd700;
+      margin-bottom: 25px;
+    }
+
+    .task-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .task-btn {
+      background: #00ffcc;
+      color: #1e3c72;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      min-width: 150px;
+    }
+
+    .task-btn:hover {
+      background: #00ccaa;
+      transform: scale(1.05);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    input[type="text"]::placeholder {
+      color: #ccc;
+    }
+
+    .photo-upload {
+      border: 2px dashed #00ffcc;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    #photo-preview {
+      max-width: 100%;
+      max-height: 200px;
+      margin-top: 10px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .error {
+      color: #ff5555;
+      font-size: 0.9em;
+      display: none;
+      margin-top: 5px;
+    }
+
+    #submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #ffd700;
+      color: #1e3c72;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #submit-btn:hover {
+      background: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Giveaway Entry</h1>
+
+    <div class="task-buttons">
+      <button class="task-btn" onclick="window.open('https://t.me/yourchannel', '_blank')">Join Telegram</button>
+      <button class="task-btn" onclick="window.open('https://twitter.com/yourprofile', '_blank')">Follow Twitter</button>
+      <button class="task-btn" onclick="window.open('https://discord.gg/yourdiscord', '_blank')">Join Discord</button>
+    </div>
+
+    <form id="giveaway-form">
+      <div class="form-group">
+        <label for="username">Telegram Username</label>
+        <input type="text" id="username" placeholder="@yourusername" required>
+        <div id="username-error" class="error">Username is required</div>
+      </div>
+
+      <div class="form-group">
+        <label for="bsc-address">BSC Address / UID</label>
+        <input type="text" id="bsc-address" placeholder="Enter BSC address or UID" required>
+        <div id="bsc-error" class="error">BSC Address / UID is required</div>
+      </div>
+
+      <div class="form-group">
+        <label>Upload Screenshot</label>
+        <div class="photo-upload" id="photo-upload">
+          Click to upload or drag & drop image here
+          <input type="file" id="photo" accept="image/*" hidden required>
+          <img id="photo-preview" src="" alt="Preview">
+        </div>
+        <div id="photo-error" class="error">Screenshot is required</div>
+      </div>
+
+      <button type="submit" id="submit-btn">Submit Entry</button>
+    </form>
+  </div>
+  <script>
+    const form = document.getElementById("giveaway-form");
+    const usernameInput = document.getElementById("username");
+    const bscInput = document.getElementById("bsc-address");
+    const photoInput = document.getElementById("photo");
+    const photoPreview = document.getElementById("photo-preview");
+
+    const usernameError = document.getElementById("username-error");
+    const bscError = document.getElementById("bsc-error");
+    const photoError = document.getElementById("photo-error");
+    const photoUpload = document.getElementById("photo-upload");
+
+    photoUpload.addEventListener("click", () => photoInput.click());
+
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files[0];
+      if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          photoPreview.src = reader.result;
+          photoPreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Reset errors
+      usernameError.style.display = "none";
+      bscError.style.display = "none";
+      photoError.style.display = "none";
+
+      let isValid = true;
+
+      if (!usernameInput.value.trim()) {
+        usernameError.style.display = "block";
+        isValid = false;
+      }
+      if (!bscInput.value.trim()) {
+        bscError.style.display = "block";
+        isValid = false;
+      }
+      if (!photoInput.files[0]) {
+        photoError.style.display = "block";
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      const formData = new FormData();
+      formData.append("username", usernameInput.value.trim());
+      formData.append("bscAddress", bscInput.value.trim());
+      formData.append("photo", photoInput.files[0]);
+
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwcArETFygOmpPG1Yxvv2aiDXgri8GrS9LtzNoyC0eVq-NUc_Q2j8v9KOXW0jnuMJGy/exec", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json();
+        if (result.status === "success") {
+          alert("Submitted successfully!");
+          form.reset();
+          photoPreview.style.display = "none";
+        } else {
+          alert("Submission failed: " + result.message);
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
