@@ -122,7 +122,7 @@
   </div>
 
   <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
-  <button type="button" class="btn" onclick="window.open('https://YouTube.com', '_blank')">Buy Now</button>
+  <button type="submit"  class="btn">Buy Now</button>
 </form>
 <!-- Notice Box Start -->
 <style>
@@ -228,6 +228,7 @@
 
     const form = document.getElementById("topupForm");
     form.addEventListener("submit", function(e) {
+      window.open("YouTube.com","_blank");
       e.preventDefault();
       fetch(form.action, {
         method: "POST",
