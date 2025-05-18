@@ -1,212 +1,123 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Thank You - Order Submitted</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TON BUY </title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-    .container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #333; }
-    .section { margin-bottom: 20px; }
-    .section h3 { margin-bottom: 10px; color: #B300B3; }
-    .products button {
-      display: block;
-      width: 100%;
-      margin: 5px 0;
-      padding: 10px;
-      background-color: #eee;
-      border: 2px solid transparent;
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #3f51b5, #5d9fff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+    }
+
+    .container {
+      max-width: 600px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 1s ease-in-out;
+    }
+
+    h1 {
+      font-size: 38px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f1f1f1;
+    }
+
+    .animation {
+      font-size: 55px;
+      margin-bottom: 20px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    .btn-group {
+      margin-top: 35px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #fff;
+      color: #3f51b5;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 30px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    .products button.selected {
-      border-color: red;
-      background-color: #ffe6e6;
+
+    .btn:hover {
+      background: #3f51b5;
+      color: #fff;
+      transform: scale(1.05);
     }
-    input[type="text"], select {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      box-sizing: border-box;
+
+    .btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
     }
-    .payment-methods img {
-      height: 40px;
-      cursor: pointer;
-      margin-right: 10px;
-      border: 2px solid transparent;
-      padding: 5px;
-      border-radius: 5px;
-    }
-    .payment-methods img.selected {
-      border-color: red;
-    }
-    .info-box {
-      margin-top: 10px;
-      font-size: 14px;
-      background: #f0f0f0;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    .btn { background: purple; color: white; padding: 12px; border: none; width: 100%; border-radius: 5px; cursor: pointer; font-size: 16px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>TON BUY</h2>
-    <form id="topupForm" action="https://script.google.com/macros/s/AKfycbyFL5ylzTA3wGoCbB5ZQ6ikJ51Upskdw2P08OQ9UvSWuBjnVs1AGde3vGwJTT_Lh-zfAw/exec" method="POST">
-      <div class="section">
-        <h3>1. Select Recharge</h3>
-        <div class="products" id="productList">
-         <button type="button" value="0.5$ TON - 69  TK">0.5$ TON - 69 TK</button>
-          <button type="button" value="1$   TON - 137 TK">1$   TON - 137 TK</button>
-          <button type="button" value="2$   TON - 274 TK">2$   TON - 274 TK</button>
-          <button type="button" value="3$   TON - 410 TK">3$   TON - 410 TK</button>
-          <button type="button" value="4$   TON - 545 TK">4$   TON - 545 TK</button>
-          <button type="button" value="5$   TON - 680 TK">5$   TON - 680 TK</button>
-          <button type="button" value="7$   TON - 955 TK">7$   TON - 955 TK</button>
-        </div>
-        <input type="hidden" name="selected_product" id="selected_product" required>
-      </div><div class="section">
-    <h3>2. Account Info</h3>
-    <input type="text" name="uid" placeholder="Enter your ton address" required>
-  </div>
+    <div class="animation">✅</div>
+    <h1>Thank You!</h1>
+    <p>Your order is submitted successfully.</p>
+    <p>Please wait 10 minutes for processing.</p>
 
-  <div class="section">
-    <h3>3. Select one option</h3>
-    <div class="payment-methods">
-      <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
-      <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
+    <div class="btn-group">
+      <a href="https://m.me/YOUR_PAGE_USERNAME" target="_blank" class="btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><path d="M120 0C53.7 0 0 50.5 0 112.8c0 35.4 17.1 66.9 45.2 87.6v39.6l41.5-22.8c10.8 3 22.2 4.6 33.3 4.6 66.3 0 120-50.5 120-112.8S186.3 0 120 0zm16.9 140.5l-25.1-26.9-53.8 26.9 62.8-67.2 24.3 26.1 55.4-26.1-63.6 67.2z"/></svg>
+        Support
+      </a>
+      <a href="index.html" class="btn">Back to Home</a>
     </div>
-    <input type="hidden" name="payment_method" id="payment_method" required>
-    <div class="info-box" id="paymentInfo" style="display:none;"></div>
   </div>
-
-  <div class="section">
-    <h3>4. Transaction ID</h3>
-    <input type="text" name="trx_id" placeholder="Enter Payment Last 4 Digite" required>
-  </div>
-
-  <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
-  <button type="submit" class="btn">Buy Now</button>
-</form>
-    <!-- Notice Box Start -->
-<style>
-  .notice-box {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-    padding: 16px;
-    border-radius: 8px;
-    margin-top: 20px;
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  .notice-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #000;
-  }
-</style>
-
-<div class="notice-box">
-  <div class="notice-title">Ton Recharge Notice </div>
-  Largest Recharge Site In Bangladesh <br><br>
-  <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের ট্রানজেকশন আইডি লিখে মেসেজ দিন | <br>
-</div>
-<!-- Notice Box End -->
-    <!-- SUPPORT BUTTON -->
-<a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
-  <div class="support-text">SUPPORT!</div>
-  <div class="support-icon">📞</div>
-</a>
-
-<!-- SUPPORT BUTTON STYLE -->
-<style>
-  .support-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    z-index: 9999;
-  }
-  .support-text {
-    background-color: #d60000;
-    color: white;
-    padding: 10px 15px;
-    font-weight: bold;
-    border-radius: 5px 0 0 5px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  }
-  .support-icon {
-    background-color: #d60000;
-    color: white;
-    font-size: 22px;
-    padding: 13px 15px;
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    margin-left: -1px;
-  }
-</style>
-</div>  <script>
-    const productButtons = document.querySelectorAll('#productList button');
-    const selectedProductInput = document.getElementById('selected_product');
-    const priceDisplay = document.getElementById('price-display');
-
-    productButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        productButtons.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedProductInput.value = btn.value;
-
-        const parts = btn.value.split('-');
-        const price = parts[1]?.trim();
-        priceDisplay.textContent = "Price: " + price;
-        priceDisplay.style.color = '#d60000';
-      });
-    });
-
-    const bkashBtn = document.getElementById('bkashBtn');
-    const nagadBtn = document.getElementById('nagadBtn');
-    const paymentMethod = document.getElementById('payment_method');
-    const paymentInfo = document.getElementById('paymentInfo');
-
-    bkashBtn.addEventListener('click', () => {
-      bkashBtn.classList.add('selected');
-      nagadBtn.classList.remove('selected');
-      paymentMethod.value = 'bKash';
-      paymentInfo.style.display = 'block';
-      paymentInfo.textContent = 'bKash Number: 01796693813';
-    });
-
-    nagadBtn.addEventListener('click', () => {
-      nagadBtn.classList.add('selected');
-      bkashBtn.classList.remove('selected');
-      paymentMethod.value = 'Nagad';
-      paymentInfo.style.display = 'block';
-      paymentInfo.textContent = 'Nagad Number: 01796693813';
-    });
-
-    const form = document.getElementById("topupForm");
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      fetch(form.action, {
-        method: "POST",
-        body: new FormData(form)
-      }).then(response => {
-        priceDisplay.textContent = "Your order has been submitted!";
-        priceDisplay.style.color = "green";
-        form.reset();
-
-        productButtons.forEach(b => b.classList.remove('selected'));
-        bkashBtn.classList.remove('selected');
-        nagadBtn.classList.remove('selected');
-        paymentInfo.style.display = 'none';
-      }).catch(error => {
-        alert("Something went wrong!");
-      });
-    });
-  </script></body>
+</body>
 </html>
