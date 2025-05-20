@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Confirm Email</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #ffffffee;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 25px;
+      font-size: 28px;
+      animation: slideDown 1s ease;
+    }
+
+    input[type="email"] {
+      padding: 12px 15px;
+      width: 280px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      transition: 0.3s;
+    }
+
+    input[type="email"]:focus {
+      border-color: #2980b9;
+      outline: none;
+    }
+
+    button {
+      padding: 12px 24px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+      transform: scale(1.05);
+    }
+
+    #responseMsg {
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: green;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 90%;
+        padding: 20px;
+      }
+
+      input[type="email"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>অর্ডার কনফার্ম নোটিফিকেশন পাঠান</h2>
+    <form id="emailForm">
+      <input type="email" id="email" name="email" placeholder="কাস্টমারের Gmail লিখুন..." required><br>
+      <button type="submit">নোটিফিকেশন পাঠান</button>
+    </form>
+    <p id="responseMsg"></p>
+  </div>
+
+  <script>
+    document.getElementById("emailForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      fetch("https://script.google.com/macros/s/AKfycbyUAVuCOUxup2N9j8Bl56w0uWGwUBOp2gfsF7GIVUvfeQSt7MPiSsxhtKKAQrVMTNl5/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "email=" + encodeURIComponent(email)
+      })
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("responseMsg").textContent = "নোটিফিকেশন সফলভাবে পাঠানো হয়েছে!";
+      })
+      .catch(err => {
+        document.getElementById("responseMsg").textContent = "নোটিফিকেশন পাঠাতে সমস্যা হয়েছে!";
+      });
+    });
+  </script>
+</body>
+</html>
