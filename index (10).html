@@ -58,7 +58,22 @@
       padding: 10px;
       margin: 5px 0;
       box-sizing: border-box;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+      }
+    
     }
+    input[type="email"], select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      box-sizing: border-box;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    
     .payment-methods img {
       height: 40px;
       cursor: pointer;
@@ -83,8 +98,8 @@
 <body>
   <div class="container">
     <h2>TON NETWORK </h2>
-    <form id="topupForm" action="https://script.google.com/macros/s/AKfycbyFL5ylzTA3wGoCbB5ZQ6ikJ51Upskdw2P08OQ9UvSWuBjnVs1AGde3vGwJTT_Lh-zfAw/exec" method="POST">
-      <div class="section">
+    <form id="topupForm" action="https://script.google.com/macros/s/AKfycbyaXu09UNVmR2FoEbADWabMqgmvicUe3eW1iaXzY_9Ym2c3HtzWkjm0K-mDKSkZxB_FCg/exec" method="POST">
+      <div class="section" style="--index: 1;">
         <h3>1. Select Recharge</h3>
         <div class="products" id="productList">
           <button type="button" value="0.5$  TON - 69  TK">0.5$ TON - 69  TK</button>
@@ -94,12 +109,16 @@
           <button type="button" value="4$    TON - 545 TK">4$   TON - 545 TK</button>
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
-      </div><div class="section">
+      </div>
+      <div class="section" style="--index: 2;">
     <h3>2. Account Info</h3>
     <input type="text" name="uid" placeholder="Enter your Ton network address" required>
   </div>
-
-  <div class="section">
+  <div class="section" style="--index: 3;">
+        <h3>3.ordert confram notification gmail</h3>
+        <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
+  </div>
+  <div class="section" style="--index: 4;">
     <h3>3. Select one option</h3>
     <div class="payment-methods">
       <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
@@ -109,9 +128,9 @@
     <div class="info-box" id="paymentInfo" style="display:none;"></div>
   </div>
 
-  <div class="section">
+  <div class="section" style="--index: 5;">
     <h3>4. Transaction ID</h3>
-    <input type="text" name="trx_id" placeholder="Enter your payment LAST 4 DIGITE" required>
+    <input type="text" name="trx_id" placeholder="আপনার বিকাশ বা নগদ এর লাস্ট ৪ নাম্বার দেন !" required>
   </div>
 
   <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
@@ -141,7 +160,7 @@
 <div class="notice-box">
   <div class="notice-title">Ton Recharge Notice </div>
   Largest Recharge Site In Bangladesh <br><br>
-  <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের ট্রানজেকশন আইডি লিখে মেসেজ দিন | <br>
+  <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন | <br>
 </div>
 <!-- Notice Box End -->
     <!-- SUPPORT BUTTON -->
