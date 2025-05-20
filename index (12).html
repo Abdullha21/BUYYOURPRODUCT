@@ -160,7 +160,12 @@
       border-radius: 8px;
       transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     }
-
+    input[type="email"]:focus, select:focus {
+      border-color: #B300B3;
+      box-shadow: 0 0 8px rgba(179,0,179,0.3);
+      transform: scale(1.01);
+      outline: none;
+    }
     input[type="text"]:focus, select:focus {
       border-color: #B300B3;
       box-shadow: 0 0 8px rgba(179,0,179,0.3);
