@@ -104,7 +104,7 @@
     document.getElementById("emailForm").addEventListener("submit", function(e){
       e.preventDefault();
       const email = document.getElementById("email").value;
-      fetch("https://script.google.com/macros/s/AKfycbyUAVuCOUxup2N9j8Bl56w0uWGwUBOp2gfsF7GIVUvfeQSt7MPiSsxhtKKAQrVMTNl5/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbwar8EQ7Z7o-UKkIDztY5Vt8PN7JIlnRbknLptWHQ5Vx2GKhj0solH2tuns42efVMIv/exec", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: "email=" + encodeURIComponent(email)
