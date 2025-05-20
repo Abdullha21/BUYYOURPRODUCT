@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>এন্ট্স্ফুল</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #ffffff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .checkmark {
+      font-size: 90px;
+      color: #2ecc71;
+      animation: bounceIn 0.8s ease;
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .message {
+      font-size: 24px;
+      color: #2d3436;
+      margin-top: 15px;
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .note {
+      margin-top: 35px;
+      font-size: 18px;
+      color: #c0392b;
+      background-color: #ffecec;
+      padding: 14px 22px;
+      border-radius: 12px;
+      max-width: 80%;
+      animation: slideIn 1.2s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="checkmark">✅</div>
+  <div class="message">
+    <strong>ভিভো এ এন্ট্রি সাকসেসফুলি</strong><br>
+    প্লিজ ওয়েট, ডিস্ট্রিবিউশন ডলার চলছে...
+  </div>
+  <div class="note">
+    যতই ইউজার ফুল ট্যাক্স কমপ্লিট করবে,<br>
+    তত ইউজার কে পেমেন্ট দেওয়া হবে।
+  </div>
+</body>
+</html>
