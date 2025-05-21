@@ -3,24 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>এন্ট্স্ফুল</title>
+  <title>এন্ট্রি সফল</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@500;700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #e0f7fa, #ffffff);
+      font-family: 'Noto Sans Bengali', sans-serif;
+      background: linear-gradient(145deg, #fff7e6, #fff2cc);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
       text-align: center;
       overflow: hidden;
+      padding: 20px;
     }
 
     .checkmark {
-      font-size: 90px;
-      color: #2ecc71;
+      font-size: 100px;
+      color: #27ae60;
       animation: bounceIn 0.8s ease;
     }
 
@@ -30,7 +32,7 @@
         opacity: 0;
       }
       50% {
-        transform: scale(1.1);
+        transform: scale(1.2);
         opacity: 1;
       }
       70% {
@@ -42,20 +44,22 @@
     }
 
     .message {
-      font-size: 24px;
+      font-size: 28px;
       color: #2d3436;
       margin-top: 15px;
       animation: fadeInUp 1s ease forwards;
+      font-weight: bold;
     }
 
     .note {
-      margin-top: 35px;
-      font-size: 18px;
-      color: #c0392b;
-      background-color: #ffecec;
-      padding: 14px 22px;
-      border-radius: 12px;
-      max-width: 80%;
+      margin-top: 30px;
+      font-size: 20px;
+      color: #b94a48;
+      background-color: #fff0e0;
+      padding: 18px 25px;
+      border-left: 8px solid #ffa502;
+      border-radius: 14px;
+      max-width: 85%;
       animation: slideIn 1.2s ease forwards;
     }
 
@@ -80,17 +84,67 @@
         transform: translateX(0);
       }
     }
+
+    /* Marigold Flower Animation */
+    .flower-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .flower {
+      position: absolute;
+      top: -60px;
+      width: 40px;
+      height: 40px;
+      background-image: url('https://assets.onecompiler.app/42weeh2u8/43japj5wr/1000017954.png');
+      background-size: cover;
+      opacity: 0.9;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-60px) rotate(0deg);
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Marigold Flowers -->
+  <div class="flower-container" id="flowers"></div>
+
   <div class="checkmark">✅</div>
+
   <div class="message">
-    <strong>Giveaway entry successful</strong><br>
-   একজন 0.20$ করে ডলার পাবে।
+    গিভঅ্যাওয়ে এন্ট্রি সফল হয়েছে<br>
+    আপনি পাবেন $0.20
   </div>
+
   <div class="note">
-    যত জন ইউজার ফুল ট্যাক্স কমপ্লিট করবে,<br>
-    তত ইউজার কে পেমেন্ট দেওয়া হবে। FCFS
+    যারা সম্পূর্ণ টাস্ক সম্পন্ন করবে<br>
+    শুধুমাত্র তাদেরকেই পেমেন্ট দেওয়া হবে<br>
+    <strong>FCFS (First Come First Serve)</strong>
   </div>
+
+  <script>
+    // Marigold flower effect
+    const container = document.getElementById('flowers');
+
+    for (let i = 0; i < 20; i++) {
+      const flower = document.createElement('div');
+      flower.classList.add('flower');
+      flower.style.left = Math.random() * 100 + 'vw';
+      flower.style.animationDuration = (3 + Math.random() * 5) + 's';
+      container.appendChild(flower);
+    }
+  </script>
 </body>
 </html>
