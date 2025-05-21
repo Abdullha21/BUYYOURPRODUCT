@@ -152,8 +152,9 @@
 
     <div class="tasks-section">
       <button class="task-btn" data-task="telegram" onclick="completeTask('telegram')">Join Telegram</button>
-      <button class="task-btn" data-task="twitter" onclick="completeTask('twitter')">Follow Twitter</button>
-      <button class="task-btn" data-task="discord" onclick="completeTask('discord')">Join Discord</button>
+      <button class="task-btn" data-task="twitter" onclick="completeTask('twitter')">Twitter like repost</button>
+      <button class="task-btn" data-task="discord" onclick="completeTask('discord')">Subscribe channel</button>
+      <button class="task-btn" data-task="youtube" onclick="completeTask('youtube')">Subscribe channel</button>
     </div>
 
     <form id="giveaway-form">
@@ -164,8 +165,8 @@
       </div>
 
       <div class="form-group">
-        <label for="bsc-address">BSC Address / UID</label>
-        <input type="text" id="bsc-address" placeholder="0x1234... or UID" required>
+        <label for="bsc-address">BSC Address</label>
+        <input type="text" id="bsc-address" placeholder="0x1234..." required>
         <div id="bsc-error" class="error">Address/UID is required</div>
       </div>
 
@@ -193,7 +194,8 @@
 
       if (task === 'telegram') window.open('https://t.me/example', '_blank');
       if (task === 'twitter') window.open('https://twitter.com/example', '_blank');
-      if (task === 'discord') window.open('https://discord.gg/example', '_blank');
+      if (task === 'youtube') window.open('https://youtube.com/@onlineincome500', '_blank');
+      if (task === 'youtube') window.open('https://youtube.com/@mamahasidawtoh2.0?si=0cqhk-mbJe-LIVhG', '_blank');
     }
 
     function checkTasksComplete() {
