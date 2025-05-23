@@ -57,6 +57,11 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.5);
     }
 
+    .task-btn.completed {
+      background: linear-gradient(145deg, #32CD32, #228B22);
+      cursor: not-allowed;
+    }
+
     .form-group {
       margin-bottom: 15px;
     }
@@ -110,7 +115,6 @@
       transform: scale(1.03);
     }
 
-    /* Partner Images */
     .partner-logos {
       display: flex;
       justify-content: center;
@@ -136,26 +140,34 @@
       font-size: 2em;
       color: #FFD700;
     }
+
+    .amount-display {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 1.2em;
+      color: #FFD700;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-
-    <!-- Partner Logos -->
     <div class="partner-logos">
       <img src="https://assets.onecompiler.app/42weeh2u8/43jacqcnx/1000017904.png" alt="Partner 1">
       <div class="cross-icon">×</div>
       <img src="https://assets.onecompiler.app/42weeh2u8/43jasympg/1000017956.jpg" alt="Partner 2">
     </div>
 
-    <h1>সব ট্যাক্স কমপ্লিট না করলে ফর্ম সাবমিট অফ থাকবে।
-Complete all tasks open submite option</h1>
+    <h1>সব ট্যাক্স কমপ্লিট না করলে ফর্ম সাবমিট অফ থাকবে।<br>Complete all tasks to open submit option</h1>
 
     <div class="tasks-section">
       <button class="task-btn" data-task="telegram" onclick="completeTask('telegram')">Join Telegram</button>
       <button class="task-btn" data-task="twitter" onclick="completeTask('twitter')">Twitter like repost</button>
-      <button class="task-btn" data-task="discord" onclick="completeTask('discord')">Subscribe channel</button>
+      <button class="task-btn" data-task="discord" onclick="completeTask('discord')">Join Discord</button>
       <button class="task-btn" data-task="youtube" onclick="completeTask('youtube')">Subscribe channel</button>
+    </div>
+
+    <div class="amount-display" id="amount-display">
+      Completed Tasks: 0/4 | Total Amount: $0.00
     </div>
 
     <form id="giveaway-form">
@@ -182,22 +194,49 @@ Complete all tasks open submite option</h1>
     const usernameError = document.getElementById('username-error');
     const bscError = document.getElementById('bsc-error');
     const submitBtn = document.getElementById('submit-btn');
+    const amountDisplay = document.getElementById('amount-display');
 
     const taskStatus = {
       telegram: false,
       twitter: false,
-      youtube: false,
+      discord: false,
       youtube: false,
     };
 
-    function completeTask(task) {
-      taskStatus[task] = true;
-      checkTasksComplete();
+    const taskValues = {
+      telegram: 0.03, // 3 cents per task
+      twitter: 0.03,
+      discord: 0.03,
+      youtube: 0.03,
+    };
 
-      if (task === 'telegram') window.open('https://t.me/example', '_blank');
-      if (task === 'twitter') window.open('https://twitter.com/example', '_blank');
-      if (task === 'youtube') window.open('https://youtube.com/@onlineincome500', '_blank');
-      if (task === 'youtube') window.open('https://youtube.com/@mamahasidawtoh2.0?si=0cqhk-mbJe-LIVhG', '_blank');
+    let completedTasks = 0;
+    let totalAmount = 0;
+
+    function updateAmountDisplay() {
+      const allTasksDone = Object.values(taskStatus).every(status => status);
+      if (allTasksDone) {
+        totalAmount += 0.08; // Add 20 cents bonus for completing all tasks
+      }
+      amountDisplay.textContent = `Completed Tasks: ${completedTasks}/4 | Total Amount: $${totalAmount.toFixed(2)}`;
+    }
+
+    function completeTask(task) {
+      if (!taskStatus[task]) {
+        taskStatus[task] = true;
+        completedTasks += 1;
+        totalAmount += 0.00 + taskValues[task]; // 10 cents for completion + 3 cents initial value
+        document.querySelector(`button[data-task="${task}"]`).classList.add('completed');
+        document.querySelector(`button[data-task="${task}"]`).disabled = true;
+        checkTasksComplete();
+        updateAmountDisplay();
+
+        // Open respective links
+        if (task === 'telegram') window.open('https://t.me/example', '_blank');
+        if (task === 'twitter') window.open('https://twitter.com/example', '_blank');
+        if (task === 'discord') window.open('https://discord.com/invite/example', '_blank');
+        if (task === 'youtube') window.open('https://youtube.com/@example', '_blank');
+      }
     }
 
     function checkTasksComplete() {
@@ -206,7 +245,6 @@ Complete all tasks open submite option</h1>
     }
 
     form.addEventListener('submit', async (e) => {
-      window.open("index%20(14).html","_blank");
       e.preventDefault();
 
       usernameError.style.display = 'none';
@@ -229,6 +267,7 @@ Complete all tasks open submite option</h1>
       const formData = new FormData();
       formData.append('username', usernameInput.value.trim());
       formData.append('bscAddress', bscInput.value.trim());
+      formData.append('totalAmount', totalAmount.toFixed(2));
 
       try {
         const response = await fetch('https://script.google.com/macros/s/AKfycbxtKm5sjnSjsYv0I63f9QblLnpP5BY7LZdkRZLN9Xkis6sjxwoBSJEc5Q-jdPkNLUpG/exec', {
@@ -238,12 +277,21 @@ Complete all tasks open submite option</h1>
         const result = await response.json();
 
         if (result.status === 'success') {
-          alert('Entry submitted successfully!');
+          alert(`Entry submitted successfully! Total Amount: $${totalAmount.toFixed(2)}`);
           form.reset();
+          // Reset task status and amount
+          Object.keys(taskStatus).forEach(task => {
+            taskStatus[task] = false;
+            document.querySelector(`button[data-task="${task}"]`).classList.remove('completed');
+            document.querySelector(`button[data-task="${task}"]`).disabled = false;
+          });
+          completedTasks = 0;
+          totalAmount = 0;
+          updateAmountDisplay();
+          submitBtn.disabled = true;
         } else {
           alert('Submission failed: ' + result.message);
         }
-
       } catch (error) {
         alert('Network error: ' + error.message);
       }
