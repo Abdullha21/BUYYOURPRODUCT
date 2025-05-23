@@ -162,12 +162,13 @@
     <div class="tasks-section">
       <button class="task-btn" data-task="telegram" onclick="completeTask('telegram')">Join Telegram</button>
       <button class="task-btn" data-task="twitter" onclick="completeTask('twitter')">Twitter like repost</button>
-      <button class="task-btn" data-task="discord" onclick="completeTask('discord')">Join Discord</button>
+      <button class="task-btn" data-task="discord" onclick="completeTask('twotter')">Join Discord</button>
+      <button class="task-btn" data-task="youtube" onclick="completeTask('youtube')">Subscribe channel</button>
       <button class="task-btn" data-task="youtube" onclick="completeTask('youtube')">Subscribe channel</button>
     </div>
 
     <div class="amount-display" id="amount-display">
-      Completed Tasks: 0/4 | Total Amount: $0.00
+      Completed Tasks: 0/5 | Total Amount: $0.00
     </div>
 
     <form id="giveaway-form">
@@ -199,14 +200,16 @@
     const taskStatus = {
       telegram: false,
       twitter: false,
-      discord: false,
+      twotter: false,
+      youtube: false,
       youtube: false,
     };
 
     const taskValues = {
       telegram: 0.03, // 3 cents per task
       twitter: 0.03,
-      discord: 0.03,
+      Twitter: 0.03,
+      youtube: 0.03,
       youtube: 0.03,
     };
 
@@ -216,7 +219,7 @@
     function updateAmountDisplay() {
       const allTasksDone = Object.values(taskStatus).every(status => status);
       if (allTasksDone) {
-        totalAmount += 0.08; // Add 20 cents bonus for completing all tasks
+        totalAmount += 0.05; // Add 20 cents bonus for completing all tasks
       }
       amountDisplay.textContent = `Completed Tasks: ${completedTasks}/4 | Total Amount: $${totalAmount.toFixed(2)}`;
     }
@@ -232,10 +235,11 @@
         updateAmountDisplay();
 
         // Open respective links
-        if (task === 'telegram') window.open('https://t.me/example', '_blank');
-        if (task === 'twitter') window.open('https://twitter.com/example', '_blank');
-        if (task === 'discord') window.open('https://discord.com/invite/example', '_blank');
-        if (task === 'youtube') window.open('https://youtube.com/@example', '_blank');
+        if (task === 'telegram') window.open('https://t.me/monlineincome', '_blank');
+        if (task === 'twitter') window.open('https://x.com/srincomebd19/status/1925929325892710722?t=wcGjEbQQwUotfwrjfHAESQ&s=19', '_blank');
+        if (task === 'twotter') window.open('https://x.com/srincomebd10/status/1925929222809198758?s=19', '_blank');
+        if (task === 'youtube') window.open('https://youtube.com/@onlineincome500', '_blank');
+        if (task === 'youtube') window.open('https://youtube.com/@mamahasidawtoh2.0?si=xC1UNfyX7Toqu4_W', '_blank');
       }
     }
 
