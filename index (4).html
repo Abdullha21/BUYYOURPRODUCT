@@ -90,9 +90,9 @@
         }
         .banner-wrapper {
             display: flex;
-            width: 500%; /* 5টি ব্যানারের জন্য */
+            width: 600%; /* 5টি ব্যানারের জন্য */
             height: 100%;
-            transition: transform 0.6s ease-in-out;
+            transition: transform 0.5s ease-in-out;
         }
         .banner-slide {
             width: 20%; /* প্রতিটি ব্যানারের জন্য */
@@ -256,20 +256,24 @@
                 <img src="https://assets.onecompiler.app/42weeh2u8/43jb9843p/1000017960.jpg" alt="Banner 1">
             </a>
             <a href="https://www.youtube.com/embed/vXUUDXNXjW8" class="banner-slide">
-                <img src="https://assets.onecompiler.app/42weeh2u8/43hzsyg44/1000017842.png" alt="Banner 2">
+                <img src="https://assets.onecompiler.app/42weeh2u8/43jjzjfwr/1000018118.png" alt="Banner 2">
             </a>
             <a href="https://www.youtube.com/embed/vXUUDXNXjW8" class="banner-slide">
-                <img src="https://assets.onecompiler.app/42weeh2u8/43j6rjwqt/1000017910.png" alt="Banner 3">
+                <img src="https://assets.onecompiler.app/42weeh2u8/43hzsyg44/1000017842.png" alt="Banner 3">
             </a>
             <a href="https://www.youtube.com/embed/vXUUDXNXjW8" class="banner-slide">
-                <img src="https://assets.onecompiler.app/42weeh2u8/43j6rjwqt/1000017907.png" alt="Banner 4">
+                <img src="https://assets.onecompiler.app/42weeh2u8/43j6rjwqt/1000017910.png" alt="Banner 4">
             </a>
             <a href="https://www.youtube.com/embed/vXUUDXNXjW8" class="banner-slide">
-                <img src="https://assets.onecompiler.app/42weeh2u8/43j82czpg/1000017927.png" alt="Banner 5">
+                <img src="https://assets.onecompiler.app/42weeh2u8/43j6rjwqt/1000017907.png" alt="Banner 5">
+            </a>
+            <a href="https://www.youtube.com/embed/vXUUDXNXjW8" class="banner-slide">
+                <img src="https://assets.onecompiler.app/42weeh2u8/43j82czpg/1000017927.png" alt="Banner 6">
             </a>
         </div>
         <div class="dots">
             <span class="dot active"></span>
+            <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
@@ -282,7 +286,7 @@
         let currentIndex = 0;
         const wrapper = document.querySelector('.banner-wrapper');
         const dots = document.querySelectorAll('.dot');
-        const totalBanners = 5;
+        const totalBanners = 6;
 
         function showBanner(index) {
             wrapper.style.transform = `translateX(-${index * 20}%)`;
