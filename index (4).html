@@ -82,10 +82,10 @@
         .banner {
             position: relative;
             width: 100%;
-            max-width: 1200px; /* বড় স্ক্রিনের জন্য */
+            max-width: 1200px;
             margin: 20px auto;
             overflow: hidden;
-            height: 300px; /* ডিফল্ট উচ্চতা */
+            height: 300px;
             border-radius: 10px;
         }
         .banner-wrapper {
@@ -95,16 +95,15 @@
             transition: transform 0.6s ease-in-out;
         }
         .banner-slide {
-            width: 20%; /* প্রতিটি ব্যানারের জন্য */
+            width: 16.6667%; /* 100% / 6 = 16.6667% প্রতিটি স্লাইডের জন্য */
             height: 100%;
+            flex-shrink: 0; /* স্লাইডের আকার সংকুচিত হবে না */
             position: relative;
-            background-size: cover;
-            background-position: center;
         }
         .banner-slide img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* ইমেজ ফিট করার জন্য */
+            object-fit: cover;
             display: block;
         }
         .banner-slide::before {
@@ -114,7 +113,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.0); /* হালকা ওভারলে */
+            background: rgba(0, 0, 0, 0.0);
             z-index: 1;
         }
         .dots {
@@ -139,12 +138,12 @@
         /* রেসপন্সিভ ডিজাইন */
         @media (max-width: 768px) {
             .banner {
-                height: 200px; /* মোবাইলে উচ্চতা কমানো */
+                height: 200px;
             }
         }
         @media (max-width: 480px) {
             .banner {
-                height: 150px; /* খুব ছোট স্ক্রিনের জন্য */
+                height: 150px;
             }
             .dots {
                 bottom: 5px;
@@ -230,6 +229,31 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             margin-left: -1px;
         }
+        /* Social Icons */
+        .social-icons {
+            text-align: center;
+            margin-top: 40px;
+            padding-bottom: 30px;
+        }
+        .social-icons .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border-radius: 50%;
+            font-size: 26px;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .social-icons .icon:hover {
+            transform: scale(1.1);
+            background-color: #e0e0e0;
+        }
     </style>
 </head>
 <body>
@@ -289,7 +313,7 @@
         const totalBanners = 6;
 
         function showBanner(index) {
-            wrapper.style.transform = `translateX(-${index * 20}%)`;
+            wrapper.style.transform = `translateX(-${index * 16.6667}%)`; // 100% / 6 = 16.6667%
             dots.forEach(dot => dot.classList.remove('active'));
             dots[index].classList.add('active');
         }
@@ -308,20 +332,19 @@
             });
         });
     </script>
-    <!-- How to Order Section -->
-<div style="text-align: center; padding: 30px 20px;">
-  <h2 style="font-size: 28px; font-weight: bold; color: #333; margin-bottom: 20px;">
-    How to Order
-  </h2>
 
-  <!-- YouTube Shorts Embed -->
-  <div style="max-width: 400px; margin: auto;">
-    <iframe width="100%" height="250" 
-      src="https://www.youtube.com/embed/vXUUDXNXjW8" 
-      title="How to Order" frameborder="0" allowfullscreen style="border-radius: 10px;">
-    </iframe>
-  </div>
-</div>
+    <!-- How to Order Section -->
+    <div style="text-align: center; padding: 30px 20px;">
+        <h2 style="font-size: 28px; font-weight: bold; color: #333; margin-bottom: 20px;">
+            How to Order
+        </h2>
+        <div style="max-width: 400px; margin: auto;">
+            <iframe width="100%" height="250" 
+                src="https://www.youtube.com/embed/vXUUDXNXjW8" 
+                title="How to Order" frameborder="0" allowfullscreen style="border-radius: 10px;">
+            </iframe>
+        </div>
+    </div>
 
     <!-- Hot Products Section -->
     <h2 class="section-title">HOT PRODUCTS</h2>
@@ -368,52 +391,26 @@
         <div class="support-text">SUPPORT!</div>
         <div class="support-icon">📞</div>
     </a>
-<!-- Font Awesome CDN যুক্ত করুন head সেকশনে -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-<div class="social-icons">
-  <a href="https://m.me/AbDuLlHa300" target="_blank" class="icon messenger" title="Messenger">
-    <i class="fab fa-facebook-messenger"></i>
-  </a>
-  <a href="https://www.facebook.com/share/1Y9C6rZG7R/" target="_blank" class="icon facebook" title="Facebook">
-    <i class="fab fa-facebook-f"></i>
-  </a>
-  <a href="https://t.me/Onlineincamechannel" target="_blank" class="icon telegram" title="Telegram">
-    <i class="fab fa-telegram-plane"></i>
-  </a>
-  <a href="https://youtube.com/@mamahasidawtoh2.0?si=cMoQEpW7OhbR37hw" target="_blank" class="icon youtube" title="YouTube">
-    <i class="fab fa-youtube"></i>
-  </a>
-</div>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-<style>
-  .social-icons {
-    text-align: center;
-    margin-top: 40px;
-    padding-bottom: 30px;
-  }
+    <!-- Social Icons -->
+    <div class="social-icons">
+        <a href="https://m.me/AbDuLlHa300" target="_blank" class="icon messenger" title="Messenger">
+            <i class="fab fa-facebook-messenger"></i>
+        </a>
+        <a href="https://www.facebook.com/share/1Y9C6rZG7R/" target="_blank" class="icon facebook" title="Facebook">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://t.me/Onlineincamechannel" target="_blank" class="icon telegram" title="Telegram">
+            <i class="fab fa-telegram-plane"></i>
+        </a>
+        <a href="https://youtube.com/@mamahasidawtoh2.0?si=cMoQEpW7OhbR37hw" target="_blank" class="icon youtube" title="YouTube">
+            <i class="fab fa-youtube"></i>
+        </a>
+    </div>
 
-  .social-icons .icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 10px;
-    width: 60px;
-    height: 60px;
-    background: #fff;
-    border-radius: 50%;
-    font-size: 26px;
-    color: #333;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    transition: all 0.3s;
-    text-decoration: none;
-  }
-
-  .social-icons .icon:hover {
-    transform: scale(1.1);
-    background-color: #e0e0e0;
-  }
-</style>
     <!-- Footer -->
     <footer style="text-align: center; padding: 15px 0; background-color: #f0f0f0; margin-top: 40px; font-size: 14px; color: #555;">
         © 2025 ABDULLAH KHAN. All rights reserved.
