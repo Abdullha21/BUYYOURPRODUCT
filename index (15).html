@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <!-- Back Button Start -->
+  <style>
+    #back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #ff4d4d;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      z-index: 999;
+    }
+
+    #back-button:hover {
+      background-color: #e60000;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    #back-button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+
+  <button id="back-button" onclick="goBack()">← Back</button>
+
+  <script>
+    function goBack() {
+      window.location.href = "https://abdullha21.github.io/ALLTOPUPBUY/index%20(4).html";
+    }
+  </script>
+  <!-- Back Button End -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FF LEVEL UP PASS UID</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      animation: slideIn 0.6s ease-out;
+      transform: translateY(0);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .section {
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards;
+      animation-delay: calc(0.1s * var(--index));
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section h3 {
+      margin-bottom: 10px;
+      color: #B300B3;
+      position: relative;
+    }
+
+    .section h3::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(to right, #B300B3, transparent);
+      transition: width 0.4s ease;
+    }
+
+    .section h3:hover::after {
+      width: 100%;
+    }
+
+    .products button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #eee;
+      border: 2px solid transparent;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .products button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .products button:hover::before {
+      left: 100%;
+    }
+
+    .products button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      background-color: #f5f5f5;
+    }
+
+    .products button.selected {
+      border-color: red;
+      background-color: #ffe6e6;
+      transform: scale(1.02);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      box-sizing: border-box;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    input[type="email"], select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      box-sizing: border-box;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    
+    input[type="text"]:focus, select:focus {
+      border-color: #B300B3;
+      box-shadow: 0 0 8px rgba(179,0,179,0.3);
+      transform: scale(1.01);
+      outline: none;
+    }
+
+    .payment-methods img {
+      height: 40px;
+      cursor: pointer;
+      margin-right: 10px;
+      border: 2px solid transparent;
+      padding: 5px;
+      border-radius: 5px;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .payment-methods img:hover {
+      transform: scale(1.1) rotate(3deg);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .payment-methods img.selected {
+      border-color: red;
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(255,0,0,0.3);
+    }
+
+    .info-box {
+      margin-top: 10px;
+      font-size: 14px;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+      animation: popIn 0.5s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #8e2de2, #4a00e0);
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .notice-box {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: 500;
+      animation: slideInRight 0.8s ease;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .support-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      z-index: 9999;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    .support-text {
+      background-color: #d60000;
+      color: white;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 5px 0 0 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .support-icon {
+      background-color: #d60000;
+      color: white;
+      font-size: 22px;
+      padding: 13px 15px;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      margin-left: -1px;
+      transition: transform 0.3s ease;
+    }
+
+    .support-btn:hover .support-text,
+    .support-btn:hover .support-icon {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>FF LEVEL UP PASS UID </h2>
+    <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
+      <div class="section" style="--index: 1;">
+        <h3>1. Select Recharge</h3>
+        <div class="products" id="productList">
+          <button type="button" value="Level Up Package 6  level - 45 TK">Level Up Package - Level 6   -150💎 - 45 TK</button>
+          <button type="button" value="Level Up Package 10 level - 75 TK">Level Up Package - Level 10  -200💎 - 75 TK</button>
+          <button type="button" value="Level Up Package 15 level - 75 TK">Level Up Package - Level 15  -200💎 - 75 TK</button>
+          <button type="button" value="Level Up Package 20 level - 75 TK">Level Up Package - Level 20  -200💎 - 75 TK</button>
+          <button type="button" value="Level Up Package 25 level - 75 TK">Level Up Package - Level 25  -200💎 - 75 TK</button>
+          <button type="button" value="Level Up Package 30 level - 105 TK">Level Up Package - Level 30 -350💎 - 105TK</button>
+          <button type="button" value=" FULL Level Up Package    - 440 TK"> FULL Level Up Package - 1300💎 - 440 TK</button>
+        </div>
+        <input type="hidden" name="selected_product" id="selected_product" required>
+      </div>
+      <div class="section" style="--index: 2;">
+        <h3>2. Account Info</h3>
+        <input type="text" name="uid" placeholder="এখানে আপনার গেম UID দেন!" required>
+      </div>
+      <div class="section" style="--index: 3;">
+        <h3>3.ordert confram notification gmail</h3>
+        <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
+      </div>
+      <div class="section" style="--index: 4;">
+        <h3>4. Select one option</h3>
+        <div class="payment-methods">
+          <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
+          <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
+        </div>
+        <input type="hidden" name="payment_method" id="payment_method" required>
+        <div class="info-box" id="paymentInfo" style="display:none;"></div>
+      </div>
+      <div id="price-display" style="margin-top: 20px; font-weight: bold; color: #d60000;"></div>
+      <div class="section" style="--index: 5;">
+        <h3>5. Transaction ID</h3>
+        <input type="text" name="trx_id" placeholder="আপনার বিকাশ বা নগদ এর লাস্ট ৪ নাম্বার দেন !" required>
+      </div>
+      <button type="submit" class="btn">Buy Now</button>
+    </form>
+    <!-- Notice Box -->
+    <div class="notice-box">
+      <div class="notice-title">FF LEVEL UP PASS Recharge Notice</div>
+      Largest Recharge Site In Bangladesh <br><br>
+      <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+    </div>
+    <!-- SUPPORT BUTTON -->
+    <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
+      <div class="support-text">SUPPORT!</div>
+      <div class="support-icon">📞</div>
+    </a>
+  </div>
+  <script>
+    const productButtons = document.querySelectorAll('#productList button');
+    const selectedProductInput = document.getElementById('selected_product');
+    const priceDisplay = document.getElementById('price-display');
+
+    productButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        productButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedProductInput.value = btn.value;
+
+        const parts = btn.value.split('-');
+        const price = parts[1]?.trim();
+        priceDisplay.textContent = "Price: " + price;
+        priceDisplay.style.color = '#d60000';
+      });
+    });
+
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+
+    bkashBtn.addEventListener('click', () => {
+      bkashBtn.classList.add('selected');
+      nagadBtn.classList.remove('selected');
+      paymentMethod.value = 'bKash';
+      paymentInfo.style.display = 'block';
+      paymentInfo.textContent = 'bKash Number: 01796693813';
+    });
+
+    nagadBtn.addEventListener('click', () => {
+      nagadBtn.classList.add('selected');
+      bkashBtn.classList.remove('selected');
+      paymentMethod.value = 'Nagad';
+      paymentInfo.style.display = 'block';
+      paymentInfo.textContent = 'Nagad Number: 01796693813';
+    });
+
+    const form = document.getElementById("topupForm");
+    form.addEventListener("submit", function(e) {
+      window.open("index%20(6).html","_blank");
+      e.preventDefault();
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form)
+      }).then(response => {
+        priceDisplay.textContent = "Your order has been submitted! Pless w8 10 minite";
+        priceDisplay.style.color = "green";
+        form.reset();
+
+        productButtons.forEach(b => b.classList.remove('selected'));
+        bkashBtn.classList.remove('selected');
+        nagadBtn.classList.remove('selected');
+        paymentInfo.style.display = 'none';
+      }).catch(error => {
+        alert("Something went wrong!");
+      });
+    });
+  </script>
+</body>
+</html>
