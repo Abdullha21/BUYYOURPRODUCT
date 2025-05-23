@@ -162,7 +162,7 @@
     <div class="tasks-section">
       <button class="task-btn" data-task="telegram" onclick="completeTask('telegram')">Join Telegram</button>
       <button class="task-btn" data-task="twitter" onclick="completeTask('twitter')">Twitter like repost</button>
-      <button class="task-btn" data-task="twitter" onclick="completeTask('twitter')">Join Discord</button>
+      <button class="task-btn" data-task="twitter" onclick="completeTask('twitter')">Twitter like repost</button>
       <button class="task-btn" data-task="youtube" onclick="completeTask('youtube')">Subscribe channel</button>
       <button class="task-btn" data-task="youtube" onclick="completeTask('youtube')">Subscribe channel</button>
     </div>
@@ -221,7 +221,7 @@
       if (allTasksDone) {
         totalAmount += 0.05; // Add 20 cents bonus for completing all tasks
       }
-      amountDisplay.textContent = `Completed Tasks: ${completedTasks}/4 | Total Amount: $${totalAmount.toFixed(2)}`;
+      amountDisplay.textContent = `Completed Tasks: ${completedTasks}/5 | Total Amount: $${totalAmount.toFixed(2)}`;
     }
 
     function completeTask(task) {
