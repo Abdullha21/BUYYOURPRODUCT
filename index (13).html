@@ -101,6 +101,7 @@
       .catch(error => {
         status.innerText = "Error: " + error;
         status.style.color = "red";
+        return ContentService.createTextOutput("Success").setMimeType(ContentService.MimeType.TEXT);
       });
     }
   </script>
