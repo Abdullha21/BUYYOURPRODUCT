@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BUY YOUR PRODUCT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <style>
         * {
             margin: 0;
@@ -14,6 +16,7 @@
         body {
             background-color: #f5f5f5;
         }
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -24,6 +27,14 @@
         }
         .header img.logo {
             height: 40px;
+        }
+        .header .website-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a0dad;
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            flex-grow: 1;
         }
         .header .cart {
             display: flex;
@@ -67,12 +78,8 @@
             line-height: 1;
         }
         @keyframes scroll-left {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
         }
         .marquee-text:hover {
             animation-play-state: paused;
@@ -90,14 +97,14 @@
         }
         .banner-wrapper {
             display: flex;
-            width: 600%; /* 6টি ব্যানারের জন্য */
+            width: 600%;
             height: 100%;
             transition: transform 0.6s ease-in-out;
         }
         .banner-slide {
-            width: 16.6667%; /* 100% / 6 = 16.6667% প্রতিটি স্লাইডের জন্য */
+            width: 16.6667%;
             height: 100%;
-            flex-shrink: 0; /* স্লাইডের আকার সংকুচিত হবে না */
+            flex-shrink: 0;
             position: relative;
         }
         .banner-slide img {
@@ -135,10 +142,13 @@
         .dot.active {
             background-color: #717171;
         }
-        /* রেসপন্সিভ ডিজাইন */
+        /* Responsive Design */
         @media (max-width: 768px) {
             .banner {
                 height: 200px;
+            }
+            .header .website-name {
+                font-size: 18px;
             }
         }
         @media (max-width: 480px) {
@@ -153,6 +163,9 @@
                 width: 8px;
                 margin: 0 3px;
             }
+            .header .website-name {
+                font-size: 14px;
+            }
         }
         /* Hot Products Section */
         .section-title {
@@ -164,43 +177,69 @@
         .category-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 10px;
             padding: 0 20px;
             flex-wrap: wrap;
         }
         .category-box {
             background: linear-gradient(135deg, #6a0dad, #a855f7);
             color: white;
-            width: 200px;
-            border-radius: 15px;
-            padding: 15px;
+            width: 120px;
+            border-radius: 8px;
+            padding: 8px;
             text-align: center;
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            animation: popIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        .category-box:nth-child(1) { animation-delay: 0.2s; }
+        .category-box:nth-child(2) { animation-delay: 0.3s; }
+        .category-box:nth-child(3) { animation-delay: 0.4s; }
+        .category-box:nth-child(4) { animation-delay: 0.5s; }
+        .category-box:nth-child(5) { animation-delay: 0.6s; }
+        .category-box:nth-child(6) { animation-delay: 0.7s; }
+        .category-box:nth-child(7) { animation-delay: 0.8s; }
+        .category-box:nth-child(8) { animation-delay: 0.9s; }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
         .category-box:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(106, 13, 173, 0.7);
         }
         .category-box img {
             max-width: 100%;
             height: auto;
-            border-radius: 10px;
+            border-radius: 6px;
         }
         .category-box h3 {
-            font-size: 18px;
-            margin: 10px 0;
+            font-size: 12px;
+            margin: 6px 0;
+            line-height: 1.2;
         }
-        .category-box a {
-            display: inline-block;
-            background-color: #fff;
-            color: #6a0dad;
-            padding: 5px 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-top: 10px;
+        /* Ripple Effect on Click */
+        .category-box::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+            pointer-events: none;
         }
-        .category-box a:hover {
-            background-color: #6a0dad;
-            color: white;
+        .category-box.clicked::after {
+            width: 200px;
+            height: 200px;
+            opacity: 0;
         }
         /* Support Button */
         .support-btn {
@@ -260,13 +299,13 @@
     <!-- Header -->
     <div class="header">
         <img src="https://assets.onecompiler.app/42weeh2u8/43jacqcnx/1000017904.png" alt="EgyTopUp Logo" class="logo">
+        <div class="website-name">Buy Your Product</div>
         <div class="cart">
             <img src="https://assets.onecompiler.app/42weeh2u8/43hswpykf/1000017652.png" alt="Cart Icon">
         </div>
     </div>
 
     <!-- Marquee Text -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <div class="marquee-container">
         <div class="marquee-text">
             অর্ডার দেওয়ার পর দশ মিনিটের মধ্যেও পেমেন্ট না পেলে সাপোর্টে ক্লিক করে আমার সাথে যোগাযোগ করুন।
@@ -313,7 +352,7 @@
         const totalBanners = 6;
 
         function showBanner(index) {
-            wrapper.style.transform = `translateX(-${index * 16.6667}%)`; // 100% / 6 = 16.6667%
+            wrapper.style.transform = `translateX(-${index * 16.6667}%)`;
             dots.forEach(dot => dot.classList.remove('active'));
             dots[index].classList.add('active');
         }
@@ -349,46 +388,38 @@
     <!-- Hot Products Section -->
     <h2 class="section-title">HOT PRODUCTS AVAILABLE FOR YOU</h2>
     <div class="category-container">
-        <div class="category-box">
+        <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(3).html" class="category-box">
             <img src="https://assets.onecompiler.app/42weeh2u8/43hydt8zq/1000017823.jpg" alt="Weekly Discount">
             <h3>FREE FIRE<br>UID TOP UP AVAILABLE</h3>
-            <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(3).html">FF UID TopUp</a>
-        </div>
-        <div class="category-box">
+        </a>
+        <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(16).html" class="category-box">
             <img src="https://assets.onecompiler.app/42weeh2u8/43jsjykdr/1000018435.jpg" alt="Weekly Discount">
             <h3>FACEBOOK STAR AVAILABLE</h3>
-            <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(16).html">FB STAR </a>
-        </div>
-        <div class="category-box">
+        </a>
+        <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(15).html" class="category-box">
             <img src="https://assets.onecompiler.app/42weeh2u8/43jjwq4w2/1000018112.jpg" alt="Weekly Discount">
             <h3>FREE FIRE<br>LEVEL UP PASS UID AVAILABLE</h3>
-            <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(15).html">FF UID LEVEL UP PASS</a>
-        </div>
-        <div class="category-box">
+        </a>
+        <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(11).html" class="category-box">
             <img src="https://assets.onecompiler.app/42weeh2u8/43j82czpg/1000017926.png" alt="Weekly Discount">
             <h3>FREE FIRE<br>UID AIRDROP AVAILABLE</h3>
-            <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(11).html">FF UID AIRDROP</a>
-        </div>
-        <div class="category-box">
+        </a>
+        <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(12).html" class="category-box">
             <img src="https://assets.onecompiler.app/42weeh2u8/43j8bdjyx/1000017933.png" alt="Weekly Discount">
             <h3>FREE FIRE<br>Evo Access AVAILABLE</h3>
-            <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(12).html">FF Evo Access</a>
-        </div>
-        <div class="category-box">
+        </a>
+        <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(10).html" class="category-box">
             <img src="https://assets.onecompiler.app/42weeh2u8/43hx8r8mp/download%20(1).jpg" alt="Weekly Discount">
             <h3>TON AVAILABLE</h3>
-            <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(10).html">TON BUY</a>
-        </div>
-        <div class="category-box">
+        </a>
+        <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(7).html" class="category-box">
             <img src="https://assets.onecompiler.app/42weeh2u8/43hymssu2/leuchtend-gelber-goldener-stern-mit-schatten-und-highlights-im-einfachen-stil_1012478-351.avif" alt="Weekly Discount">
             <h3>TELEGRAM STAR AVAILABLE</h3>
-            <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(7).html">STAR BUY</a>
-        </div>
-        <div class="category-box">
+        </a>
+        <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(5).html" class="category-box">
             <img src="https://assets.onecompiler.app/42weeh2u8/43hyu8gkm/download%20(2).jpg" alt="Weekly Discount">
             <h3>Giveaway Not AVAILABLE</h3>
-            <a href="https://abdullha21.github.io/ALLTOPUPBUY/index%20(5).html">Giveaway</a>
-        </div>
+        </a>
     </div>
 
     <!-- Support Button -->
@@ -396,9 +427,6 @@
         <div class="support-text">SUPPORT!</div>
         <div class="support-icon">📞</div>
     </a>
-
-    <!-- Font Awesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
     <!-- Social Icons -->
     <div class="social-icons">
@@ -420,5 +448,19 @@
     <footer style="text-align: center; padding: 15px 0; background-color: #f0f0f0; margin-top: 40px; font-size: 14px; color: #555;">
         © 2025 All rights reserved | Developed By MD ABDULLH KHAN
     </footer>
+
+    <!-- JavaScript for Category Box Click Animation -->
+    <script>
+        document.querySelectorAll('.category-box').forEach(box => {
+            box.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = box.getAttribute('href');
+                box.classList.add('clicked');
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 400); // Match ripple animation duration
+            });
+        });
+    </script>
 </body>
 </html>
