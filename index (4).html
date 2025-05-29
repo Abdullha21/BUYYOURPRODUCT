@@ -489,7 +489,7 @@
         </a>
     </div>
 </div>
-    <div style="
+    <div id="noticeBox" style="
   position: fixed;
   top: 50%;
   left: 50%;
@@ -505,7 +505,8 @@
   text-align: center;
   animation: pulse 1.5s infinite;
 ">
-  এখন আপাতত কেউ অর্ডার দিয়েন না<br>মোবাইল অফ থাকবেক, আমাদের এখানে কারেন্ট নেই।
+  <div style="position: absolute; top: 5px; right: 10px; cursor: pointer; font-weight: bold;" onclick="document.getElementById('noticeBox').style.display='none'">✖</div>
+  এখন আপাতত কেউ অর্ডার দিয়েন না<br>মোবাইল অফ থাকবে, আমাদের এখানে কারেন্ট নেই।
 </div>
 
 <style>
