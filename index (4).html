@@ -489,6 +489,32 @@
         </a>
     </div>
 </div>
+    <div style="
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffdddd;
+  border: 2px solid red;
+  color: #b30000;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  font-size: 18px;
+  text-align: center;
+  animation: pulse 1.5s infinite;
+">
+  এখন আপাতত কেউ অর্ডার দিয়েন না<br>মোবাইল অফ থাকবেক, আমাদের এখানে কারেন্ট নেই।
+</div>
+
+<style>
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+</style>
 
     <!-- Hot Products Section -->
     <h2 class="section-title">HOT PRODUCTS AVAILABLE FOR YOU</h2>
