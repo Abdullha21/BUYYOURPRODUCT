@@ -4,11 +4,11 @@
   <title>Order History</title>
   <style>
     .box {
+      background: #f0f0f0;
       border: 1px solid #ccc;
       margin: 10px;
       padding: 15px;
       border-radius: 10px;
-      background-color: #f0f0f0;
     }
   </style>
 </head>
@@ -17,10 +17,13 @@
   <div id="history">Loading...</div>
 
   <script>
-    const dataURL = "https://script.google.com/macros/s/AKfycbzxNVk7SKDcoyy2H7M4zblZf-StYj6TlZGyFDOH3TXI0P4PH8gtPET-n_daGQqSMfYGZA/exec";
+    const dataURL = "https://script.google.com/macros/s/AKfycbzxNVk7SKDcoyy2H7M4zblZf-StYj6TlZGyFDOH3TXI0P4PH8gtPET-n_daGQqSMfYGZA/exec"; // Paste your deployed script URL here
 
     fetch(dataURL)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
       .then(data => {
         const container = document.getElementById("history");
         container.innerHTML = "";
