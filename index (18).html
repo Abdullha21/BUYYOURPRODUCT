@@ -5,9 +5,10 @@
   <style>
     .box {
       border: 1px solid #ccc;
-      padding: 10px;
       margin: 10px;
+      padding: 15px;
       border-radius: 10px;
+      background-color: #f0f0f0;
     }
   </style>
 </head>
@@ -16,7 +17,7 @@
   <div id="history">Loading...</div>
 
   <script>
-    const dataURL = "https://script.google.com/macros/s/AKfycbwkPqyELDl9xp7uEjSoiEAIU71QhK0AY04UWvjzGPRbr8mGZ_kXWBI9z9kSXOCjSlLbNQ/exec";
+    const dataURL = "https://script.google.com/macros/s/AKfycbzxNVk7SKDcoyy2H7M4zblZf-StYj6TlZGyFDOH3TXI0P4PH8gtPET-n_daGQqSMfYGZA/exec";
 
     fetch(dataURL)
       .then(res => res.json())
@@ -24,11 +25,16 @@
         const container = document.getElementById("history");
         container.innerHTML = "";
 
+        if (!Array.isArray(data) || data.length === 0) {
+          container.innerText = "No orders found.";
+          return;
+        }
+
         data.reverse().forEach(order => {
           const div = document.createElement("div");
           div.className = "box";
           div.innerHTML = 
-            Product: <strong>${order.product}</strong><br>
+            <strong>${order.product}</strong><br>
             Amount: ৳${order.amount}<br>
             Method: ${order.method}<br>
             <small>${order.time}</small>
@@ -38,6 +44,7 @@
       })
       .catch(err => {
         document.getElementById("history").innerText = "Failed to load history.";
+        console.error("Fetch error:", err);
       });
   </script>
 </body>
