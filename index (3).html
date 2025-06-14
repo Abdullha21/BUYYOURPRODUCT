@@ -31,7 +31,6 @@
     }
   </style>
 
-.same as telegram star
   <button id="back-button" onclick="goBack()">← Back</button>
 
   <script>
@@ -321,17 +320,17 @@
       <div class="section" style="--index: 1;">
         <h3>1. Select Recharge</h3>
         <div class="products" id="productList">
-          <button type="button" value="25 Diamond - 24 TK">25 Diamond - 24 TK</button>
-          <button type="button" value="50 Diamond - 40 TK">50 Diamond - 40 TK</button>
-          <button type="button" value="115 Diamond - 80 TK">115 Diamond - 80 TK</button>
-          <button type="button" value="240 Diamond - 155 TK">240 Diamond - 155 TK</button>
-          <button type="button" value="480 Diamond - 315 TK">480 Diamond - 315 TK</button>
-          <button type="button" value="610 Diamond - 400 TK">610 Diamond - 400 TK</button>
-          <button type="button" value="1240 Diamond - 760 TK">1240 Diamond - 760 TK</button>
-          <button type="button" value="2530 Diamond - 1550 TK">2530 Diamond - 1550 TK</button>
-          <button type="button" value="Weekly - 155 TK">Weekly - 155 TK</button>
-          <button type="button" value="Monthly - 750 TK">Monthly - 750 TK</button>
-          <button type="button" value="Level Up Pass - 45 TK">weekly lite - 45 TK</button>
+          <button type="button" value="25 Diamond - 24 TK" data-payment-link="https://example.com/payment/24">25 Diamond - 24 TK</button>
+          <button type="button" value="50 Diamond - 40 TK" data-payment-link="https://example.com/payment/40">50 Diamond - 40 TK</button>
+          <button type="button" value="115 Diamond - 80 TK" data-payment-link="https://example.com/payment/80">115 Diamond - 80 TK</button>
+          <button type="button" value="240 Diamond - 155 TK" data-payment-link="https://example.com/payment/155">240 Diamond - 155 TK</button>
+          <button type="button" value="480 Diamond - 315 TK" data-payment-link="https://example.com/payment/315">480 Diamond - 315 TK</button>
+          <button type="button" value="610 Diamond - 400 TK" data-payment-link="https://example.com/payment/400">610 Diamond - 400 TK</button>
+          <button type="button" value="1240 Diamond - 760 TK" data-payment-link="https://example.com/payment/760">1240 Diamond - 760 TK</button>
+          <button type="button" value="2530 Diamond - 1550 TK" data-payment-link="https://example.com/payment/1550">2530 Diamond - 1550 TK</button>
+          <button type="button" value="Weekly - 155 TK" data-payment-link="https://example.com/payment/155_weekly">Weekly - 155 TK</button>
+          <button type="button" value="Monthly - 750 TK" data-payment-link="https://example.com/payment/750">Monthly - 750 TK</button>
+          <button type="button" value="Level Up Pass - 45 TK" data-payment-link="https://example.com/payment/45">weekly lite - 45 TK</button>
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
       </div>
@@ -340,11 +339,11 @@
         <input type="text" name="uid" placeholder="এখানে আপনার গেমের আইডি কোড লিখুন !" required>
       </div>
       <div class="section" style="--index: 3;">
-        <h3>3.ordert confram notification gmail</h3>
+        <h3>3. Order Confirm Notification Gmail</h3>
         <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
       </div>
       <div class="section" style="--index: 4;">
-        <h3>4. Select one option</h3>
+        <h3>4. Select One Option</h3>
         <div class="payment-methods">
           <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
           <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
@@ -354,7 +353,7 @@
       </div>
       <div class="section" style="--index: 5;">
         <h3>5. Transaction ID</h3>
-        <input type="text" name="trx_id" placeholder="আপনার বিকাশ বা নগদ এর লাস্ট ৪ নাম্বার দেন !" required>
+        <input type="text" name="trx_id" value="পেমেন্ট সিস্টেম অটোমেটিক প্লেগ বায় বাটন" readonly required>
       </div>
       <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
       <button type="submit" class="btn">Buy Now</button>
@@ -376,12 +375,14 @@
     const productButtons = document.querySelectorAll('#productList button');
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
+    let selectedPaymentLink = '';
 
     productButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         productButtons.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedProductInput.value = btn.value;
+        selectedPaymentLink = btn.getAttribute('data-payment-link');
 
         const parts = btn.value.split('-');
         const price = parts[1]?.trim();
@@ -399,27 +400,27 @@
       bkashBtn.classList.add('selected');
       nagadBtn.classList.remove('selected');
       paymentMethod.value = 'bKash';
-      paymentInfo.style.display = 'block';
-      paymentInfo.textContent = 'bKash Number: 01796693813 personal';
+      paymentInfo.style.display = 'none';
     });
 
     nagadBtn.addEventListener('click', () => {
       nagadBtn.classList.add('selected');
       bkashBtn.classList.remove('selected');
       paymentMethod.value = 'Nagad';
-      paymentInfo.style.display = 'block';
-      paymentInfo.textContent = 'Nagad Number: 01796693813 personal';
+      paymentInfo.style.display = 'none';
     });
 
     const form = document.getElementById("topupForm");
     form.addEventListener("submit", function(e) {
-      window.open("index%20(6).html","_blank");
       e.preventDefault();
+      if (selectedPaymentLink) {
+        window.open(selectedPaymentLink, "_blank");
+      }
       fetch(form.action, {
         method: "POST",
         body: new FormData(form)
       }).then(response => {
-        priceDisplay.textContent = "Your order has been submitted!";
+        priceDisplay.textContent = "Your order has been submitted! Please wait 10 minutes";
         priceDisplay.style.color = "green";
         form.reset();
 
@@ -427,6 +428,7 @@
         bkashBtn.classList.remove('selected');
         nagadBtn.classList.remove('selected');
         paymentInfo.style.display = 'none';
+        selectedPaymentLink = '';
       }).catch(error => {
         alert("Something went wrong!");
       });
