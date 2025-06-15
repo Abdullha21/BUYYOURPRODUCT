@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
   <!-- Back Button Start -->
   <style>
@@ -267,6 +265,13 @@
       animation: slideInRight 0.8s ease;
     }
 
+    .notice-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
     @keyframes slideInRight {
       from { transform: translateX(50px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
@@ -318,18 +323,18 @@
 </head>
 <body>
   <div class="container">
-    <h2>FF LEVEL UP PASS UID </h2>
+    <h2>FF LEVEL UP PASS UID</h2>
     <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
       <div class="section" style="--index: 1;">
         <h3>1. Select Recharge</h3>
         <div class="products" id="productList">
-          <button type="button" value="Level Up Package 6  level - 45 TK">Level Up Package - Level 6   -150💎 - 45 TK</button>
-          <button type="button" value="Level Up Package 10 level - 75 TK">Level Up Package - Level 10  -200💎 - 75 TK</button>
-          <button type="button" value="Level Up Package 15 level - 75 TK">Level Up Package - Level 15  -200💎 - 75 TK</button>
-          <button type="button" value="Level Up Package 20 level - 75 TK">Level Up Package - Level 20  -200💎 - 75 TK</button>
-          <button type="button" value="Level Up Package 25 level - 75 TK">Level Up Package - Level 25  -200💎 - 75 TK</button>
-          <button type="button" value="Level Up Package 30 level - 105 TK">Level Up Package - Level 30 -350💎 - 105TK</button>
-          <button type="button" value=" FULL Level Up Package    - 440 TK"> FULL Level Up Package - 1300💎 - 440 TK</button>
+          <button type="button" value="Level Up Package 6  level - 45 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/799f6a5b-d813-485f-9153-b4200dfea588">Level Up Package - Level 6   -150💎 - 45 TK</button>
+          <button type="button" value="Level Up Package 10 level - 75 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/7984685b-e06f-4bb3-8fae-ed1e4f811bb0">Level Up Package - Level 10  -200💎 - 75 TK</button>
+          <button type="button" value="Level Up Package 15 level - 75 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/7984685b-e06f-4bb3-8fae-ed1e4f811bb0">Level Up Package - Level 15  -200💎 - 75 TK</button>
+          <button type="button" value="Level Up Package 20 level - 75 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/7984685b-e06f-4bb3-8fae-ed1e4f811bb0">Level Up Package - Level 20  -200💎 - 75 TK</button>
+          <button type="button" value="Level Up Package 25 level - 75 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/7984685b-e06f-4bb3-8fae-ed1e4f811bb0">Level Up Package - Level 25  -200💎 - 75 TK</button>
+          <button type="button" value="Level Up Package 30 level - 105 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/50549893-863f-4013-9d99-58a84e1c043b">Level Up Package - Level 30 -350💎 - 105TK</button>
+          <button type="button" value="FULL Level Up Package - 440 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/ee693a60-901f-4dd7-99af-473ec7a1154b">FULL Level Up Package - 1300💎 - 440 TK</button>
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
       </div>
@@ -338,11 +343,11 @@
         <input type="text" name="uid" placeholder="এখানে আপনার গেম UID দেন!" required>
       </div>
       <div class="section" style="--index: 3;">
-        <h3>3.ordert confram notification gmail</h3>
+        <h3>3. Order Confirm Notification Gmail</h3>
         <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
       </div>
       <div class="section" style="--index: 4;">
-        <h3>4. Select one option</h3>
+        <h3>4. Select One Option</h3>
         <div class="payment-methods">
           <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
           <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
@@ -350,12 +355,12 @@
         <input type="hidden" name="payment_method" id="payment_method" required>
         <div class="info-box" id="paymentInfo" style="display:none;"></div>
       </div>
-      <div id="price-display" style="margin-top: 20px; font-weight: bold; color: #d60000;"></div>
       <div class="section" style="--index: 5;">
-        <h3>5. Transaction ID</h3>
-        <input type="text" name="trx_id" placeholder="আপনার বিকাশ বা নগদ এর লাস্ট ৪ নাম্বার দেন !" required>
+        <h3>5. Automatic Payment</h3>
+        <input type="text" name="trx_id" value="পেমেন্ট সিস্টেম অটোমেটিক - Click payment button" readonly required>
       </div>
-      <button type="submit" class="btn">Buy Now</button>
+      <div id="price-display" style="margin-top: 20px; font-weight: bold; color: #d60000;"></div>
+      <button type="submit" class="btn">Go to Payment Page</button>
     </form>
     <!-- Notice Box -->
     <div class="notice-box">
@@ -373,12 +378,20 @@
     const productButtons = document.querySelectorAll('#productList button');
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+    const form = document.getElementById('topupForm');
+    let selectedPaymentLink = '';
 
+    // Product Selection
     productButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         productButtons.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedProductInput.value = btn.value;
+        selectedPaymentLink = btn.getAttribute('data-payment-link');
 
         const parts = btn.value.split('-');
         const price = parts[1]?.trim();
@@ -387,45 +400,44 @@
       });
     });
 
-    const bkashBtn = document.getElementById('bkashBtn');
-    const nagadBtn = document.getElementById('nagadBtn');
-    const paymentMethod = document.getElementById('payment_method');
-    const paymentInfo = document.getElementById('paymentInfo');
-
+    // Payment Method Selection
     bkashBtn.addEventListener('click', () => {
       bkashBtn.classList.add('selected');
       nagadBtn.classList.remove('selected');
       paymentMethod.value = 'bKash';
-      paymentInfo.style.display = 'block';
-      paymentInfo.textContent = 'bKash Number: 01796693813';
+      paymentInfo.style.display = 'none';
     });
 
     nagadBtn.addEventListener('click', () => {
       nagadBtn.classList.add('selected');
       bkashBtn.classList.remove('selected');
       paymentMethod.value = 'Nagad';
-      paymentInfo.style.display = 'block';
-      paymentInfo.textContent = 'Nagad Number: 01796693813';
+      paymentInfo.style.display = 'none';
     });
 
-    const form = document.getElementById("topupForm");
-    form.addEventListener("submit", function(e) {
-      window.open("index%20(6).html","_blank");
+    // Form Submission
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
+      if (selectedPaymentLink) {
+        window.open(selectedPaymentLink, '_blank');
+      } else {
+        alert('Please select a product!');
+        return;
+      }
       fetch(form.action, {
-        method: "POST",
+        method: 'POST',
         body: new FormData(form)
       }).then(response => {
-        priceDisplay.textContent = "Your order has been submitted! Pless w8 10 minite";
-        priceDisplay.style.color = "green";
+        priceDisplay.textContent = 'Your order has been submitted! Please wait 10 minutes';
+        priceDisplay.style.color = 'green';
         form.reset();
-
         productButtons.forEach(b => b.classList.remove('selected'));
         bkashBtn.classList.remove('selected');
         nagadBtn.classList.remove('selected');
         paymentInfo.style.display = 'none';
+        selectedPaymentLink = '';
       }).catch(error => {
-        alert("Something went wrong!");
+        alert('Something went wrong!');
       });
     });
   </script>
