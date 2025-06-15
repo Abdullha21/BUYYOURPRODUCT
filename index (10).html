@@ -25,6 +25,33 @@
       box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
       animation: bounce 0.4s ease;
     }
+
+    /* iFrame স্টাইল */
+    .iframe-container {
+      width: 100%;
+      height: 500px;
+      margin: 15px 0;
+      display: none;
+      border-radius: 10px;
+      overflow: auto; /* স্ক্রলবার যোগ করা */
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      min-width: 100%; /* মোবাইলে কনটেন্ট ছোট হবে না */
+    }
+
+    #paymentFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      min-width: 100%; /* মোবাইলে লেখা স্পষ্ট থাকবে */
+    }
+
+    @media (max-width: 600px) {
+      .iframe-container {
+        height: 450px;
+        overflow: auto; /* মোবাইলে স্ক্রলবার */
+      }
+    }
   </style>
 
   <button id="back-button" onclick="goBack()">← Back</button>
@@ -37,13 +64,32 @@
   <!-- Back Button End -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>telegram star</title>
+  <title>TON Network</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-    .container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #333; }
-    .section { margin-bottom: 20px; }
-    .section h3 { margin-bottom: 10px; color: #B300B3; }
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f5f5f5; 
+      padding: 20px; 
+    }
+    .container { 
+      max-width: 500px; 
+      margin: auto; 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 10px; 
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+    }
+    h2 { 
+      text-align: center; 
+      color: #333; 
+    }
+    .section { 
+      margin-bottom: 20px; 
+    }
+    .section h3 { 
+      margin-bottom: 10px; 
+      color: #B300B3; 
+    }
     .products button {
       display: block;
       width: 100%;
@@ -123,7 +169,11 @@
       font-size: 16px;
       transition: all 0.3s ease;
     }
-    .btn:hover {
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .btn:hover:not(:disabled) {
       background: #cc00cc;
       transform: scale(1.1);
       box-shadow: 0 0 20px rgba(204, 0, 204, 0.7);
@@ -160,6 +210,57 @@
     @keyframes fadeIn {
       0% { opacity: 0; transform: translateY(20px) scale(0.95); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    /* Notice Box Style */
+    .notice-box {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: 500;
+      animation: fadeIn 1.2s ease;
+    }
+    .notice-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #000;
+    }
+    /* Support Button Style */
+    .support-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      z-index: 9999;
+      transition: all 0.3s ease;
+    }
+    .support-btn:hover {
+      transform: scale(1.2) rotate(10deg);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+      animation: bounce 0.4s ease;
+    }
+    .support-text {
+      background-color: #d60000;
+      color: white;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 5px 0 0 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .support-icon {
+      background-color: #d60000;
+      color: white;
+      font-size: 22px;
+      padding: 13px 15px;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      margin-left: -1px;
     }
   </style>
 </head>
@@ -198,91 +299,59 @@
         <div class="info-box" id="paymentInfo" style="display:none;"></div>
       </div>
       <div class="section" style="--index: 5;">
-        <h3>5. automatic payment</h3>
-        <input type="text" name="trx_id" value="পেমেন্ট সিস্টেম অটোমেটিকClick payment button" readonly required>
+        <h3>5. Automatic Payment</h3>
+        <input type="text" name="trx_id" value="পেমেন্ট সিস্টেম অটোমেটিক - Click payment button" readonly required>
       </div>
       <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
-      <button type="submit" class="btn">Go to payment page</button>
+      
+      <!-- iFrame কন্টেইনার -->
+      <div class="iframe-container" id="iframeContainer">
+        <iframe id="paymentFrame" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
+      </div>
+      
+      <button type="button" class="btn" id="paymentBtn" disabled>Confirm Order</button>
     </form>
-    <!-- Notice Box Start -->
-    <style>
-      .notice-box {
-        background-color: #fff3cd;
-        color: #856404;
-        border: 1px solid #ffeeba;
-        padding: 16px;
-        border-radius: 8px;
-        margin-top: 20px;
-        font-size: 16px;
-        font-weight: 500;
-        animation: fadeIn 1.2s ease;
-      }
-      .notice-title {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 10px;
-        color: #000;
-      }
-    </style>
+    <!-- Notice Box -->
     <div class="notice-box">
       <div class="notice-title">Ton Recharge Notice</div>
       Largest Recharge Site In Bangladesh <br><br>
       <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
     </div>
-    <!-- Notice Box End -->
     <!-- SUPPORT BUTTON -->
     <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
       <div class="support-text">SUPPORT!</div>
       <div class="support-icon">📞</div>
     </a>
-    <!-- SUPPORT BUTTON STYLE -->
-    <style>
-      .support-btn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        z-index: 9999;
-        transition: all 0.3s ease;
-      }
-      .support-btn:hover {
-        transform: scale(1.2) rotate(10deg);
-        box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
-        animation: bounce 0.4s ease;
-      }
-      .support-text {
-        background-color: #d60000;
-        color: white;
-        padding: 10px 15px;
-        font-weight: bold;
-        border-radius: 5px 0 0 5px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      }
-      .support-icon {
-        background-color: #d60000;
-        color: white;
-        font-size: 22px;
-        padding: 13px 15px;
-        border-radius: 50%;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        margin-left: -1px;
-      }
-    </style>
   </div>
   <script>
     const productButtons = document.querySelectorAll('#productList button');
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+    const form = document.getElementById('topupForm');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const paymentFrame = document.getElementById('paymentFrame');
+    const paymentBtn = document.getElementById('paymentBtn');
     let selectedPaymentLink = '';
+    let paymentCompleted = false;
 
+    // Product Selection
     productButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         productButtons.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedProductInput.value = btn.value;
         selectedPaymentLink = btn.getAttribute('data-payment-link');
+        
+        // iFrame লোড করুন
+        iframeContainer.style.display = 'block';
+        paymentFrame.src = selectedPaymentLink;
+        paymentBtn.textContent = 'Confirm Order';
+        paymentBtn.disabled = true; // প্রাথমিকভাবে বাটন নিষ্ক্রিয়
+        paymentCompleted = false;
 
         const parts = btn.value.split('-');
         const price = parts[1]?.trim();
@@ -291,11 +360,7 @@
       });
     });
 
-    const bkashBtn = document.getElementById('bkashBtn');
-    const nagadBtn = document.getElementById('nagadBtn');
-    const paymentMethod = document.getElementById('payment_method');
-    const paymentInfo = document.getElementById('paymentInfo');
-
+    // Payment Method Selection
     bkashBtn.addEventListener('click', () => {
       bkashBtn.classList.add('selected');
       nagadBtn.classList.remove('selected');
@@ -310,29 +375,77 @@
       paymentInfo.style.display = 'none';
     });
 
-    const form = document.getElementById("topupForm");
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      if (selectedPaymentLink) {
-        window.open(selectedPaymentLink, "_blank");
+    // Payment Button Click
+    paymentBtn.addEventListener('click', function() {
+      if (!selectedPaymentLink) {
+        alert('Please select a product first!');
+        return;
       }
-      fetch(form.action, {
-        method: "POST",
-        body: new FormData(form)
-      }).then(response => {
-        priceDisplay.textContent = "Your order has been submitted! Please wait 10 minutes";
-        priceDisplay.style.color = "green";
-        form.reset();
-
-        productButtons.forEach(b => b.classList.remove('selected'));
-        bkashBtn.classList.remove('selected');
-        nagadBtn.classList.remove('selected');
-        paymentInfo.style.display = 'none';
-        selectedPaymentLink = '';
-      }).catch(error => {
-        alert("Something went wrong!");
-      });
+      
+      // ফর্ম ভ্যালিডেশন
+      const uid = form.querySelector('[name="uid"]').value;
+      const email = form.querySelector('[name="email"]').value;
+      const paymentMethodValue = paymentMethod.value;
+      
+      if (!uid || !email || !paymentMethodValue) {
+        alert('Please fill all required fields!');
+        return;
+      }
+      
+      if (!paymentCompleted) {
+        // নতুন ট্যাবে পেমেন্ট লিঙ্ক খুলুন
+        window.open(selectedPaymentLink, '_blank');
+        priceDisplay.textContent = 'Please complete your payment in the new tab';
+        priceDisplay.style.color = '#d60000';
+      } else {
+        // পেমেন্ট সম্পন্ন হলে ফর্ম সাবমিট এবং নতুন উইন্ডোতে লিঙ্ক খুলুন
+        fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form)
+        }).then(response => {
+          priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
+          priceDisplay.style.color = 'green';
+          
+          // নতুন উইন্ডোতে নির্দিষ্ট লিঙ্ক খুলুন
+          window.open('https://abdullha21.github.io/ALLTOPUPBUY/index%20(6).html', '_blank');
+          
+          // ফর্ম রিসেট
+          form.reset();
+          iframeContainer.style.display = 'none';
+          paymentBtn.style.display = 'none';
+          productButtons.forEach(b => b.classList.remove('selected'));
+          bkashBtn.classList.remove('selected');
+          nagadBtn.classList.remove('selected');
+        }).catch(error => {
+          alert('Error submitting form!');
+        });
+      }
     });
+
+    // iFrame থেকে পেমেন্ট স্ট্যাটাস ট্র্যাক করার জন্য
+    window.addEventListener('message', function(event) {
+      // ZiniPay থেকে পেমেন্ট কনফার্মেশন মেসেজ চেক করুন
+      if (event.data === 'payment_completed') {
+        paymentCompleted = true;
+        paymentBtn.disabled = false; // বাটন সক্রিয় করুন
+        priceDisplay.textContent = 'Payment completed! Please confirm your order';
+        priceDisplay.style.color = 'green';
+      }
+    });
+
+    // প্রতি 5 সেকেন্ডে পেমেন্ট স্ট্যাটাস চেক করুন (ডেমোর জন্য)
+    setInterval(function() {
+      // এটি শুধু ডেমো উদ্দেশ্যে, প্রকৃত অ্যাপ্লিকেশনে ZiniPay এর ওয়েবহুক ব্যবহার করুন
+      if (iframeContainer.style.display === 'block' && !paymentCompleted) {
+        // ডেমো: র‍্যান্ডমলি পেমেন্ট কমপ্লিট সিমুলেট করুন
+        if (Math.random() < 0.1) { // 10% চান্স
+          paymentCompleted = true;
+          paymentBtn.disabled = false; // বাটন সক্রিয় করুন
+          priceDisplay.textContent = 'Payment completed! Please confirm your order';
+          priceDisplay.style.color = 'green';
+        }
+      }
+    }, 5000);
   </script>
 </body>
 </html>
