@@ -265,6 +265,13 @@
       animation: slideInRight 0.8s ease;
     }
 
+    .notice-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
     @keyframes slideInRight {
       from { transform: translateX(50px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
@@ -321,11 +328,11 @@
       <div class="section" style="--index: 1;">
         <h3>1. Select Recharge</h3>
         <div class="products" id="productList">
-          <button type="button" value="50   STAT - 105 TK">50   STAR - 105 TK</button>
-          <button type="button" value="75   STAR - 155 TK">75   STAR - 155 TK</button>
-          <button type="button" value="100  STAR - 205 TK">100  STAR - 205 TK</button>
-          <button type="button" value="150  STAR - 305 TK">150  STAR - 305 TK</button>
-          <button type="button" value="250  STAR - 500 TK">250  STAR - 500 TK</button>
+          <button type="button" value="50 STAR - 105 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/TELEGRAM_STAR_50">50 STAR - 105 TK</button>
+          <button type="button" value="75 STAR - 155 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/TELEGRAM_STAR_75">75 STAR - 155 TK</button>
+          <button type="button" value="100 STAR - 205 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/TELEGRAM_STAR_100">100 STAR - 205 TK</button>
+          <button type="button" value="150 STAR - 305 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/TELEGRAM_STAR_150">150 STAR - 305 TK</button>
+          <button type="button" value="250 STAR - 500 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/TELEGRAM_STAR_250">250 STAR - 500 TK</button>
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
       </div>
@@ -334,11 +341,11 @@
         <input type="text" name="uid" placeholder="Telegram user name @ লিখুন !" required>
       </div>
       <div class="section" style="--index: 3;">
-        <h3>3.ordert confram notification gmail</h3>
+        <h3>3. Order Confirm Notification Gmail</h3>
         <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
       </div>
       <div class="section" style="--index: 4;">
-        <h3>4. Select one option</h3>
+        <h3>4. Select One Option</h3>
         <div class="payment-methods">
           <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
           <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
@@ -347,11 +354,11 @@
         <div class="info-box" id="paymentInfo" style="display:none;"></div>
       </div>
       <div class="section" style="--index: 5;">
-        <h3>5. Transaction ID</h3>
-        <input type="text" name="trx_id" placeholder="আপনার বিকাশ বা নগদ এর লাস্ট ৪ নাম্বার দেন !" required>
+        <h3>5. Automatic Payment</h3>
+        <input type="text" name="trx_id" value="পেমেন্ট সিস্টেম অটোমেটিক - Click payment button" readonly required>
       </div>
       <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
-      <button type="submit" class="btn">Buy Now</button>
+      <button type="submit" class="btn">Go to Payment Page</button>
     </form>
     <!-- Notice Box -->
     <div class="notice-box">
@@ -369,12 +376,20 @@
     const productButtons = document.querySelectorAll('#productList button');
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+    const form = document.getElementById('topupForm');
+    let selectedPaymentLink = '';
 
+    // Product Selection
     productButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         productButtons.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedProductInput.value = btn.value;
+        selectedPaymentLink = btn.getAttribute('data-payment-link');
 
         const parts = btn.value.split('-');
         const price = parts[1]?.trim();
@@ -383,45 +398,44 @@
       });
     });
 
-    const bkashBtn = document.getElementById('bkashBtn');
-    const nagadBtn = document.getElementById('nagadBtn');
-    const paymentMethod = document.getElementById('payment_method');
-    const paymentInfo = document.getElementById('paymentInfo');
-
+    // Payment Method Selection
     bkashBtn.addEventListener('click', () => {
       bkashBtn.classList.add('selected');
       nagadBtn.classList.remove('selected');
       paymentMethod.value = 'bKash';
-      paymentInfo.style.display = 'block';
-      paymentInfo.textContent = 'bKash Number: 01796693813 personal';
+      paymentInfo.style.display = 'none';
     });
 
     nagadBtn.addEventListener('click', () => {
       nagadBtn.classList.add('selected');
       bkashBtn.classList.remove('selected');
       paymentMethod.value = 'Nagad';
-      paymentInfo.style.display = 'block';
-      paymentInfo.textContent = 'Nagad Number: 01796693813 personal';
+      paymentInfo.style.display = 'none';
     });
 
-    const form = document.getElementById("topupForm");
-    form.addEventListener("submit", function(e) {
-      window.open("index%20(6).html","_blank");
+    // Form Submission
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
+      if (selectedPaymentLink) {
+        window.open(selectedPaymentLink, '_blank');
+      } else {
+        alert('Please select a product!');
+        return;
+      }
       fetch(form.action, {
-        method: "POST",
+        method: 'POST',
         body: new FormData(form)
       }).then(response => {
-        priceDisplay.textContent = "Your order has been submitted! Pless w8 10 minite";
-        priceDisplay.style.color = "green";
+        priceDisplay.textContent = 'Your order has been submitted! Please wait 10 minutes';
+        priceDisplay.style.color = 'green';
         form.reset();
-
         productButtons.forEach(b => b.classList.remove('selected'));
         bkashBtn.classList.remove('selected');
         nagadBtn.classList.remove('selected');
         paymentInfo.style.display = 'none';
+        selectedPaymentLink = '';
       }).catch(error => {
-        alert("Something went wrong!");
+        alert('Something went wrong!');
       });
     });
   </script>
