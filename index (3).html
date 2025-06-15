@@ -29,6 +29,33 @@
       transform: translateY(0);
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
+    /* iFrame স্টাইল */
+    .iframe-container {
+      width: 100%;
+      height: 500px;
+      margin: 15px 0;
+      display: none;
+      border-radius: 10px;
+      overflow: auto; /* স্ক্রলবার যোগ করা */
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      min-width: 100%; /* মোবাইলে কনটেন্ট ছোট হবে না */
+    }
+
+    #paymentFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      min-width: 100%; /* মোবাইলে লেখা স্পষ্ট থাকবে */
+    }
+
+    @media (max-width: 600px) {
+      .iframe-container {
+        height: 450px;
+        overflow: auto; /* মোবাইলে স্ক্রলবার */
+      }
+    }
   </style>
 
   <button id="back-button" onclick="goBack()">← Back</button>
@@ -171,6 +198,7 @@
       border-radius: 8px;
       transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     }
+    
     input[type="text"]:focus, select:focus {
       border-color: #B300B3;
       box-shadow: 0 0 8px rgba(179,0,179,0.3);
@@ -227,6 +255,11 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
     .btn::before {
       content: '';
       position: absolute;
@@ -242,12 +275,12 @@
       left: 100%;
     }
 
-    .btn:hover {
+    .btn:hover:not(:disabled) {
       transform: translateY(-3px);
       box-shadow: 0 6px 12px rgba(0,0,0,0.3);
     }
 
-    .btn:active {
+    .btn:active:not(:disabled) {
       transform: translateY(0);
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
@@ -262,6 +295,13 @@
       font-size: 16px;
       font-weight: 500;
       animation: slideInRight 0.8s ease;
+    }
+
+    .notice-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #000;
     }
 
     @keyframes slideInRight {
@@ -315,7 +355,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>Uid Topup [BD SERVER]</h2>
+    <h2>UID Topup [BD SERVER]</h2>
     <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
       <div class="section" style="--index: 1;">
         <h3>1. Select Recharge</h3>
@@ -330,7 +370,7 @@
           <button type="button" value="2530 Diamond - 1540 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/1a5a3491-cd92-4ede-80f2-575d4c823ac6">2530 Diamond - 1540 TK</button>
           <button type="button" value="Weekly - 155 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/062596b8-7035-494d-ad5b-d009704947bd">Weekly - 155 TK</button>
           <button type="button" value="Monthly - 750 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/5f14532a-c8d9-4801-971a-38154d9eb513">Monthly - 750 TK</button>
-          <button type="button" value="Level Up Pass - 45 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/a9eab7e0-d796-43eb-9997-814a4e610699">weekly lite - 45 TK</button>
+          <button type="button" value="weekly lite - 45 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/a9eab7e0-d796-43eb-9997-814a4e610699">weekly lite - 45 TK</button>
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
       </div>
@@ -356,7 +396,13 @@
         <input type="text" name="trx_id" value="পেমেন্ট সিস্টেম অটোমেটিক click payment বাটন" readonly required>
       </div>
       <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
-      <button type="submit" class="btn">Go to payment page</button>
+      
+      <!-- iFrame কন্টেইনার -->
+      <div class="iframe-container" id="iframeContainer">
+        <iframe id="paymentFrame" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
+      </div>
+      
+      <button type="button" class="btn" id="paymentBtn" disabled>Confirm Order</button>
     </form>
     <!-- Notice Box -->
     <div class="notice-box">
@@ -375,14 +421,31 @@
     const productButtons = document.querySelectorAll('#productList button');
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+    const form = document.getElementById('topupForm');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const paymentFrame = document.getElementById('paymentFrame');
+    const paymentBtn = document.getElementById('paymentBtn');
     let selectedPaymentLink = '';
+    let paymentCompleted = false;
 
+    // Product Selection
     productButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         productButtons.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedProductInput.value = btn.value;
         selectedPaymentLink = btn.getAttribute('data-payment-link');
+        
+        // iFrame লোড করুন
+        iframeContainer.style.display = 'block';
+        paymentFrame.src = selectedPaymentLink;
+        paymentBtn.textContent = 'Confirm Order';
+        paymentBtn.disabled = true; // প্রাথমিকভাবে বাটন নিষ্ক্রিয়
+        paymentCompleted = false;
 
         const parts = btn.value.split('-');
         const price = parts[1]?.trim();
@@ -391,11 +454,7 @@
       });
     });
 
-    const bkashBtn = document.getElementById('bkashBtn');
-    const nagadBtn = document.getElementById('nagadBtn');
-    const paymentMethod = document.getElementById('payment_method');
-    const paymentInfo = document.getElementById('paymentInfo');
-
+    // Payment Method Selection
     bkashBtn.addEventListener('click', () => {
       bkashBtn.classList.add('selected');
       nagadBtn.classList.remove('selected');
@@ -410,29 +469,77 @@
       paymentInfo.style.display = 'none';
     });
 
-    const form = document.getElementById("topupForm");
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      if (selectedPaymentLink) {
-        window.open(selectedPaymentLink, "_blank");
+    // Payment Button Click
+    paymentBtn.addEventListener('click', function() {
+      if (!selectedPaymentLink) {
+        alert('Please select a product first!');
+        return;
       }
-      fetch(form.action, {
-        method: "POST",
-        body: new FormData(form)
-      }).then(response => {
-        priceDisplay.textContent = "Your order has been submitted! Please wait 10 minutes";
-        priceDisplay.style.color = "green";
-        form.reset();
-
-        productButtons.forEach(b => b.classList.remove('selected'));
-        bkashBtn.classList.remove('selected');
-        nagadBtn.classList.remove('selected');
-        paymentInfo.style.display = 'none';
-        selectedPaymentLink = '';
-      }).catch(error => {
-        alert("Something went wrong!");
-      });
+      
+      // ফর্ম ভ্যালিডেশন
+      const uid = form.querySelector('[name="uid"]').value;
+      const email = form.querySelector('[name="email"]').value;
+      const paymentMethodValue = paymentMethod.value;
+      
+      if (!uid || !email || !paymentMethodValue) {
+        alert('Please fill all required fields!');
+        return;
+      }
+      
+      if (!paymentCompleted) {
+        // নতুন ট্যাবে পেমেন্ট লিঙ্ক খুলুন
+        window.open(selectedPaymentLink, '_blank');
+        priceDisplay.textContent = 'Please complete your payment in the new tab';
+        priceDisplay.style.color = '#d60000';
+      } else {
+        // পেমেন্ট সম্পন্ন হলে ফর্ম সাবমিট এবং নতুন উইন্ডোতে লিঙ্ক খুলুন
+        fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form)
+        }).then(response => {
+          priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
+          priceDisplay.style.color = 'green';
+          
+          // নতুন উইন্ডোতে নির্দিষ্ট লিঙ্ক খুলুন
+          window.open('https://abdullha21.github.io/ALLTOPUPBUY/index%20(6).html', '_blank');
+          
+          // ফর্ম রিসেট
+          form.reset();
+          iframeContainer.style.display = 'none';
+          paymentBtn.style.display = 'none';
+          productButtons.forEach(b => b.classList.remove('selected'));
+          bkashBtn.classList.remove('selected');
+          nagadBtn.classList.remove('selected');
+        }).catch(error => {
+          alert('Error submitting form!');
+        });
+      }
     });
+
+    // iFrame থেকে পেমেন্ট স্ট্যাটাস ট্র্যাক করার জন্য
+    window.addEventListener('message', function(event) {
+      // ZiniPay থেকে পেমেন্ট কনফার্মেশন মেসেজ চেক করুন
+      if (event.data === 'payment_completed') {
+        paymentCompleted = true;
+        paymentBtn.disabled = false; // বাটন সক্রিয় করুন
+        priceDisplay.textContent = 'Payment completed! Please confirm your order';
+        priceDisplay.style.color = 'green';
+      }
+    });
+
+    // প্রতি 5 সেকেন্ডে পেমেন্ট স্ট্যাটাস চেক করুন (ডেমোর জন্য)
+    setInterval(function() {
+      // এটি শুধু ডেমো উদ্দেশ্যে, প্রকৃত অ্যাপ্লিকেশনে ZiniPay এর ওয়েবহুক ব্যবহার করুন
+      if (iframeContainer.style.display === 'block' && !paymentCompleted) {
+        // ডেমো: র‍্যান্ডমলি পেমেন্ট কমপ্লিট সিমুলেট করুন
+        if (Math.random() < 0.1) { // 10% চান্স
+          paymentCompleted = true;
+          paymentBtn.disabled = false; // বাটন সক্রিয় করুন
+          priceDisplay.textContent = 'Payment completed! Please confirm your order';
+          priceDisplay.style.color = 'green';
+        }
+      }
+    }, 5000);
   </script>
 </body>
 </html>
