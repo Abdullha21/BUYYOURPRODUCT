@@ -1,1 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Back Button Start -->
+  <style>
+    #back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #ff4d4d;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+
+    #back-button:hover {
+      background-color: #e60000;
+      transform: scale(1.2) rotate(10deg);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+      animation: bounce 0.4s ease;
+    }
+
+    /* iFrame স্টাইল */
+    .iframe-container {
+      width: 100%;
+      height: 500px;
+      margin: 15px 0;
+      display: none;
+      border-radius: 10px;
+      overflow: auto; /* স্ক্রলবার যোগ করা */
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      min-width: 100%; /* মোবাইলে কনটেন্ট ছোট হবে না */
+    }
+
+    #paymentFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      min-width: 100%; /* মোবাইলে লেখা স্পষ্ট থাকবে */
+    }
+
+    @media (max-width: 600px) {
+      .iframe-container {
+        height: 450px;
+        overflow: auto; /* মোবাইলে স্ক্রলবার */
+      }
+    }
+  </style>
+
+  <button id="back-button" onclick="goBack()">← Back</button>
+
+  <script>
+    function goBack() {
+      window.location.href = "https://abdullha21.github.io/ALLTOPUPBUY/index%20(4).html";
+    }
+  </script>
+  <!-- Back Button End -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TON Network</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f5f5f5; 
+      padding: 20px; 
+    }
+    .container { 
+      max-width: 500px; 
+      margin: auto; 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 10px; 
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+    }
+    h2 { 
+      text-align: center; 
+      color: #333; 
+    }
+    .section { 
+      margin-bottom: 20px; 
+    }
+    .section h3 { 
+      margin-bottom: 10px; 
+      color: #B300B3; 
+    }
+    .products button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #eee;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .products button.selected {
+      border-color: red;
+      background-color: #ffe6e6;
+    }
+    .products button:hover {
+      transform: scale(1.1);
+      background-color: #e0e0e0;
+      box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
+      animation: glow 1s ease-in-out infinite alternate;
+    }
+    .products button:active {
+      animation: shake 0.3s ease;
+    }
+    input[type="text"], input[type="email"], select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      box-sizing: border-box;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    input[type="text"]:focus, input[type="email"]:focus, select:focus {
+      border-color: #B300B3;
+      box-shadow: 0 0 12px rgba(179, 0, 179, 0.7);
+      transform: scale(1.05) translateY(-3px);
+      animation: inputGlow 0.8s ease-in-out infinite alternate;
+      outline: none;
+    }
+    input[type="text"]:hover, input[type="email"]:hover, select:hover {
+      border-color: #B300B3;
+      transform: scale(1.05) translateY(-3px);
+      box-shadow: 0 0 8px rgba(179, 0, 179, 0.4);
+    }
+    .payment-methods img {
+      height: 40px;
+      cursor: pointer;
+      margin-right: 10px;
+      border: 2px solid transparent;
+      padding: 5px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    .payment-methods img.selected {
+      border-color: red;
+    }
+    .payment-methods img:hover {
+      transform: scale(1.3) rotate(15deg);
+      box-shadow: 0 0 20px rgba(255, 77, 77, 0.6);
+      animation: pop 0.4s ease;
+    }
+    .info-box {
+      margin-top: 10px;
+      font-size: 14px;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .btn {
+      background: purple;
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .btn:hover:not(:disabled) {
+      background: #cc00cc;
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(204, 0, 204, 0.7);
+      animation: pulse 0.6s ease-in-out infinite alternate;
+    }
+    /* Animation Keyframes */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-8px); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1.1); box-shadow: 0 0 20px rgba(204, 0, 204, 0.7); }
+      100% { transform: scale(1.15); box-shadow: 0 0 30px rgba(204, 0, 204, 1); }
+    }
+    @keyframes glow {
+      0% { box-shadow: 0 0 15px rgba(179, 0, 179, 0.5); }
+      100% { box-shadow: 0 0 25px rgba(179, 0, 179, 0.8); }
+    }
+    @keyframes inputGlow {
+      0% { box-shadow: 0 0 12px rgba(179, 0, 179, 0.7); }
+      100% { box-shadow: 0 0 20px rgba(179, 0, 179, 1); }
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4) rotate(20deg); }
+      100% { transform: scale(1.3) rotate(15deg); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: scale(1.2) rotate(10deg); }
+      50% { transform: scale(1.3) rotate(12deg); }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    /* Notice Box Style */
+    .notice-box {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: 500;
+      animation: fadeIn 1.2s ease;
+    }
+    .notice-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #000;
+    }
+    /* Support Button Style */
+    .support-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      z-index: 9999;
+      transition: all 0.3s ease;
+    }
+    .support-btn:hover {
+      transform: scale(1.2) rotate(10deg);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+      animation: bounce 0.4s ease;
+    }
+    .support-text {
+      background-color: #d60000;
+      color: white;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 5px 0 0 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .support-icon {
+      background-color: #d60000;
+      color: white;
+      font-size: 22px;
+      padding: 13px 15px;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      margin-left: -1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>BINANCE DOLLAR</h2>
+    <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
+      <div class="section" style="--index: 1;">
+        <h3>1. Select Recharge</h3>
+        <div class="products" id="productList">
+          <button type="button" value="5$  DOLLAR - 635  TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/214531a6-f4f1-4e7a-8799-c21725c71c81">5$  DOLLAR - 635  TK</button>
+          <button type="button" value="8$  DOLLAR - 1015 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/81bd2894-d5fe-47a2-8e05-1271f262d4b5">8$  DOLLAR - 1015 TK</button>
+          <button type="button" value="11$ DOLLAR - 1395 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/1ef4d89b-91da-4370-9e27-b6b34a42a47c">11$ DOLLAR - 1395 TK</button>
+        </div>
+        <input type="hidden" name="selected_product" id="selected_product" required>
+      </div>
+      <div class="section" style="--index: 2;">
+        <h3>2. Account Info</h3>
+        <input type="text" name="uid" placeholder="আপনার BIANANCE UID দেন" required>
+      </div>
+      <div class="section" style="--index: 3;">
+        <h3>3. Order Confirm Notification Gmail</h3>
+        <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
+      </div>
+      <div class="section" style="--index: 4;">
+        <h3>4. Select one option</h3>
+        <div class="payment-methods">
+          <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
+          <img src="https://assets.onecompiler.app/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
+        </div>
+        <input type="hidden" name="payment_method" id="payment_method" required>
+        <div class="info-box" id="paymentInfo" style="display:none;"></div>
+      </div>
+      <div class="section" style="--index: 5;">
+        <h3>5. Automatic Payment</h3>
+        <input type="text" name="trx_id" value="আগে পেমেন্ট করে তারপর অর্ডার কনফার্ম বাটনে ক্লিক করবেন।" readonly required>
+      </div>
+      <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
       
+      <!-- iFrame কন্টেইনার -->
+      <div class="iframe-container" id="iframeContainer">
+        <iframe id="paymentFrame" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
+      </div>
+      
+      <button type="button" class="btn" id="paymentBtn" disabled>Confirm Order</button>
+    </form>
+    <!-- Notice Box -->
+    <div class="notice-box">
+      <div class="notice-title">DOLLAR Recharge Notice</div>
+      Largest Recharge Site In Bangladesh <br><br>
+      <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+    </div>
+    <!-- SUPPORT BUTTON -->
+    <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
+      <div class="support-text">SUPPORT!</div>
+      <div class="support-icon">📞</div>
+    </a>
+  </div>
+  <script>
+    const productButtons = document.querySelectorAll('#productList button');
+    const selectedProductInput = document.getElementById('selected_product');
+    const priceDisplay = document.getElementById('price-display');
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+    const form = document.getElementById('topupForm');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const paymentFrame = document.getElementById('paymentFrame');
+    const paymentBtn = document.getElementById('paymentBtn');
+    let selectedPaymentLink = '';
+    let paymentCompleted = false;
+
+    // Product Selection
+    productButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        productButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedProductInput.value = btn.value;
+        selectedPaymentLink = btn.getAttribute('data-payment-link');
+        
+        // iFrame লোড করুন
+        iframeContainer.style.display = 'block';
+        paymentFrame.src = selectedPaymentLink;
+        paymentBtn.textContent = 'Confirm Order';
+        paymentBtn.disabled = true; // প্রাথমিকভাবে বাটন নিষ্ক্রিয়
+        paymentCompleted = false;
+
+        const parts = btn.value.split('-');
+        const price = parts[1]?.trim();
+        priceDisplay.textContent = "Price: " + price;
+        priceDisplay.style.color = '#d60000';
+      });
+    });
+
+    // Payment Method Selection
+    bkashBtn.addEventListener('click', () => {
+      bkashBtn.classList.add('selected');
+      nagadBtn.classList.remove('selected');
+      paymentMethod.value = 'bKash';
+      paymentInfo.style.display = 'none';
+    });
+
+    nagadBtn.addEventListener('click', () => {
+      nagadBtn.classList.add('selected');
+      bkashBtn.classList.remove('selected');
+      paymentMethod.value = 'Nagad';
+      paymentInfo.style.display = 'none';
+    });
+
+    // Payment Button Click
+    paymentBtn.addEventListener('click', function() {
+      if (!selectedPaymentLink) {
+        alert('Please select a product first!');
+        return;
+      }
+      
+      // ফর্ম ভ্যালিডেশন
+      const uid = form.querySelector('[name="uid"]').value;
+      const email = form.querySelector('[name="email"]').value;
+      const paymentMethodValue = paymentMethod.value;
+      
+      if (!uid || !email || !paymentMethodValue) {
+        alert('Please fill all required fields!');
+        return;
+      }
+      
+      if (!paymentCompleted) {
+        // নতুন ট্যাবে পেমেন্ট লিঙ্ক খুলুন
+        window.open(selectedPaymentLink, '_blank');
+        priceDisplay.textContent = 'Please complete your payment in the new tab';
+        priceDisplay.style.color = '#d60000';
+      } else {
+        // পেমেন্ট সম্পন্ন হলে ফর্ম সাবমিট এবং নতুন উইন্ডোতে লিঙ্ক খুলুন
+        fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form)
+        }).then(response => {
+          priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
+          priceDisplay.style.color = 'green';
+          
+          // নতুন উইন্ডোতে নির্দিষ্ট লিঙ্ক খুলুন
+          window.open('https://abdullha21.github.io/ALLTOPUPBUY/index%20(6).html', '_blank');
+          
+          // ফর্ম রিসেট
+          form.reset();
+          iframeContainer.style.display = 'none';
+          paymentBtn.style.display = 'none';
+          productButtons.forEach(b => b.classList.remove('selected'));
+          bkashBtn.classList.remove('selected');
+          nagadBtn.classList.remove('selected');
+        }).catch(error => {
+          alert('Error submitting form!');
+        });
+      }
+    });
+
+    // iFrame থেকে পেমেন্ট স্ট্যাটাস ট্র্যাক করার জন্য
+    window.addEventListener('message', function(event) {
+      // ZiniPay থেকে পেমেন্ট কনফার্মেশন মেসেজ চেক করুন
+      if (event.data === 'payment_completed') {
+        paymentCompleted = true;
+        paymentBtn.disabled = false; // বাটন সক্রিয় করুন
+        priceDisplay.textContent = 'Payment completed! Please confirm your order';
+        priceDisplay.style.color = 'green';
+      }
+    });
+
+    // প্রতি 5 সেকেন্ডে পেমেন্ট স্ট্যাটাস চেক করুন (ডেমোর জন্য)
+    setInterval(function() {
+      // এটি শুধু ডেমো উদ্দেশ্যে, প্রকৃত অ্যাপ্লিকেশনে ZiniPay এর ওয়েবহুক ব্যবহার করুন
+      if (iframeContainer.style.display === 'block' && !paymentCompleted) {
+        // ডেমো: র‍্যান্ডমলি পেমেন্ট কমপ্লিট সিমুলেট করুন
+        if (Math.random() < 0.1) { // 10% চান্স
+          paymentCompleted = true;
+          paymentBtn.disabled = false; // বাটন সক্রিয় করুন
+          priceDisplay.textContent = 'Payment completed! Please confirm your order';
+          priceDisplay.style.color = 'green';
+        }
+      }
+    }, 5000);
+  </script>
+</body>
+</html>      
