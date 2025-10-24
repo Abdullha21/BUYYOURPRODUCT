@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Buy Your Product</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body {font-family: Arial, sans-serif; background:#f5f5f5; margin:0; padding:0;}
+  header {background:#6a0dad; color:#fff; padding:15px; text-align:center; font-size:24px; font-family:'Orbitron',sans-serif;}
+  main {max-width:1000px; margin:20px auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+  h2 {color:#6a0dad; margin-bottom:10px;}
+  label {display:block; margin:10px 0 5px;}
+  input[type=text], textarea {width:100%; padding:8px; border-radius:5px; border:1px solid #ccc; font-size:16px;}
+  button {background:#6a0dad; color:#fff; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; margin-top:10px;}
+  button:hover {background:#5a0cac;}
+  .section {margin-bottom:30px; border-bottom:1px solid #eee; padding-bottom:20px;}
+  .item {margin-bottom:10px;}
+  .item input {width:80%;}
+  .remove-btn {background:red; margin-left:5px;}
+</style>
+</head>
+<body>
+
+<header>Admin Panel - Buy Your Product</header>
+
+<main>
+  <!-- Site Name & Marquee -->
+  <div class="section">
+    <h2>Site Settings</h2>
+    <label>Site Name:</label>
+    <input type="text" id="siteNameInput">
+    <label>Marquee Text:</label>
+    <textarea id="marqueeInput" rows="3"></textarea>
+    <label>Support Link:</label>
+    <input type="text" id="supportInput">
+  </div>
+
+  <!-- Banners -->
+  <div class="section">
+    <h2>Banners</h2>
+    <div id="bannersContainer"></div>
+    <button id="addBannerBtn">Add Banner</button>
+  </div>
+
+  <!-- Categories -->
+  <div class="section">
+    <h2>Categories</h2>
+    <div id="categoriesContainer"></div>
+    <button id="addCategoryBtn">Add Category</button>
+  </div>
+
+  <!-- Social Links -->
+  <div class="section">
+    <h2>Social Links</h2>
+    <div id="socialContainer"></div>
+    <button id="addSocialBtn">Add Social Link</button>
+  </div>
+
+  <button id="saveBtn">Save All Changes</button>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+  authDomain: "test-30208.firebaseapp.com",
+  projectId: "test-30208",
+  storageBucket: "test-30208.appspot.com",
+  messagingSenderId: "511922448499",
+  appId: "1:511922448499:web:c3d192dc7ded1256282206"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const siteNameInput = document.getElementById('siteNameInput');
+const marqueeInput = document.getElementById('marqueeInput');
+const supportInput = document.getElementById('supportInput');
+const bannersContainer = document.getElementById('bannersContainer');
+const categoriesContainer = document.getElementById('categoriesContainer');
+const socialContainer = document.getElementById('socialContainer');
+const saveBtn = document.getElementById('saveBtn');
+
+// Load data from Firebase
+async function loadData() {
+  const docRef = doc(db, "mainpage", "content");
+  const docSnap = await getDoc(docRef);
+  if(docSnap.exists()){
+    const data = docSnap.data();
+    siteNameInput.value = data.siteName || '';
+    marqueeInput.value = data.marquee || '';
+    supportInput.value = data.supportLink || '';
+
+    // Load Banners
+    bannersContainer.innerHTML = '';
+    data.banners.forEach((b,i)=>{ addBannerField(b.image,b.link); });
+
+    // Load Categories
+    categoriesContainer.innerHTML = '';
+    data.categories.forEach(c=>{ addCategoryField(c.name,c.image,c.link); });
+
+    // Load Social
+    socialContainer.innerHTML = '';
+    data.social.forEach(s=>{ addSocialField(s.icon,s.link); });
+  }
+}
+
+// Banner functions
+function addBannerField(img='',link=''){
+  const div = document.createElement('div'); div.classList.add('item');
+  div.innerHTML = `
+    <input type="text" placeholder="Banner Image URL" value="${img}">
+    <input type="text" placeholder="Banner Link" value="${link}">
+    <button class="remove-btn">Remove</button>
+  `;
+  div.querySelector('.remove-btn').addEventListener('click', ()=>{div.remove();});
+  bannersContainer.appendChild(div);
+}
+document.getElementById('addBannerBtn').addEventListener('click', ()=>addBannerField());
+
+// Category functions
+function addCategoryField(name='',img='',link=''){
+  const div = document.createElement('div'); div.classList.add('item');
+  div.innerHTML = `
+    <input type="text" placeholder="Category Name" value="${name}">
+    <input type="text" placeholder="Image URL" value="${img}">
+    <input type="text" placeholder="Link" value="${link}">
+    <button class="remove-btn">Remove</button>
+  `;
+  div.querySelector('.remove-btn').addEventListener('click', ()=>{div.remove();});
+  categoriesContainer.appendChild(div);
+}
+document.getElementById('addCategoryBtn').addEventListener('click', ()=>addCategoryField());
+
+// Social functions
+function addSocialField(icon='',link=''){
+  const div = document.createElement('div'); div.classList.add('item');
+  div.innerHTML = `
+    <input type="text" placeholder="Icon Class" value="${icon}">
+    <input type="text" placeholder="Link" value="${link}">
+    <button class="remove-btn">Remove</button>
+  `;
+  div.querySelector('.remove-btn').addEventListener('click', ()=>{div.remove();});
+  socialContainer.appendChild(div);
+}
+document.getElementById('addSocialBtn').addEventListener('click', ()=>addSocialField());
+
+// Save data
+saveBtn.addEventListener('click', async ()=>{
+  const banners = Array.from(bannersContainer.children).map(div=>({
+    image: div.children[0].value,
+    link: div.children[1].value
+  }));
+  const categories = Array.from(categoriesContainer.children).map(div=>({
+    name: div.children[0].value,
+    image: div.children[1].value,
+    link: div.children[2].value
+  }));
+  const social = Array.from(socialContainer.children).map(div=>({
+    icon: div.children[0].value,
+    link: div.children[1].value
+  }));
+
+  await setDoc(doc(db,"mainpage","content"),{
+    siteName: siteNameInput.value,
+    marquee: marqueeInput.value,
+    supportLink: supportInput.value,
+    banners,
+    categories,
+    social
+  });
+
+  alert("Data saved successfully!");
+});
+
+loadData();
+</script>
+</body>
+</html>
