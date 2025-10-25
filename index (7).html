@@ -29,33 +29,6 @@
       transform: translateY(0);
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
-    /* iFrame স্টাইল */
-    .iframe-container {
-      width: 100%;
-      height: 500px;
-      margin: 15px 0;
-      display: none;
-      border-radius: 10px;
-      overflow: auto; /* স্ক্রলবার যোগ করা */
-      border: 1px solid #ddd;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      min-width: 100%; /* মোবাইলে কনটেন্ট ছোট হবে না */
-    }
-
-    #paymentFrame {
-      width: 100%;
-      height: 100%;
-      border: none;
-      min-width: 100%; /* মোবাইলে লেখা স্পষ্ট থাকবে */
-    }
-
-    @media (max-width: 600px) {
-      .iframe-container {
-        height: 450px;
-        overflow: auto; /* মোবাইলে স্ক্রলবার */
-      }
-    }
   </style>
 
   <button id="back-button" onclick="goBack()">← Back</button>
@@ -285,6 +258,26 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
+    /* Automatic Payment Image */
+    .payment-image {
+      height: 100px;
+      width: auto;
+      cursor: pointer;
+      margin: 10px auto;
+      display: block;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    .payment-image:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
+    }
+    .payment-image.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .notice-box {
       background-color: #fff3cd;
       color: #856404;
@@ -352,6 +345,10 @@
       transform: scale(1.1);
     }
   </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="container">
@@ -360,11 +357,7 @@
       <div class="section" style="--index: 1;">
         <h3>1. Select Recharge</h3>
         <div class="products" id="productList">
-          <button type="button" value="50 STAR - 105 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/308d42bd-2caf-43d5-924b-1add08cbbd44">50 STAR - 105 TK</button>
-          <button type="button" value="75 STAR - 155 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/8df0b110-ca3b-47b8-b525-bd01d5d3942e">75 STAR - 155 TK</button>
-          <button type="button" value="100 STAR - 205 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/d64d412b-336f-425b-b85a-e3393cac6ff9">100 STAR - 205 TK</button>
-          <button type="button" value="150 STAR - 305 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/cd9c1b36-31a7-4526-ac45-48190e0f022f">150 STAR - 300 TK</button>
-          <button type="button" value="250 STAR - 500 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/12ff3c3f-549e-4cf4-8951-415f916d6fdc">250 STAR - 500 TK</button>
+          <!-- Products will be loaded from Firebase -->
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
       </div>
@@ -387,22 +380,20 @@
       </div>
       <div class="section" style="--index: 5;">
         <h3>5. Automatic Payment</h3>
-        <input type="text" name="trx_id" value="আগে পেমেন্ট করে তারপর অর্ডার কনফার্ম বাটনে ক্লিক করবেন।" readonly required>
+        <img src="https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg" alt="Payment Method" id="autoPaymentImg" class="payment-image disabled">
+        <input type="text" name="trx_id" value="প্রথমে instant payment Photo ক্লিক করে পেমেন্ট করুন ।" readonly required>
       </div>
       <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
-      
-      <!-- iFrame কন্টেইনার -->
-      <div class="iframe-container" id="iframeContainer">
-        <iframe id="paymentFrame" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
-      </div>
       
       <button type="button" class="btn" id="paymentBtn" disabled>Confirm Order</button>
     </form>
     <!-- Notice Box -->
     <div class="notice-box">
-      <div class="notice-title">Telegram Star Recharge Notice</div>
-      Largest Recharge Site In Bangladesh <br><br>
-      <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+      <div class="notice-title" id="noticeTitle">Telegram Star Recharge Notice</div>
+      <div id="noticeContent">
+        Largest Recharge Site In Bangladesh <br><br>
+        <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+      </div>
     </div>
     <!-- SUPPORT BUTTON -->
     <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
@@ -410,8 +401,23 @@
       <div class="support-icon">📞</div>
     </a>
   </div>
+
   <script>
-    const productButtons = document.querySelectorAll('#productList button');
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+      authDomain: "test-30208.firebaseapp.com",
+      projectId: "test-30208",
+      storageBucket: "test-30208.firebasestorage.app",
+      messagingSenderId: "511922448499",
+      appId: "1:511922448499:web:c3d192dc7ded1256282206"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // DOM Elements
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
     const bkashBtn = document.getElementById('bkashBtn');
@@ -419,33 +425,73 @@
     const paymentMethod = document.getElementById('payment_method');
     const paymentInfo = document.getElementById('paymentInfo');
     const form = document.getElementById('topupForm');
-    const iframeContainer = document.getElementById('iframeContainer');
-    const paymentFrame = document.getElementById('paymentFrame');
+    const autoPaymentImg = document.getElementById('autoPaymentImg');
     const paymentBtn = document.getElementById('paymentBtn');
     let selectedPaymentLink = '';
     let paymentCompleted = false;
 
-    // Product Selection
-    productButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        productButtons.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedProductInput.value = btn.value;
-        selectedPaymentLink = btn.getAttribute('data-payment-link');
+    // Load products from SPECIFIC collection for Telegram Star page only
+    function loadProducts() {
+      db.collection('telegram_star_products').orderBy('name').onSnapshot(snapshot => {
+        const productList = document.getElementById('productList');
+        productList.innerHTML = '';
         
-        // iFrame লোড করুন
-        iframeContainer.style.display = 'block';
-        paymentFrame.src = selectedPaymentLink;
-        paymentBtn.textContent = 'Confirm Order';
-        paymentBtn.disabled = true; // প্রাথমিকভাবে বাটন নিষ্ক্রিয়
-        paymentCompleted = false;
+        if (snapshot.empty) {
+          productList.innerHTML = '<p style="text-align: center; color: #666;">No Telegram Star products available at the moment.</p>';
+          return;
+        }
+        
+        snapshot.forEach(doc => {
+          const product = doc.data();
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.value = product.name;
+          button.setAttribute('data-payment-link', product.paymentLink);
+          button.textContent = product.name;
+          
+          button.addEventListener('click', function() {
+            document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedProductInput.value = this.value;
+            selectedPaymentLink = this.getAttribute('data-payment-link');
+            
+            const parts = this.value.split('-');
+            const price = parts[1]?.trim();
+            priceDisplay.textContent = "Price: " + price;
+            priceDisplay.style.color = '#d60000';
 
-        const parts = btn.value.split('-');
-        const price = parts[1]?.trim();
-        priceDisplay.textContent = "Price: " + price;
-        priceDisplay.style.color = '#d60000';
+            autoPaymentImg.classList.remove('disabled');
+            if (paymentMethod.value === 'bKash') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
+              autoPaymentImg.alt = 'bKash';
+            } else if (paymentMethod.value === 'Nagad') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
+              autoPaymentImg.alt = 'Nagad';
+            }
+            paymentBtn.disabled = true;
+            paymentCompleted = false;
+          });
+          
+          productList.appendChild(button);
+        });
+      }, error => {
+        console.error('Error loading Telegram Star products:', error);
+        document.getElementById('productList').innerHTML = '<p style="text-align: center; color: red;">Error loading products. Please try again later.</p>';
       });
-    });
+    }
+
+    // Load notice from SPECIFIC collection for Telegram Star page only
+    function loadNotice() {
+      db.collection('telegram_star_notices').doc('current').onSnapshot(doc => {
+        if (doc.exists) {
+          const notice = doc.data();
+          document.getElementById('noticeTitle').textContent = notice.title;
+          document.getElementById('noticeContent').innerHTML = notice.content;
+        }
+      }, error => {
+        console.error('Error loading Telegram Star notice:', error);
+      });
+    }
 
     // Payment Method Selection
     bkashBtn.addEventListener('click', () => {
@@ -453,6 +499,11 @@
       nagadBtn.classList.remove('selected');
       paymentMethod.value = 'bKash';
       paymentInfo.style.display = 'none';
+      if (selectedPaymentLink) {
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg';
+        autoPaymentImg.alt = 'bKash';
+        autoPaymentImg.classList.remove('disabled');
+      }
     });
 
     nagadBtn.addEventListener('click', () => {
@@ -460,16 +511,39 @@
       bkashBtn.classList.remove('selected');
       paymentMethod.value = 'Nagad';
       paymentInfo.style.display = 'none';
+      if (selectedPaymentLink) {
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
+        autoPaymentImg.alt = 'Nagad';
+        autoPaymentImg.classList.remove('disabled');
+      }
     });
 
-    // Payment Button Click
+    // Automatic Payment Image Click
+    autoPaymentImg.addEventListener('click', function() {
+      if (autoPaymentImg.classList.contains('disabled') || !selectedPaymentLink) {
+        alert('Please select a product and payment method first!');
+        return;
+      }
+      
+      window.open(selectedPaymentLink, '_blank');
+      priceDisplay.textContent = 'Please complete your payment in the new tab';
+      priceDisplay.style.color = '#d60000';
+      autoPaymentImg.classList.add('disabled');
+      paymentCompleted = true;
+
+      setTimeout(() => {
+        paymentBtn.disabled = false;
+        paymentBtn.style.background = 'purple';
+      }, 15000);
+    });
+
+    // Confirm Order Button Click
     paymentBtn.addEventListener('click', function() {
       if (!selectedPaymentLink) {
         alert('Please select a product first!');
         return;
       }
       
-      // ফর্ম ভ্যালিডেশন
       const uid = form.querySelector('[name="uid"]').value;
       const email = form.querySelector('[name="email"]').value;
       const paymentMethodValue = paymentMethod.value;
@@ -480,60 +554,36 @@
       }
       
       if (!paymentCompleted) {
-        // নতুন ট্যাবে পেমেন্ট লিঙ্ক খুলুন
-        window.open(selectedPaymentLink, '_blank');
-        priceDisplay.textContent = 'Please complete your payment in the new tab';
-        priceDisplay.style.color = '#d60000';
-      } else {
-        // পেমেন্ট সম্পন্ন হলে ফর্ম সাবমিট এবং নতুন উইন্ডোতে লিঙ্ক খুলুন
-        fetch(form.action, {
-          method: 'POST',
-          body: new FormData(form)
-        }).then(response => {
-          priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
-          priceDisplay.style.color = 'green';
-          
-          // নতুন উইন্ডোতে নির্দিষ্ট লিঙ্ক খুলুন
-          window.open('https://abdullha21.github.io/ALLTOPUPBUY/index%20(6).html', '_blank');
-          
-          // ফর্ম রিসেট
-          form.reset();
-          iframeContainer.style.display = 'none';
-          paymentBtn.style.display = 'none';
-          productButtons.forEach(b => b.classList.remove('selected'));
-          bkashBtn.classList.remove('selected');
-          nagadBtn.classList.remove('selected');
-        }).catch(error => {
-          alert('Error submitting form!');
-        });
+        alert('Please complete the payment first using the Automatic Payment image!');
+        return;
       }
-    });
-
-    // iFrame থেকে পেমেন্ট স্ট্যাটাস ট্র্যাক করার জন্য
-    window.addEventListener('message', function(event) {
-      // ZiniPay থেকে পেমেন্ট কনফার্মেশন মেসেজ চেক করুন
-      if (event.data === 'payment_completed') {
-        paymentCompleted = true;
-        paymentBtn.disabled = false; // বাটন সক্রিয় করুন
-        priceDisplay.textContent = 'Payment completed! Please confirm your order';
+      
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form)
+      }).then(response => {
+        priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
         priceDisplay.style.color = 'green';
-      }
+        
+        window.open('https://abdullha21.github.io/ALLTOPUPBUY/index%20(6).html', '_blank');
+        
+        form.reset();
+        autoPaymentImg.classList.add('disabled');
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
+        paymentBtn.disabled = true;
+        paymentBtn.style.background = '#ccc';
+        document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+        bkashBtn.classList.remove('selected');
+        nagadBtn.classList.remove('selected');
+        priceDisplay.textContent = '';
+      }).catch(error => {
+        alert('Error submitting form!');
+      });
     });
 
-    // প্রতি 5 সেকেন্ডে পেমেন্ট স্ট্যাটাস চেক করুন (ডেমোর জন্য)
-    setInterval(function() {
-      // এটি শুধু ডেমো উদ্দেশ্যে, প্রকৃত অ্যাপ্লিকেশনে ZiniPay এর ওয়েবহুক ব্যবহার করুন
-      if (iframeContainer.style.display === 'block' && !paymentCompleted) {
-        // ডেমো: র‍্যান্ডমলি পেমেন্ট কমপ্লিট সিমুলেট করুন
-        if (Math.random() < 0.1) { // 10% চান্স
-          paymentCompleted = true;
-          paymentBtn.disabled = false; // বাটন সক্রিয় করুন
-          priceDisplay.textContent = 'Payment completed! Please confirm your order';
-          priceDisplay.style.color = 'green';
-        }
-      }
-    }, 5000);
+    // Load initial data
+    loadProducts();
+    loadNotice();
   </script>
 </body>
 </html>
-
