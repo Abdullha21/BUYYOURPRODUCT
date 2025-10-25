@@ -29,61 +29,35 @@
       transform: translateY(0);
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
-    /* iFrame স্টাইল */
-    .iframe-container {
-      width: 100%;
-      height: 500px;
-      margin: 15px 0;
-      display: none;
-      border-radius: 10px;
-      overflow: auto; /* স্ক্রলবার যোগ করা */
-      border: 1px solid #ddd;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      min-width: 100%; /* মোবাইলে কনটেন্ট ছোট হবে না */
-    }
-
-    #paymentFrame {
-      width: 100%;
-      height: 100%;
-      border: none;
-      min-width: 100%; /* মোবাইলে লেখা স্পষ্ট থাকবে */
-    }
-
-    @media (max-width: 600px) {
-      .iframe-container {
-        height: 450px;
-        overflow: auto; /* মোবাইলে স্ক্রলবার */
-      }
-    }
   </style>
 
   <button id="back-button" onclick="goBack()">← Back</button>
 
   <script>
     function goBack() {
-      window.location.href = "https://abdullha21.github.io/BUYYOURPRODUCT/index%20(4).html";
+      window.location.href = "https://abdullha21.github.io/ALLTOPUPBUY/index%20(4).html";
     }
   </script>
   <!-- Back Button End -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UID Topup [BD SERVER]</title>
+  <title>FF UID TOP UP</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding: 20px;
       overflow-x: hidden;
+      min-height: 100vh;
     }
 
     .container {
       max-width: 500px;
       margin: auto;
       background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       animation: slideIn 0.6s ease-out;
       transform: translateY(0);
     }
@@ -97,6 +71,12 @@
       text-align: center;
       color: #333;
       animation: fadeIn 1s ease;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 28px;
+      font-weight: bold;
     }
 
     @keyframes fadeIn {
@@ -105,7 +85,7 @@
     }
 
     .section {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       opacity: 0;
       animation: fadeInUp 0.8s ease forwards;
       animation-delay: calc(0.1s * var(--index));
@@ -117,9 +97,10 @@
     }
 
     .section h3 {
-      margin-bottom: 10px;
-      color: #B300B3;
+      margin-bottom: 12px;
+      color: #2c3e50;
       position: relative;
+      font-size: 18px;
     }
 
     .section h3::after {
@@ -129,7 +110,7 @@
       left: 0;
       width: 50px;
       height: 3px;
-      background: linear-gradient(to right, #B300B3, transparent);
+      background: linear-gradient(to right, #e74c3c, transparent);
       transition: width 0.4s ease;
     }
 
@@ -140,15 +121,17 @@
     .products button {
       display: block;
       width: 100%;
-      margin: 5px 0;
-      padding: 10px;
-      background-color: #eee;
+      margin: 8px 0;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
       border: 2px solid transparent;
       cursor: pointer;
-      border-radius: 8px;
-      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 10px;
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
+      font-weight: bold;
     }
 
     .products button::before {
@@ -168,72 +151,71 @@
 
     .products button:hover {
       transform: translateY(-3px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      background-color: #f5f5f5;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #764ba2, #667eea);
     }
 
     .products button.selected {
-      border-color: red;
-      background-color: #ffe6e6;
+      border-color: #e74c3c;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
       transform: scale(1.02);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
     }
 
-    input[type="text"], select {
+    input[type="text"], input[type="email"], select {
       width: 100%;
-      padding: 10px;
-      margin: 5px 0;
+      padding: 12px;
+      margin: 8px 0;
       box-sizing: border-box;
-      border: 2px solid #ddd;
+      border: 2px solid #bdc3c7;
       border-radius: 8px;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+      transition: all 0.3s ease;
+      font-size: 14px;
     }
 
-    input[type="email"], select {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      box-sizing: border-box;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-    }
-    
-    input[type="text"]:focus, select:focus {
-      border-color: #B300B3;
-      box-shadow: 0 0 8px rgba(179,0,179,0.3);
+    input[type="text"]:focus, input[type="email"]:focus, select:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
       transform: scale(1.01);
       outline: none;
     }
 
+    .payment-methods {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
     .payment-methods img {
-      height: 40px;
+      height: 45px;
       cursor: pointer;
-      margin-right: 10px;
       border: 2px solid transparent;
-      padding: 5px;
-      border-radius: 5px;
-      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .payment-methods img:hover {
-      transform: scale(1.1) rotate(3deg);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: scale(1.15) rotate(5deg);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
     .payment-methods img.selected {
-      border-color: red;
-      transform: scale(1.05);
-      box-shadow: 0 0 10px rgba(255,0,0,0.3);
+      border-color: #e74c3c;
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
     }
 
     .info-box {
       margin-top: 10px;
       font-size: 14px;
-      background: #f0f0f0;
-      padding: 10px;
-      border-radius: 5px;
+      background: #ecf0f1;
+      padding: 12px;
+      border-radius: 8px;
       animation: popIn 0.5s ease;
+      border-left: 4px solid #3498db;
     }
 
     @keyframes popIn {
@@ -242,22 +224,25 @@
     }
 
     .btn {
-      background: linear-gradient(45deg, #8e2de2, #4a00e0);
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
       color: white;
-      padding: 12px;
+      padding: 15px;
       border: none;
       width: 100%;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 18px;
+      font-weight: bold;
       position: relative;
       overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: all 0.3s ease;
+      margin-top: 10px;
     }
 
     .btn:disabled {
-      background: #ccc;
+      background: #bdc3c7;
       cursor: not-allowed;
+      transform: none !important;
     }
 
     .btn::before {
@@ -277,31 +262,57 @@
 
     .btn:hover:not(:disabled) {
       transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+      background: linear-gradient(45deg, #c0392b, #e74c3c);
     }
 
     .btn:active:not(:disabled) {
       transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Automatic Payment Image */
+    .payment-image {
+      height: 110px;
+      width: auto;
+      cursor: pointer;
+      margin: 15px auto;
+      display: block;
+      border: 3px solid transparent;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .payment-image:hover {
+      transform: scale(1.15);
+      box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+      border-color: #e74c3c;
+    }
+    .payment-image.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
     }
 
     .notice-box {
-      background-color: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeeba;
-      padding: 16px;
-      border-radius: 8px;
-      margin-top: 20px;
+      background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+      color: #2d3436;
+      border: none;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 25px;
       font-size: 16px;
       font-weight: 500;
       animation: slideInRight 0.8s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
     .notice-title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
-      margin-bottom: 10px;
-      color: #000;
+      margin-bottom: 12px;
+      color: #d63031;
+      text-align: center;
     }
 
     @keyframes slideInRight {
@@ -327,22 +338,22 @@
     }
 
     .support-text {
-      background-color: #d60000;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
       color: white;
-      padding: 10px 15px;
+      padding: 12px 18px;
       font-weight: bold;
-      border-radius: 5px 0 0 5px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      border-radius: 8px 0 0 8px;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
       transition: transform 0.3s ease;
     }
 
     .support-icon {
-      background-color: #d60000;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
       color: white;
-      font-size: 22px;
-      padding: 13px 15px;
+      font-size: 24px;
+      padding: 14px 16px;
       border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
       margin-left: -1px;
       transition: transform 0.3s ease;
     }
@@ -351,39 +362,45 @@
     .support-btn:hover .support-icon {
       transform: scale(1.1);
     }
+
+    #price-display {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #e74c3c;
+      font-size: 18px;
+      text-align: center;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #e74c3c;
+    }
   </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="container">
-    <h2>UID Topup [BD SERVER]</h2>
+    <h2>🚀 FF UID TOP UP</h2>
     <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
       <div class="section" style="--index: 1;">
-        <h3>1. Select Recharge</h3>
+        <h3>🎯 1. Select Top Up Amount</h3>
         <div class="products" id="productList">
-          <button type="button" value="25 Diamond - 24 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/0c1d4470-4720-45b1-b18c-1e3f94674665">25 Diamond - 24 TK</button>
-          <button type="button" value="50 Diamond - 36 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/ff49d1e8-f6a8-4910-a2fa-faa33648fb31">50 Diamond - 36 TK</button>
-          <button type="button" value="115 Diamond - 80 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/26654260-2f29-4654-a909-745ec2148b82">115 Diamond - 80 TK</button>
-          <button type="button" value="240 Diamond - 155 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/6753ad01-f5ea-4c19-bd3c-dd817ef4f749">240 Diamond - 155 TK</button>
-          <button type="button" value="480 Diamond - 310 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/66a89f0f-4221-4ba2-b87d-16ddea5a0b81">480 Diamond - 310 TK</button>
-          <button type="button" value="610 Diamond - 390 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/08515891-ecdd-4315-867a-9a84f08f1ab0">610 Diamond - 390 TK</button>
-          <button type="button" value="1240 Diamond - 760 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/f530ca45-bd7a-43a0-9df9-6324a6a68623">1240 Diamond - 760 TK</button>
-          <button type="button" value="2530 Diamond - 1540 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/1a5a3491-cd92-4ede-80f2-575d4c823ac6">2530 Diamond - 1540 TK</button>
-          <button type="button" value="Weekly - 160 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/062596b8-7035-494d-ad5b-d009704947bd">Weekly - 160 TK</button>
-          <button type="button" value="Monthly - 755 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/5f14532a-c8d9-4801-971a-38154d9eb513">Monthly - 755 TK</button>
-          <button type="button" value="weekly lite - 45 TK" data-payment-link="https://dash.zinipay.com/secure/payment-link/a9eab7e0-d796-43eb-9997-814a4e610699">weekly lite - 45 TK</button>
+          <!-- Products will be loaded from Firebase -->
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
       </div>
       <div class="section" style="--index: 2;">
-        <h3>2. Account Info</h3>
-        <input type="text" name="uid" placeholder="এখানে আপনার গেমের আইডি কোড লিখুন !" required>
+        <h3>👤 2. Player Information</h3>
+        <input type="text" name="uid" placeholder="Enter your Free Fire UID" required>
       </div>
       <div class="section" style="--index: 3;">
-        <h3>3. Order Confirm Notification Gmail</h3>
-        <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
+        <h3>📧 3. Order Confirm Notification Gmail</h3>
+        <input type="email" name="email" placeholder="Enter your Gmail address" required>
       </div>
       <div class="section" style="--index: 4;">
-        <h3>4. Select One Option</h3>
+        <h3>💳 4. Select Payment Method</h3>
         <div class="payment-methods">
           <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
           <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
@@ -392,24 +409,21 @@
         <div class="info-box" id="paymentInfo" style="display:none;"></div>
       </div>
       <div class="section" style="--index: 5;">
-        <h3>5. Transaction ID</h3>
-        <input type="text" name="trx_id" value="আগে পেমেন্ট করে তারপর অর্ডার কনফার্ম বাটনে ক্লিক করবেন।" readonly required>
+        <h3>⚡ 5. Automatic Payment</h3>
+        <img src="https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg" alt="Payment Method" id="autoPaymentImg" class="payment-image disabled">
+        <input type="text" name="trx_id" value="Click on the payment image above to complete payment first" readonly required>
       </div>
       <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
       
-      <!-- iFrame কন্টেইনার -->
-      <div class="iframe-container" id="iframeContainer">
-        <iframe id="paymentFrame" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
-      </div>
-      
-      <button type="button" class="btn" id="paymentBtn" disabled>Confirm Order</button>
+      <button type="button" class="btn" id="paymentBtn" disabled>🎮 Confirm Top Up Order</button>
     </form>
     <!-- Notice Box -->
     <div class="notice-box">
-      <div class="notice-title">Free Fire Diamond TopUp</div>
-      Largest TopUp Site In Bangladesh <br><br>
-      <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার লিখে মেসেজ দিন | <br>
-      <strong>18 বছরের নিচে</strong> অভিভাবকের অনুমতি ছাড়া অর্ডার করা সম্পুর্নভাবে নিষিদ্ধ।
+      <div class="notice-title" id="noticeTitle">📢 Free Fire Top Up Notice</div>
+      <div id="noticeContent">
+        🏆 Largest Free Fire Top Up Site In Bangladesh <br><br>
+        <strong>⚠️ নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+      </div>
     </div>
     <!-- SUPPORT BUTTON -->
     <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
@@ -417,8 +431,23 @@
       <div class="support-icon">📞</div>
     </a>
   </div>
+
   <script>
-    const productButtons = document.querySelectorAll('#productList button');
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+      authDomain: "test-30208.firebaseapp.com",
+      projectId: "test-30208",
+      storageBucket: "test-30208.firebasestorage.app",
+      messagingSenderId: "511922448499",
+      appId: "1:511922448499:web:c3d192dc7ded1256282206"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // DOM Elements
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
     const bkashBtn = document.getElementById('bkashBtn');
@@ -426,33 +455,73 @@
     const paymentMethod = document.getElementById('payment_method');
     const paymentInfo = document.getElementById('paymentInfo');
     const form = document.getElementById('topupForm');
-    const iframeContainer = document.getElementById('iframeContainer');
-    const paymentFrame = document.getElementById('paymentFrame');
+    const autoPaymentImg = document.getElementById('autoPaymentImg');
     const paymentBtn = document.getElementById('paymentBtn');
     let selectedPaymentLink = '';
     let paymentCompleted = false;
 
-    // Product Selection
-    productButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        productButtons.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedProductInput.value = btn.value;
-        selectedPaymentLink = btn.getAttribute('data-payment-link');
+    // Load products from SPECIFIC collection for FF UID Top Up page only
+    function loadProducts() {
+      db.collection('ff_uid_topup_products').orderBy('name').onSnapshot(snapshot => {
+        const productList = document.getElementById('productList');
+        productList.innerHTML = '';
         
-        // iFrame লোড করুন
-        iframeContainer.style.display = 'block';
-        paymentFrame.src = selectedPaymentLink;
-        paymentBtn.textContent = 'Confirm Order';
-        paymentBtn.disabled = true; // প্রাথমিকভাবে বাটন নিষ্ক্রিয়
-        paymentCompleted = false;
+        if (snapshot.empty) {
+          productList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px; background: #f8f9fa; border-radius: 8px;">No Free Fire top up products available at the moment.</p>';
+          return;
+        }
+        
+        snapshot.forEach(doc => {
+          const product = doc.data();
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.value = product.name;
+          button.setAttribute('data-payment-link', product.paymentLink);
+          button.textContent = product.name;
+          
+          button.addEventListener('click', function() {
+            document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedProductInput.value = this.value;
+            selectedPaymentLink = this.getAttribute('data-payment-link');
+            
+            const parts = this.value.split('-');
+            const price = parts[1]?.trim();
+            priceDisplay.textContent = "💰 Price: " + price;
+            priceDisplay.style.color = '#e74c3c';
 
-        const parts = btn.value.split('-');
-        const price = parts[1]?.trim();
-        priceDisplay.textContent = "Price: " + price;
-        priceDisplay.style.color = '#d60000';
+            autoPaymentImg.classList.remove('disabled');
+            if (paymentMethod.value === 'bKash') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
+              autoPaymentImg.alt = 'bKash';
+            } else if (paymentMethod.value === 'Nagad') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
+              autoPaymentImg.alt = 'Nagad';
+            }
+            paymentBtn.disabled = true;
+            paymentCompleted = false;
+          });
+          
+          productList.appendChild(button);
+        });
+      }, error => {
+        console.error('Error loading FF UID Top Up products:', error);
+        document.getElementById('productList').innerHTML = '<p style="text-align: center; color: red; padding: 20px; background: #ffeaa7; border-radius: 8px;">Error loading products. Please try again later.</p>';
       });
-    });
+    }
+
+    // Load notice from SPECIFIC collection for FF UID Top Up page only
+    function loadNotice() {
+      db.collection('ff_uid_topup_notices').doc('current').onSnapshot(doc => {
+        if (doc.exists) {
+          const notice = doc.data();
+          document.getElementById('noticeTitle').textContent = notice.title;
+          document.getElementById('noticeContent').innerHTML = notice.content;
+        }
+      }, error => {
+        console.error('Error loading FF UID Top Up notice:', error);
+      });
+    }
 
     // Payment Method Selection
     bkashBtn.addEventListener('click', () => {
@@ -460,6 +529,11 @@
       nagadBtn.classList.remove('selected');
       paymentMethod.value = 'bKash';
       paymentInfo.style.display = 'none';
+      if (selectedPaymentLink) {
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg';
+        autoPaymentImg.alt = 'bKash';
+        autoPaymentImg.classList.remove('disabled');
+      }
     });
 
     nagadBtn.addEventListener('click', () => {
@@ -467,16 +541,39 @@
       bkashBtn.classList.remove('selected');
       paymentMethod.value = 'Nagad';
       paymentInfo.style.display = 'none';
+      if (selectedPaymentLink) {
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
+        autoPaymentImg.alt = 'Nagad';
+        autoPaymentImg.classList.remove('disabled');
+      }
     });
 
-    // Payment Button Click
-    paymentBtn.addEventListener('click', function() {
-      if (!selectedPaymentLink) {
-        alert('Please select a product first!');
+    // Automatic Payment Image Click
+    autoPaymentImg.addEventListener('click', function() {
+      if (autoPaymentImg.classList.contains('disabled') || !selectedPaymentLink) {
+        alert('Please select a top up amount and payment method first!');
         return;
       }
       
-      // ফর্ম ভ্যালিডেশন
+      window.open(selectedPaymentLink, '_blank');
+      priceDisplay.textContent = '🔄 Please complete your payment in the new tab';
+      priceDisplay.style.color = '#e74c3c';
+      autoPaymentImg.classList.add('disabled');
+      paymentCompleted = true;
+
+      setTimeout(() => {
+        paymentBtn.disabled = false;
+        paymentBtn.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+      }, 15000);
+    });
+
+    // Confirm Order Button Click
+    paymentBtn.addEventListener('click', function() {
+      if (!selectedPaymentLink) {
+        alert('Please select a top up amount first!');
+        return;
+      }
+      
       const uid = form.querySelector('[name="uid"]').value;
       const email = form.querySelector('[name="email"]').value;
       const paymentMethodValue = paymentMethod.value;
@@ -487,59 +584,36 @@
       }
       
       if (!paymentCompleted) {
-        // নতুন ট্যাবে পেমেন্ট লিঙ্ক খুলুন
-        window.open(selectedPaymentLink, '_blank');
-        priceDisplay.textContent = 'Please complete your payment in the new tab';
-        priceDisplay.style.color = '#d60000';
-      } else {
-        // পেমেন্ট সম্পন্ন হলে ফর্ম সাবমিট এবং নতুন উইন্ডোতে লিঙ্ক খুলুন
-        fetch(form.action, {
-          method: 'POST',
-          body: new FormData(form)
-        }).then(response => {
-          priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
-          priceDisplay.style.color = 'green';
-          
-          // নতুন উইন্ডোতে নির্দিষ্ট লিঙ্ক খুলুন
-          window.open('https://abdullha21.github.io/BUYYOURPRODUCT/index%20(6).html', '_blank');
-          
-          // ফর্ম রিসেট
-          form.reset();
-          iframeContainer.style.display = 'none';
-          paymentBtn.style.display = 'none';
-          productButtons.forEach(b => b.classList.remove('selected'));
-          bkashBtn.classList.remove('selected');
-          nagadBtn.classList.remove('selected');
-        }).catch(error => {
-          alert('Error submitting form!');
-        });
+        alert('Please complete the payment first using the Automatic Payment image!');
+        return;
       }
-    });
-
-    // iFrame থেকে পেমেন্ট স্ট্যাটাস ট্র্যাক করার জন্য
-    window.addEventListener('message', function(event) {
-      // ZiniPay থেকে পেমেন্ট কনফার্মেশন মেসেজ চেক করুন
-      if (event.data === 'payment_completed') {
-        paymentCompleted = true;
-        paymentBtn.disabled = false; // বাটন সক্রিয় করুন
-        priceDisplay.textContent = 'Payment completed! Please confirm your order';
+      
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form)
+      }).then(response => {
+        priceDisplay.textContent = '✅ Your Free Fire top up order has been confirmed! You will receive diamonds soon.';
         priceDisplay.style.color = 'green';
-      }
+        
+        window.open('https://abdullha21.github.io/ALLTOPUPBUY/index%20(6).html', '_blank');
+        
+        form.reset();
+        autoPaymentImg.classList.add('disabled');
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
+        paymentBtn.disabled = true;
+        paymentBtn.style.background = '#bdc3c7';
+        document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+        bkashBtn.classList.remove('selected');
+        nagadBtn.classList.remove('selected');
+        priceDisplay.textContent = '';
+      }).catch(error => {
+        alert('Error submitting form!');
+      });
     });
 
-    // প্রতি 5 সেকেন্ডে পেমেন্ট স্ট্যাটাস চেক করুন (ডেমোর জন্য)
-    setInterval(function() {
-      // এটি শুধু ডেমো উদ্দেশ্যে, প্রকৃত অ্যাপ্লিকেশনে ZiniPay এর ওয়েবহুক ব্যবহার করুন
-      if (iframeContainer.style.display === 'block' && !paymentCompleted) {
-        // ডেমো: র‍্যান্ডমলি পেমেন্ট কমপ্লিট সিমুলেট করুন
-        if (Math.random() < 0.1) { // 10% চান্স
-          paymentCompleted = true;
-          paymentBtn.disabled = false; // বাটন সক্রিয় করুন
-          priceDisplay.textContent = 'আগে পেমেন্ট করে তারপর অর্ডার কনফার্ম বাটনে ক্লিক করবেন।';
-          priceDisplay.style.color = 'green';
-        }
-      }
-    }, 5000);
+    // Load initial data
+    loadProducts();
+    loadNotice();
   </script>
 </body>
 </html>
