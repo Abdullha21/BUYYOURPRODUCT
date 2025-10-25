@@ -30,19 +30,41 @@
       0%, 100% { transform: scale(1.2) rotate(10deg); }
       50% { transform: scale(1.3) rotate(12deg); }
     }
+
+    /* Admin Access Button */
+    .admin-access-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+
+    .admin-access-btn:hover {
+      background-color: #45a049;
+      transform: scale(1.1);
+    }
   </style>
 
   <button id="back-button" onclick="goBack()">← Back</button>
-
   <script>
     function goBack() {
       window.location.href = "https://abdullha21.github.io/BUYYOURPRODUCT/index%20(4).html";
     }
+
+
   </script>
   <!-- Back Button End -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Crypto Network</title>
+  <title>Facebook Star Recharge</title>
   <style>
     body { 
       font-family: Arial, sans-serif; 
@@ -159,24 +181,15 @@
     }
     /* Automatic Payment Image */
     .payment-image {
- height: 100px; /* ইমেজের উচ্চতা বাড়ানো (আগে ছিল 50px) */
- width: auto; /* প্রস্থ স্বয়ংক্রিয়ভাবে সেট হবে, ইমেজের আকৃতি ঠিক থাকবে */
- cursor: pointer;
- margin: 10px auto; /* মাঝখানে আনার জন্য margin auto */
- display: block; /* ইমেজকে ব্লক এলিমেন্ট করে মাঝখানে আনা */
- border: 2px solid transparent;
- border-radius: 5px;
- transition: all 0.3s ease;
-}
-.payment-image:hover {
- transform: scale(1.2);
- box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
- animation: pop 0.4s ease;
-}
-.payment-image.disabled {
- opacity: 0.5;
- cursor: not-allowed;
-}
+      height: 100px;
+      width: auto;
+      cursor: pointer;
+      margin: 10px auto;
+      display: block;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
     .payment-image:hover {
       transform: scale(1.2);
       box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
@@ -262,19 +275,19 @@
       margin-left: -1px;
     }
   </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="container">
-    <h2>Facebook star</h2>
+    <h2>Facebook Star Recharge</h2>
     <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
       <div class="section" style="--index: 1;">
         <h3>1. Select Recharge</h3>
         <div class="products" id="productList">
-          <button type="button" value="5 FB STAR - 16 TK" data-payment-link="https://nagorikpay.com/paymentlink/eyJ1aWQiOiIyNDQ5IiwiYnJhbmRfaWQiOiIxMzI4IiwiY3VzdG9tZXJfYW1vdW50IjoiMTYifQ">5 FB STAR - 16 TK</button>
-          <button type="button" value="10 FB STAR - 30 TK" data-payment-link="https://nagorikpay.com/paymentlink/eyJ1aWQiOiIyNDQ5IiwiYnJhbmRfaWQiOiIxMzI4IiwiY3VzdG9tZXJfYW1vdW50IjoiMzAifQ">10 FB STAR - 30 TK</button>
-          <button type="button" value="15 FB STAR - 45 TK" data-payment-link="https://nagorikpay.com/paymentlink/eyJ1aWQiOiIyNDQ5IiwiYnJhbmRfaWQiOiIxMzI4IiwiY3VzdG9tZXJfYW1vdW50IjoiNDUifQ">15 FB STAR - 45 TK</button>
-          <button type="button" value="20 FB STAR - 60 TK" data-payment-link="https://nagorikpay.com/paymentlink/eyJ1aWQiOiIyNDQ5IiwiYnJhbmRfaWQiOiIxMzI4IiwiY3VzdG9tZXJfYW1vdW50IjoiNjAifQ">20 FB STAR - 60 TK</button>
-          <button type="button" value="25 FB STAR - 75 TK" data-payment-link="https://nagorikpay.com/paymentlink/eyJ1aWQiOiIyNDQ5IiwiYnJhbmRfaWQiOiIxMzI4IiwiY3VzdG9tZXJfYW1vdW50IjoiNzUifQ">25 FB STAR - 75 TK</button>
+          <!-- Products will be loaded from Firebase -->
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
       </div>
@@ -306,9 +319,11 @@
     </form>
     <!-- Notice Box -->
     <div class="notice-box">
-      <div class="notice-title"> Recharge Notice</div>
-      Largest Recharge Site In Bangladesh <br><br>
-      <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+      <div class="notice-title" id="noticeTitle">Recharge Notice</div>
+      <div id="noticeContent">
+        Largest Recharge Site In Bangladesh <br><br>
+        <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+      </div>
     </div>
     <!-- Support Button -->
     <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
@@ -316,8 +331,23 @@
       <div class="support-icon">📞</div>
     </a>
   </div>
+
   <script>
-    const productButtons = document.querySelectorAll('#productList button');
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+      authDomain: "test-30208.firebaseapp.com",
+      projectId: "test-30208",
+      storageBucket: "test-30208.firebasestorage.app",
+      messagingSenderId: "511922448499",
+      appId: "1:511922448499:web:c3d192dc7ded1256282206"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // DOM Elements
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
     const bkashBtn = document.getElementById('bkashBtn');
@@ -330,34 +360,68 @@
     let selectedPaymentLink = '';
     let paymentCompleted = false;
 
-    // Product Selection
-    productButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        productButtons.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedProductInput.value = btn.value;
-        selectedPaymentLink = btn.getAttribute('data-payment-link');
+    // Load products from SPECIFIC collection for Facebook Star page only
+    function loadProducts() {
+      db.collection('facebook_star_products').orderBy('name').onSnapshot(snapshot => {
+        const productList = document.getElementById('productList');
+        productList.innerHTML = '';
         
-        // দাম প্রদর্শন
-        const parts = btn.value.split('-');
-        const price = parts[1]?.trim();
-        priceDisplay.textContent = "Price: " + price;
-        priceDisplay.style.color = '#d60000';
-
-        // Automatic Payment ইমেজ সক্রিয় করা
-        autoPaymentImg.classList.remove('disabled');
-        // পেমেন্ট মেথডের উপর ভিত্তি করে ইমেজ পরিবর্তন (ডিফল্ট bKash)
-        if (paymentMethod.value === 'bKash') {
-          autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
-          autoPaymentImg.alt = 'bKash';
-        } else if (paymentMethod.value === 'Nagad') {
-          autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
-          autoPaymentImg.alt = 'Nagad';
+        if (snapshot.empty) {
+          productList.innerHTML = '<p style="text-align: center; color: #666;">No products available at the moment.</p>';
+          return;
         }
-        paymentBtn.disabled = true; // Confirm Order বাটন নিষ্ক্রিয়
-        paymentCompleted = false;
+        
+        snapshot.forEach(doc => {
+          const product = doc.data();
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.value = product.name;
+          button.setAttribute('data-payment-link', product.paymentLink);
+          button.textContent = product.name;
+          
+          button.addEventListener('click', function() {
+            document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedProductInput.value = this.value;
+            selectedPaymentLink = this.getAttribute('data-payment-link');
+            
+            const parts = this.value.split('-');
+            const price = parts[1]?.trim();
+            priceDisplay.textContent = "Price: " + price;
+            priceDisplay.style.color = '#d60000';
+
+            autoPaymentImg.classList.remove('disabled');
+            if (paymentMethod.value === 'bKash') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
+              autoPaymentImg.alt = 'bKash';
+            } else if (paymentMethod.value === 'Nagad') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
+              autoPaymentImg.alt = 'Nagad';
+            }
+            paymentBtn.disabled = true;
+            paymentCompleted = false;
+          });
+          
+          productList.appendChild(button);
+        });
+      }, error => {
+        console.error('Error loading products:', error);
+        document.getElementById('productList').innerHTML = '<p style="text-align: center; color: red;">Error loading products. Please try again later.</p>';
       });
-    });
+    }
+
+    // Load notice from SPECIFIC collection for Facebook Star page only
+    function loadNotice() {
+      db.collection('facebook_star_notices').doc('current').onSnapshot(doc => {
+        if (doc.exists) {
+          const notice = doc.data();
+          document.getElementById('noticeTitle').textContent = notice.title;
+          document.getElementById('noticeContent').innerHTML = notice.content;
+        }
+      }, error => {
+        console.error('Error loading notice:', error);
+      });
+    }
 
     // Payment Method Selection
     bkashBtn.addEventListener('click', () => {
@@ -391,18 +455,16 @@
         return;
       }
       
-      // নতুন ট্যাবে পেমেন্ট লিংক খোলা
       window.open(selectedPaymentLink, '_blank');
       priceDisplay.textContent = 'Please complete your payment in the new tab';
       priceDisplay.style.color = '#d60000';
-      autoPaymentImg.classList.add('disabled'); // ইমেজ নিষ্ক্রিয়
+      autoPaymentImg.classList.add('disabled');
       paymentCompleted = true;
 
-      // ১৫ সেকেন্ড পরে Confirm Order বাটন সক্রিয় করা
       setTimeout(() => {
         paymentBtn.disabled = false;
         paymentBtn.style.background = 'purple';
-      }, 15000); // ১৫ সেকেন্ড বিলম্ব
+      }, 15000);
     });
 
     // Confirm Order Button Click
@@ -412,7 +474,6 @@
         return;
       }
       
-      // ফর্ম ভ্যালিডেশন
       const uid = form.querySelector('[name="uid"]').value;
       const email = form.querySelector('[name="email"]').value;
       const paymentMethodValue = paymentMethod.value;
@@ -427,7 +488,6 @@
         return;
       }
       
-      // ফর্ম সাবমিট
       fetch(form.action, {
         method: 'POST',
         body: new FormData(form)
@@ -435,17 +495,14 @@
         priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
         priceDisplay.style.color = 'green';
         
-        // নতুন উইন্ডোতে নির্দিষ্ট লিঙ্ক খোলা
         window.open('https://abdullha21.github.io/BUYYOURPRODUCT/index%20(6).html', '_blank');
         
-        // ফর্ম রিসেট
         form.reset();
         autoPaymentImg.classList.add('disabled');
-        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg'; // ডিফল্ট ইমেজ
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
         paymentBtn.disabled = true;
         paymentBtn.style.background = '#ccc';
-        paymentBtn.style.display = 'none';
-        productButtons.forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
         bkashBtn.classList.remove('selected');
         nagadBtn.classList.remove('selected');
         priceDisplay.textContent = '';
@@ -453,6 +510,10 @@
         alert('Error submitting form!');
       });
     });
+
+    // Load initial data
+    loadProducts();
+    loadNotice();
   </script>
 </body>
 </html>
