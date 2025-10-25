@@ -7,28 +7,23 @@
       position: fixed;
       top: 20px;
       left: 20px;
-      background-color: #ff4d4d;
+      background-color: #ff6b35;
       color: white;
-      padding: 10px 18px;
+      padding: 12px 20px;
       border: none;
       border-radius: 25px;
-      font-size: 15px;
+      font-size: 16px;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
       transition: all 0.3s ease;
       z-index: 999;
+      font-weight: 600;
     }
 
     #back-button:hover {
-      background-color: #e60000;
-      transform: scale(1.2) rotate(10deg);
-      box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
-      animation: bounce 0.4s ease;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: scale(1.2) rotate(10deg); }
-      50% { transform: scale(1.3) rotate(12deg); }
+      background-color: #e55a2b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
     }
   </style>
 
@@ -36,199 +31,294 @@
 
   <script>
     function goBack() {
-      window.location.href = "https://abdullha21.github.io/BUYYOURPRODUCT/index%20(4).html";
+      window.location.href = "https://abdullha21.github.io/ALLTOPUPBUY/index%20(4).html";
     }
   </script>
   <!-- Back Button End -->
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Crypto Network</title>
+  <title>Crypto Fee Buy</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      background: #f5f5f5; 
-      padding: 20px; 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .container { 
-      max-width: 500px; 
-      margin: auto; 
-      background: #fff; 
-      padding: 20px; 
-      border-radius: 10px; 
-      box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+
+    body {
+      font-family: 'Inter', 'Arial', sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      padding: 20px;
     }
-    h2 { 
-      text-align: center; 
-      color: #333; 
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
     }
-    .section { 
-      margin-bottom: 20px; 
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ff6b35, #ffa726, #66bb6a, #42a5f5);
     }
-    .section h3 { 
-      margin-bottom: 10px; 
-      color: #B300B3; 
+
+    h2 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #ff6b35, #ffa726, #66bb6a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
     }
-    .products button {
-      display: block;
-      width: 100%;
-      margin: 5px 0;
-      padding: 10px;
-      background-color: #eee;
+
+    .subtitle {
+      text-align: center;
+      color: #b0b0b0;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .section {
+      margin-bottom: 25px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .section h3 {
+      margin-bottom: 15px;
+      color: #ffa726;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section h3 i {
+      font-size: 20px;
+    }
+
+    .products {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .product-btn {
+      background: linear-gradient(135deg, #1e3a8a, #3730a3);
+      color: white;
       border: 2px solid transparent;
+      padding: 15px;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
     }
-    .products button.selected {
-      border-color: red;
-      background-color: #ffe6e6;
+
+    .product-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
     }
-    .products button:hover {
-      transform: scale(1.1);
-      background-color: #e0e0e0;
-      box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
-      animation: glow 1s ease-in-out infinite alternate;
+
+    .product-btn:hover::before {
+      left: 100%;
     }
-    .products button:active {
-      animation: shake 0.3s ease;
+
+    .product-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(30, 58, 138, 0.4);
+      border-color: #4f46e5;
     }
+
+    .product-btn.selected {
+      background: linear-gradient(135deg, #059669, #10b981);
+      border-color: #10b981;
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+
     input[type="text"], input[type="email"], select {
       width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      box-sizing: border-box;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-    input[type="text"]:focus, input[type="email"]:focus, select:focus {
-      border-color: #B300B3;
-      box-shadow: 0 0 12px rgba(179, 0, 179, 0.7);
-      transform: scale(1.05) translateY(-3px);
-      animation: inputGlow 0.8s ease-in-out infinite alternate;
-      outline: none;
-    }
-    input[type="text"]:hover, input[type="email"]:hover, select:hover {
-      border-color: #B300B3;
-      transform: scale(1.05) translateY(-3px);
-      box-shadow: 0 0 8px rgba(179, 0, 179, 0.4);
-    }
-    .payment-methods img {
-      height: 40px;
-      cursor: pointer;
-      margin-right: 10px;
-      border: 2px solid transparent;
-      padding: 5px;
-      border-radius: 5px;
-      transition: all 0.3s ease;
-    }
-    .payment-methods img.selected {
-      border-color: red;
-    }
-    .payment-methods img:hover {
-      transform: scale(1.3) rotate(15deg);
-      box-shadow: 0 0 20px rgba(255, 77, 77, 0.6);
-      animation: pop 0.4s ease;
-    }
-    .info-box {
-      margin-top: 10px;
-      font-size: 14px;
-      background: #f0f0f0;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    .btn {
-      background: purple;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
       color: white;
-      padding: 12px;
-      border: none;
-      width: 100%;
-      border-radius: 5px;
-      cursor: pointer;
       font-size: 16px;
       transition: all 0.3s ease;
     }
-    .btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+
+    input[type="text"]:focus, input[type="email"]:focus, select:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+      background: rgba(255, 255, 255, 0.15);
     }
-    .btn:hover:not(:disabled) {
-      background: #cc00cc;
+
+    input[type="text"]::placeholder, input[type="email"]::placeholder {
+      color: #b0b0b0;
+    }
+
+    .payment-methods {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin: 15px 0;
+    }
+
+    .payment-methods img {
+      height: 50px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .payment-methods img:hover {
       transform: scale(1.1);
-      box-shadow: 0 0 20px rgba(204, 0, 204, 0.7);
-      animation: pulse 0.6s ease-in-out infinite alternate;
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
     }
-    /* Automatic Payment Image */
+
+    .payment-methods img.selected {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.2);
+      transform: scale(1.05);
+    }
+
     .payment-image {
- height: 100px; /* ইমেজের উচ্চতা বাড়ানো (আগে ছিল 50px) */
- width: auto; /* প্রস্থ স্বয়ংক্রিয়ভাবে সেট হবে, ইমেজের আকৃতি ঠিক থাকবে */
- cursor: pointer;
- margin: 10px auto; /* মাঝখানে আনার জন্য margin auto */
- display: block; /* ইমেজকে ব্লক এলিমেন্ট করে মাঝখানে আনা */
- border: 2px solid transparent;
- border-radius: 5px;
- transition: all 0.3s ease;
-}
-.payment-image:hover {
- transform: scale(1.2);
- box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
- animation: pop 0.4s ease;
-}
-.payment-image.disabled {
- opacity: 0.5;
- cursor: not-allowed;
-}
-    .payment-image:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
-      animation: pop 0.4s ease;
+      height: 110px;
+      width: auto;
+      cursor: pointer;
+      margin: 15px auto;
+      display: block;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
     }
+
+    .payment-image:hover {
+      transform: scale(1.15);
+      border-color: #4f46e5;
+      box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
+    }
+
     .payment-image.disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none !important;
     }
-    /* Animation Keyframes */
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      50% { transform: translateX(8px); }
-      75% { transform: translateX(-8px); }
+
+    .btn {
+      background: linear-gradient(135deg, #ff6b35, #e55a2b);
+      color: white;
+      padding: 18px;
+      border: none;
+      width: 100%;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
     }
-    @keyframes pulse {
-      0% { transform: scale(1.1); box-shadow: 0 0 20px rgba(204, 0, 204, 0.7); }
-      100% { transform: scale(1.15); box-shadow: 0 0 30px rgba(204, 0, 204, 1); }
+
+    .btn:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+      transform: none !important;
     }
-    @keyframes glow {
-      0% { box-shadow: 0 0 15px rgba(179, 0, 179, 0.5); }
-      100% { box-shadow: 0 0 25px rgba(179, 0, 179, 0.8); }
+
+    .btn:not(:disabled):hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(255, 107, 53, 0.4);
     }
-    @keyframes inputGlow {
-      0% { box-shadow: 0 0 12px rgba(179, 0, 179, 0.7); }
-      100% { box-shadow: 0 0 20px rgba(179, 0, 179, 1); }
+
+    .btn:not(:disabled):active {
+      transform: translateY(0);
     }
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.4) rotate(20deg); }
-      100% { transform: scale(1.3) rotate(15deg); }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
     }
-    /* Notice Box Style */
-    .notice-box {
-      background-color: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeeba;
-      padding: 16px;
-      border-radius: 8px;
-      margin-top: 20px;
-      font-size: 16px;
-      font-weight: 500;
-      animation: fadeIn 1.2s ease;
+
+    .btn:hover::before {
+      left: 100%;
     }
-    .notice-title {
-      font-size: 20px;
+
+    #price-display {
+      margin: 15px 0;
       font-weight: bold;
-      margin-bottom: 10px;
-      color: #000;
+      color: #ffa726;
+      font-size: 20px;
+      text-align: center;
+      padding: 12px;
+      background: rgba(255, 167, 38, 0.1);
+      border-radius: 10px;
+      border-left: 4px solid #ffa726;
     }
-    /* Support Button Style */
+
+    .notice-box {
+      background: linear-gradient(135deg, rgba(255, 167, 38, 0.1), rgba(102, 187, 106, 0.1));
+      color: #e5e7eb;
+      border: 1px solid rgba(255, 167, 38, 0.3);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 25px;
+      font-size: 16px;
+      animation: fadeIn 1s ease;
+    }
+
+    .notice-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #ffa726;
+      text-align: center;
+    }
+
     .support-btn {
       position: fixed;
       bottom: 20px;
@@ -237,132 +327,229 @@
       align-items: center;
       text-decoration: none;
       z-index: 9999;
-      transition: all 0.3s ease;
+      animation: bounce 2s infinite;
     }
-    .support-btn:hover {
-      transform: scale(1.2) rotate(10deg);
-      box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
-      animation: bounce 0.4s ease;
-    }
+
     .support-text {
-      background-color: #d60000;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
       color: white;
-      padding: 10px 15px;
+      padding: 12px 18px;
       font-weight: bold;
-      border-radius: 5px 0 0 5px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      border-radius: 8px 0 0 8px;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+      transition: transform 0.3s ease;
     }
+
     .support-icon {
-      background-color: #d60000;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
       color: white;
-      font-size: 22px;
-      padding: 13px 15px;
+      font-size: 24px;
+      padding: 14px 16px;
       border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
       margin-left: -1px;
+      transition: transform 0.3s ease;
+    }
+
+    .support-btn:hover .support-text,
+    .support-btn:hover .support-icon {
+      transform: scale(1.1);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>All Crypto</h2>
+    <h2>💰 Crypto Fee Buy</h2>
+    <div class="subtitle">Buy Crypto Transaction Fees Instantly</div>
+    
     <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
+      
+      <!-- 1. Select Crypto Fee Package -->
       <div class="section" style="--index: 1;">
-        <h3>1. Select Recharge</h3>
+        <h3><i class="fas fa-coins"></i> 1. Select Fee Package</h3>
         <div class="products" id="productList">
-          <button type="button" value="0.25$ BNB - 35 TK" data-payment-link="https://nagorikpay.com/paymentlink/eyJ1aWQiOiIyNDQ5IiwiYnJhbmRfaWQiOiIxMzI4IiwiY3VzdG9tZXJfYW1vdW50IjoiMzUifQ">0.25$ BNB - 35 TK</button>
-          <button type="button" value="0.50$ BNB - 70 TK" data-payment-link="https://nagorikpay.com/paymentlink/eyJ1aWQiOiIyNDQ5IiwiYnJhbmRfaWQiOiIxMzI4IiwiY3VzdG9tZXJfYW1vdW50IjoiNzAifQ">0.50$ BNB - 70 TK</button>
-          <button type="button" value="0.80$ BNB - 110 TK" data-payment-link="https://nagorikpay.com/paymentlink/eyJ1aWQiOiIyNDQ5IiwiYnJhbmRfaWQiOiIxMzI4IiwiY3VzdG9tZXJfYW1vdW50IjoiMTEwIn0">0.80$ BNB - 110 TK</button>
+          <!-- Products will be loaded from Firebase -->
         </div>
         <input type="hidden" name="selected_product" id="selected_product" required>
       </div>
+
+      <!-- 2. Crypto Wallet Address -->
       <div class="section" style="--index: 2;">
-        <h3>2. Account Info</h3>
-        <input type="text" name="uid" placeholder="এখানে আপনার এড্রেস টা দেন" required>
+        <h3><i class="fas fa-wallet"></i> 2. Wallet Address</h3>
+        <input type="text" name="uid" placeholder="Enter your crypto wallet address" required>
       </div>
+
+      <!-- 3. Email for Notification -->
       <div class="section" style="--index: 3;">
-        <h3>3. Order Confirm Notification Gmail</h3>
-        <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
+        <h3><i class="fas fa-envelope"></i> 3. Notification Email</h3>
+        <input type="email" name="email" placeholder="Enter your email for confirmation" required>
       </div>
+
+      <!-- 4. Payment Method -->
       <div class="section" style="--index: 4;">
-        <h3>4. Select one option</h3>
+        <h3><i class="fas fa-credit-card"></i> 4. Payment Method</h3>
         <div class="payment-methods">
           <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
           <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
         </div>
         <input type="hidden" name="payment_method" id="payment_method" required>
-        <div class="info-box" id="paymentInfo" style="display:none;"></div>
       </div>
+
+      <!-- 5. Automatic Payment -->
       <div class="section" style="--index: 5;">
-        <h3>5. Automatic Payment</h3>
+        <h3><i class="fas fa-bolt"></i> 5. Automatic Payment</h3>
         <img src="https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg" alt="Payment Method" id="autoPaymentImg" class="payment-image disabled">
-        <input type="text" name="trx_id" value="প্রথমে instant payment বাটনে ক্লিক করে পেমে সন্ট করুন ।" readonly required>
+        <input type="text" name="trx_id" value="Click payment image above to complete payment first" readonly required>
       </div>
-      <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
+
+      <!-- Price Display -->
+      <div id="price-display"></div>
       
-      <button type="button" class="btn" id="paymentBtn" disabled>Confirm Order</button>
+      <!-- Confirm Order Button -->
+      <button type="button" class="btn" id="paymentBtn" disabled>
+        <i class="fas fa-lock"></i> Confirm Crypto Fee Purchase
+      </button>
     </form>
+
     <!-- Notice Box -->
     <div class="notice-box">
-      <div class="notice-title"> Recharge Notice</div>
-      Largest Recharge Site In Bangladesh <br><br>
-      <strong>নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+      <div class="notice-title" id="noticeTitle">📢 Crypto Fee Notice</div>
+      <div id="noticeContent">
+        Fastest Crypto Transaction Fee Service in Bangladesh<br><br>
+        <strong>⚠️ Note:</strong> Any order related issues, message us on Messenger with order screenshot and last 4 digits of payment.
+      </div>
     </div>
-    <!-- Support Button -->
-    <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
-      <div class="support-text">SUPPORT!</div>
-      <div class="support-icon">📞</div>
-    </a>
   </div>
+
+  <!-- Support Button -->
+  <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
+    <div class="support-text">SUPPORT!</div>
+    <div class="support-icon">📞</div>
+  </a>
+
   <script>
-    const productButtons = document.querySelectorAll('#productList button');
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+      authDomain: "test-30208.firebaseapp.com",
+      projectId: "test-30208",
+      storageBucket: "test-30208.firebasestorage.app",
+      messagingSenderId: "511922448499",
+      appId: "1:511922448499:web:c3d192dc7ded1256282206"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // DOM Elements
     const selectedProductInput = document.getElementById('selected_product');
     const priceDisplay = document.getElementById('price-display');
     const bkashBtn = document.getElementById('bkashBtn');
     const nagadBtn = document.getElementById('nagadBtn');
     const paymentMethod = document.getElementById('payment_method');
-    const paymentInfo = document.getElementById('paymentInfo');
     const form = document.getElementById('topupForm');
     const autoPaymentImg = document.getElementById('autoPaymentImg');
     const paymentBtn = document.getElementById('paymentBtn');
     let selectedPaymentLink = '';
     let paymentCompleted = false;
 
-    // Product Selection
-    productButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        productButtons.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedProductInput.value = btn.value;
-        selectedPaymentLink = btn.getAttribute('data-payment-link');
+    // Load products from SPECIFIC collection for Crypto Fee Buy
+    function loadProducts() {
+      db.collection('crypto_fee_products').orderBy('name').onSnapshot(snapshot => {
+        const productList = document.getElementById('productList');
+        productList.innerHTML = '';
         
-        // দাম প্রদর্শন
-        const parts = btn.value.split('-');
-        const price = parts[1]?.trim();
-        priceDisplay.textContent = "Price: " + price;
-        priceDisplay.style.color = '#d60000';
-
-        // Automatic Payment ইমেজ সক্রিয় করা
-        autoPaymentImg.classList.remove('disabled');
-        // পেমেন্ট মেথডের উপর ভিত্তি করে ইমেজ পরিবর্তন (ডিফল্ট bKash)
-        if (paymentMethod.value === 'bKash') {
-          autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
-          autoPaymentImg.alt = 'bKash';
-        } else if (paymentMethod.value === 'Nagad') {
-          autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
-          autoPaymentImg.alt = 'Nagad';
+        if (snapshot.empty) {
+          productList.innerHTML = '<p style="text-align: center; color: #b0b0b0; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">No crypto fee packages available at the moment.</p>';
+          return;
         }
-        paymentBtn.disabled = true; // Confirm Order বাটন নিষ্ক্রিয়
-        paymentCompleted = false;
+        
+        snapshot.forEach(doc => {
+          const product = doc.data();
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.value = product.name;
+          button.setAttribute('data-payment-link', product.paymentLink);
+          button.textContent = product.name;
+          button.className = 'product-btn';
+          
+          button.addEventListener('click', function() {
+            document.querySelectorAll('#productList .product-btn').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedProductInput.value = this.value;
+            selectedPaymentLink = this.getAttribute('data-payment-link');
+            
+            const parts = this.value.split('-');
+            const price = parts[1]?.trim();
+            priceDisplay.textContent = "💰 Price: " + price;
+            priceDisplay.style.color = '#ffa726';
+
+            autoPaymentImg.classList.remove('disabled');
+            if (paymentMethod.value === 'bKash') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
+              autoPaymentImg.alt = 'bKash';
+            } else if (paymentMethod.value === 'Nagad') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
+              autoPaymentImg.alt = 'Nagad';
+            }
+            paymentBtn.disabled = true;
+            paymentCompleted = false;
+          });
+          
+          productList.appendChild(button);
+        });
+
+        // Add animation delays
+        document.querySelectorAll('.section').forEach((section, index) => {
+          section.style.animationDelay = `${index * 0.2}s`;
+        });
+      }, error => {
+        console.error('Error loading crypto fee products:', error);
+        document.getElementById('productList').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 20px; background: rgba(239,68,68,0.1); border-radius: 10px;">Error loading packages. Please try again later.</p>';
       });
-    });
+    }
+
+    // Load notice from SPECIFIC collection for Crypto Fee Buy
+    function loadNotice() {
+      db.collection('crypto_fee_notices').doc('current').onSnapshot(doc => {
+        if (doc.exists) {
+          const notice = doc.data();
+          document.getElementById('noticeTitle').textContent = notice.title;
+          document.getElementById('noticeContent').innerHTML = notice.content;
+        }
+      }, error => {
+        console.error('Error loading crypto fee notice:', error);
+      });
+    }
 
     // Payment Method Selection
     bkashBtn.addEventListener('click', () => {
       bkashBtn.classList.add('selected');
       nagadBtn.classList.remove('selected');
       paymentMethod.value = 'bKash';
-      paymentInfo.style.display = 'none';
       if (selectedPaymentLink) {
         autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg';
         autoPaymentImg.alt = 'bKash';
@@ -374,7 +561,6 @@
       nagadBtn.classList.add('selected');
       bkashBtn.classList.remove('selected');
       paymentMethod.value = 'Nagad';
-      paymentInfo.style.display = 'none';
       if (selectedPaymentLink) {
         autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
         autoPaymentImg.alt = 'Nagad';
@@ -385,32 +571,29 @@
     // Automatic Payment Image Click
     autoPaymentImg.addEventListener('click', function() {
       if (autoPaymentImg.classList.contains('disabled') || !selectedPaymentLink) {
-        alert('Please select a product and payment method first!');
+        alert('Please select a crypto fee package and payment method first!');
         return;
       }
       
-      // নতুন ট্যাবে পেমেন্ট লিংক খোলা
       window.open(selectedPaymentLink, '_blank');
-      priceDisplay.textContent = 'Please complete your payment in the new tab';
-      priceDisplay.style.color = '#d60000';
-      autoPaymentImg.classList.add('disabled'); // ইমেজ নিষ্ক্রিয়
+      priceDisplay.textContent = '🔄 Please complete your payment in the new tab';
+      priceDisplay.style.color = '#ffa726';
+      autoPaymentImg.classList.add('disabled');
       paymentCompleted = true;
 
-      // ১৫ সেকেন্ড পরে Confirm Order বাটন সক্রিয় করা
       setTimeout(() => {
         paymentBtn.disabled = false;
-        paymentBtn.style.background = 'purple';
-      }, 15000); // ১৫ সেকেন্ড বিলম্ব
+        paymentBtn.style.background = 'linear-gradient(135deg, #ff6b35, #e55a2b)';
+      }, 15000);
     });
 
     // Confirm Order Button Click
     paymentBtn.addEventListener('click', function() {
       if (!selectedPaymentLink) {
-        alert('Please select a product first!');
+        alert('Please select a crypto fee package first!');
         return;
       }
       
-      // ফর্ম ভ্যালিডেশন
       const uid = form.querySelector('[name="uid"]').value;
       const email = form.querySelector('[name="email"]').value;
       const paymentMethodValue = paymentMethod.value;
@@ -425,25 +608,21 @@
         return;
       }
       
-      // ফর্ম সাবমিট
       fetch(form.action, {
         method: 'POST',
         body: new FormData(form)
       }).then(response => {
-        priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
-        priceDisplay.style.color = 'green';
+        priceDisplay.textContent = '✅ Your crypto fee purchase confirmed! You will receive confirmation soon.';
+        priceDisplay.style.color = '#10b981';
         
-        // নতুন উইন্ডোতে নির্দিষ্ট লিঙ্ক খোলা
-        window.open('https://abdullha21.github.io/BUYYOURPRODUCT/index%20(6).html', '_blank');
+        window.open('https://abdullha21.github.io/ALLTOPUPBUY/index%20(6).html', '_blank');
         
-        // ফর্ম রিসেট
         form.reset();
         autoPaymentImg.classList.add('disabled');
-        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg'; // ডিফল্ট ইমেজ
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
         paymentBtn.disabled = true;
-        paymentBtn.style.background = '#ccc';
-        paymentBtn.style.display = 'none';
-        productButtons.forEach(b => b.classList.remove('selected'));
+        paymentBtn.style.background = '#6b7280';
+        document.querySelectorAll('#productList .product-btn').forEach(b => b.classList.remove('selected'));
         bkashBtn.classList.remove('selected');
         nagadBtn.classList.remove('selected');
         priceDisplay.textContent = '';
@@ -451,6 +630,13 @@
         alert('Error submitting form!');
       });
     });
+
+    // Load initial data
+    loadProducts();
+    loadNotice();
   </script>
+
+  <!-- Font Awesome -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
 </html>
