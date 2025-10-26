@@ -1,196 +1,451 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Send Invoice</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Invoice - Professional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .form-container {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      max-width: 450px;
-      width: 100%;
-      backdrop-filter: blur(10px);
-      animation: slideIn 0.8s ease-out;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-    h2 {
-      text-align: center;
-      color: #1e3c72;
-      margin-bottom: 30px;
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      animation: fadeInDown 0.8s ease-out;
-    }
+        /* Animated Background Elements */
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
 
-    label {
-      display: block;
-      margin: 15px 0 8px;
-      color: #2a5298;
-      font-weight: 500;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
 
-    input, select {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      background: #f0f4f8;
-      color: #333;
-      transition: all 0.3s ease;
-      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
 
-    input:focus, select:focus {
-      outline: none;
-      background: #e6eefa;
-      box-shadow: 0 0 10px rgba(46, 82, 152, 0.5);
-      transform: scale(1.02);
-    }
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+        }
 
-    button {
-      margin-top: 25px;
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(90deg, #3b82f6, #60a5fa);
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 80%;
+            left: 20%;
+            animation-delay: 4s;
+        }
 
-    button:hover {
-      background: linear-gradient(90deg, #2563eb, #3b82f6);
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
 
-    button:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-    }
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px 40px;
+            border-radius: 25px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+            max-width: 480px;
+            width: 90%;
+            backdrop-filter: blur(20px);
+            animation: slideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
 
-    button::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 300%;
-      height: 300%;
-      background: rgba(255, 255, 255, 0.1);
-      transition: all 0.5s ease;
-      transform: translate(-50%, -50%) rotate(45deg);
-      opacity: 0;
-    }
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa, #93c5fd);
+        }
 
-    button:hover::before {
-      opacity: 1;
-      width: 0;
-      height: 0;
-    }
+        h2 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 35px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            animation: fadeInDown 0.8s ease-out;
+            position: relative;
+        }
 
-    /* Animations */
-    @keyframes slideIn {
-      0% {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 2px;
+        }
 
-    @keyframes fadeInDown {
-      0% {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
 
-    /* Responsive Design */
-    @media (max-width: 600px) {
-      .form-container {
-        padding: 25px;
-        max-width: 90%;
-      }
-    }
-  </style>
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2a5298;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: all 0.3s ease;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            font-size: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: #ffffff;
+            color: #374151;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #f8fafc;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input:focus + .input-icon {
+            color: #3b82f6;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        button {
+            margin-top: 30px;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 10px 25px rgba(37, 99, 235, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        .button-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            animation: slideIn 0.5s ease;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 35px 25px;
+                width: 95%;
+                margin: 20px;
+            }
+            
+            h2 {
+                font-size: 28px;
+            }
+            
+            input, select {
+                padding: 14px 14px 14px 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 30px 20px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            button {
+                padding: 14px;
+                font-size: 16px;
+            }
+        }
+
+        /* Custom Select Arrow */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%236b7280' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+        }
+    </style>
 </head>
 <body>
-  <div class="form-container">
-    <h2>Send Invoice</h2>
-    <form id="invoiceForm">
-      <label for="email">Customer Gmail:</label>
-      <input type="email" id="email" name="email" required>
+    <!-- Animated Background Shapes -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
 
-      <label for="orderName">Order Name:</label>
-      <input type="text" id="orderName" name="orderName" required>
+    <div class="form-container">
+        <h2><i class="fas fa-file-invoice-dollar" style="margin-right: 15px;"></i>Send Invoice</h2>
+        
+        <form id="invoiceForm">
+            <div class="input-group">
+                <label for="email"><i class="fas fa-envelope" style="margin-right: 8px;"></i>Customer Gmail</label>
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="email" name="email" placeholder="customer@gmail.com" required>
+            </div>
 
-      <label for="paymentMethod">Payment Method:</label>
-      <select id="paymentMethod" name="paymentMethod" required>
-        <option value="bKash">bKash</option>
-        <option value="Nagad">Nagad</option>
-        <option value="Rocket">Rocket</option>
-      </select>
+            <div class="input-group">
+                <label for="orderName"><i class="fas fa-shopping-bag" style="margin-right: 8px;"></i>Order Name</label>
+                <i class="fas fa-shopping-bag input-icon"></i>
+                <input type="text" id="orderName" name="orderName" placeholder="Enter order name" required>
+            </div>
 
-      <label for="amount">Amount (৳):</label>
-      <input type="number" id="amount" name="amount" required>
+            <div class="input-group">
+                <label for="paymentMethod"><i class="fas fa-credit-card" style="margin-right: 8px;"></i>Payment Method</label>
+                <i class="fas fa-wallet input-icon"></i>
+                <select id="paymentMethod" name="paymentMethod" required>
+                    <option value="">Select payment method</option>
+                    <option value="bKash">bKash</option>
+                    <option value="Nagad">Nagad</option>
+                    <option value="Rocket">Rocket</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                </select>
+            </div>
 
-      <button type="submit">Send Invoice</button>
-    </form>
-  </div>
+            <div class="input-group">
+                <label for="amount"><i class="fas fa-money-bill-wave" style="margin-right: 8px;"></i>Amount (৳)</label>
+                <i class="fas fa-taka-sign input-icon"></i>
+                <input type="number" id="amount" name="amount" placeholder="Enter amount" min="0" step="0.01" required>
+            </div>
 
-  <script>
-    document.getElementById("invoiceForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+            <button type="submit">
+                <i class="fas fa-paper-plane button-icon"></i>Send Invoice
+            </button>
 
-      const form = e.target;
-      const data = {
-        email: form.email.value,
-        orderName: form.orderName.value,
-        paymentMethod: form.paymentMethod.value,
-        amount: form.amount.value
-      };
+            <!-- Loading Animation -->
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 10px; color: #6b7280; font-size: 14px;">Sending invoice...</p>
+            </div>
 
-      fetch("https://script.google.com/macros/s/AKfycbyhkKeBLH8Tvbgb4jw8OGmhn8AAYLzOOh4ejkZH0LYiWNtR5qT68148b8ylcJwvBdJH/exec", {
-        method: "POST",
-        body: JSON.stringify(data)
-      })
-      .then(res => res.text())
-      .then(msg => {
-        alert(msg);
-        form.reset();
-      })
-      .catch(err => {
-        alert("Error: " + err.message);
-      });
-    });
-  </script>
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle" style="margin-right: 10px;"></i>
+                Invoice sent successfully!
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("invoiceForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const loading = document.getElementById("loading");
+            const successMessage = document.getElementById("successMessage");
+
+            // Show loading
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            successMessage.style.display = 'none';
+
+            const data = {
+                email: form.email.value,
+                orderName: form.orderName.value,
+                paymentMethod: form.paymentMethod.value,
+                amount: form.amount.value
+            };
+
+            // Simulate API call (replace with your actual API)
+            setTimeout(() => {
+                fetch("https://script.google.com/macros/s/AKfycbyhkKeBLH8Tvbgb4jw8OGmhn8AAYLzOOh4ejkZH0LYiWNtR5qT68148b8ylcJwvBdJH/exec", {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                })
+                .then(res => res.text())
+                .then(msg => {
+                    // Hide loading
+                    loading.style.display = 'none';
+                    
+                    // Show success message
+                    successMessage.style.display = 'block';
+                    
+                    // Reset form
+                    setTimeout(() => {
+                        form.reset();
+                        successMessage.style.display = 'none';
+                        submitBtn.disabled = false;
+                    }, 2000);
+                })
+                .catch(err => {
+                    loading.style.display = 'none';
+                    alert("Error: " + err.message);
+                    submitBtn.disabled = false;
+                });
+            }, 1500);
+        });
+
+        // Add input animations
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (this.value === '') {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
