@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Income Tracker with Alarm</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <style>
+        /* === CSS STYLES === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+        }
+
+        .form-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .transaction-form, .alarm-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+        }
+
+        input, select, button {
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        button.delete-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .summary-section {
+            margin-bottom: 25px;
+        }
+
+        .summary-card, .alarms-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .summary-card h3, .alarms-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+
+        .summary-item.income-item {
+            border-left-color: #27ae60;
+        }
+
+        .summary-item.expense-item {
+            border-left-color: #e74c3c;
+        }
+
+        .summary-item.savings-item {
+            border-left-color: #9b59b6;
+        }
+
+        .income { 
+            color: #27ae60; 
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .expense { 
+            color: #e74c3c; 
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .savings { 
+            color: #9b59b6; 
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .transactions-section {
+            margin-bottom: 25px;
+        }
+
+        .transaction-card, .alarm-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+
+        .alarm-card {
+            border-left-color: #e67e22;
+        }
+
+        .transaction-card:hover, .alarm-card:hover {
+            transform: translateX(5px);
+        }
+
+        .transaction-header, .alarm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .date {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .amount {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .transaction-details, .alarm-details {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .description {
+            color: #5d6d7e;
+            font-style: italic;
+        }
+
+        .alarm-active {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .alarm-inactive {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .alarm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .alarm-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .alarm-sound {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Income Tracker with Alarm</h1>
+            <p>Track your income and set personal alarms - No login required!</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('incomeTab')">💰 Income Tracker</div>
+            <div class="tab" onclick="switchTab('alarmTab')">⏰ Alarm System</div>
+        </div>
+
+        <main>
+            <!-- Loading Message -->
+            <div id="loadingMessage" class="loading">
+                Loading your data...
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" style="display: none;" class="error"></div>
+
+            <!-- Success Message -->
+            <div id="successMessage" style="display: none;" class="success"></div>
+
+            <!-- Income Tracker Tab -->
+            <div id="incomeTab" class="tab-content active">
+                <!-- Add Transaction Form -->
+                <section class="form-section">
+                    <h2>Add New Transaction</h2>
+                    <form id="transactionForm" class="transaction-form">
+                        <div class="input-group">
+                            <input type="number" id="income" placeholder="Daily Income ($)" step="0.01" required min="0">
+                            <input type="number" id="expense" placeholder="Daily Expense ($)" step="0.01" required min="0">
+                        </div>
+                        <input type="text" id="description" placeholder="Description (optional)">
+                        <button type="submit">Add Transaction</button>
+                    </form>
+                </section>
+
+                <!-- Summary Section -->
+                <section class="summary-section">
+                    <div id="summary">
+                        <!-- Summary will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Transactions List -->
+                <section class="transactions-section">
+                    <div id="transactionsList">
+                        <!-- Transactions will be loaded here -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Alarm System Tab -->
+            <div id="alarmTab" class="tab-content">
+                <!-- Add Alarm Form -->
+                <section class="form-section">
+                    <h2>Set New Alarm</h2>
+                    <form id="alarmForm" class="alarm-form">
+                        <div class="input-group">
+                            <input type="time" id="alarmTime" required>
+                            <input type="text" id="alarmName" placeholder="Alarm Name" required>
+                        </div>
+                        <select id="alarmRepeat">
+                            <option value="once">Once</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekdays">Weekdays</option>
+                            <option value="weekends">Weekends</option>
+                        </select>
+                        <button type="submit">Set Alarm</button>
+                    </form>
+                </section>
+
+                <!-- Active Alarms -->
+                <section class="alarms-section">
+                    <div class="alarms-card">
+                        <h3>Your Alarms ⏰</h3>
+                        <div id="alarmsList">
+                            <!-- Alarms will be loaded here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Alarm Modal -->
+        <div id="alarmModal" class="alarm-modal">
+            <div class="alarm-modal-content">
+                <div class="alarm-sound">🔔</div>
+                <h2 id="alarmModalTitle">Alarm!</h2>
+                <p id="alarmModalMessage">It's time!</p>
+                <button onclick="closeAlarm()">Stop Alarm</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Your data and alarms are private to your browser. 🔒</p>
+        </footer>
+    </div>
+
+    <script>
+        // === FIREBASE CONFIGURATION ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoIwO2jHn3gEeKsK1jiF56KEnowC6rJjs",
+            authDomain: "alam-remainder.firebaseapp.com",
+            projectId: "alam-remainder",
+            storageBucket: "alam-remainder.firebasestorage.app",
+            messagingSenderId: "118297014844",
+            appId: "1:118297014844:web:46bd187aba5926205cc939",
+            measurementId: "G-QY4BNBMRB3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // === APPLICATION CODE ===
+        let currentUser = null;
+        let alarmCheckInterval = null;
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+        }
+
+        // Show message function
+        function showMessage(message, type = 'success') {
+            const messageDiv = type === 'error' ? 
+                document.getElementById('errorMessage') : 
+                document.getElementById('successMessage');
+            
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Show/hide sections
+        function showAppSections() {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.style.display = 'block';
+            });
+        }
+
+        // Auto sign-in anonymous user
+        async function initializeApp() {
+            try {
+                showMessage('Connecting to your account...', 'success');
+                
+                // Anonymous sign-in
+                const userCredential = await auth.signInAnonymously();
+                currentUser = userCredential.user;
+                
+                console.log("User signed in anonymously:", currentUser.uid);
+                await initializeUserData();
+                await loadUserData();
+                await loadAlarms();
+                startAlarmChecker();
+                
+                showAppSections();
+                showMessage('Welcome! Start tracking your income and set alarms.', 'success');
+                
+            } catch (error) {
+                console.error("Authentication failed:", error);
+                showMessage('Failed to connect. Please refresh the page.', 'error');
+            }
+        }
+
+        // Create user document if not exists
+        async function initializeUserData() {
+            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            
+            if (!userDoc.exists) {
+                await db.collection('users').doc(currentUser.uid).set({
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    totalIncome: 0,
+                    totalExpense: 0,
+                    totalSavings: 0,
+                    transactions: [],
+                    alarms: []
+                });
+            }
+        }
+
+        // === INCOME TRACKER FUNCTIONS ===
+        async function addTransaction(income, expense, description) {
+            if (!currentUser) return;
+            
+            const transaction = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                income: parseFloat(income),
+                expense: parseFloat(expense),
+                savings: parseFloat(income) - parseFloat(expense),
+                description: description || "No description"
+            };
+            
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    transactions: firebase.firestore.FieldValue.arrayUnion(transaction),
+                    totalIncome: firebase.firestore.FieldValue.increment(transaction.income),
+                    totalExpense: firebase.firestore.FieldValue.increment(transaction.expense),
+                    totalSavings: firebase.firestore.FieldValue.increment(transaction.savings)
+                });
+                
+                showMessage('Transaction added successfully!', 'success');
+                await loadUserData();
+                
+            } catch (error) {
+                console.error("Error adding transaction:", error);
+                showMessage('Failed to add transaction. Please try again.', 'error');
+            }
+        }
+
+        async function loadUserData() {
+            if (!currentUser) return;
+            
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    displayTransactions(userData.transactions || []);
+                    displaySummary(userData);
+                }
+            } catch (error) {
+                console.error("Error loading data:", error);
+                showMessage('Error loading your data.', 'error');
+            }
+        }
+
+        function displayTransactions(transactions = []) {
+            const container = document.getElementById('transactionsList');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="transaction-card">
+                        <p style="text-align: center; color: #7f8c8d;">
+                            No transactions yet. Add your first transaction above! 📊
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '<h3 style="color: #2c3e50; margin-bottom: 20px;">Your Transactions:</h3>';
+            transactions.forEach(transaction => {
+                const savingsColor = transaction.savings >= 0 ? '#27ae60' : '#e74c3c';
+                const savingsSign = transaction.savings >= 0 ? '+' : '';
+                
+                html += `
+                    <div class="transaction-card">
+                        <div class="transaction-header">
+                            <span class="date">${new Date(transaction.date).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}</span>
+                            <span class="amount" style="color: ${savingsColor}">
+                                ${savingsSign}$${transaction.savings}
+                            </span>
+                        </div>
+                        <div class="transaction-details">
+                            <span><strong>Income:</strong> $${transaction.income}</span>
+                            <span><strong>Expense:</strong> $${transaction.expense}</span>
+                        </div>
+                        <div class="description">${transaction.description}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function displaySummary(userData) {
+            const summary = document.getElementById('summary');
+            
+            const totalIncome = userData.totalIncome || 0;
+            const totalExpense = userData.totalExpense || 0;
+            const totalSavings = userData.totalSavings || 0;
+            
+            summary.innerHTML = `
+                <div class="summary-card">
+                    <h3>Financial Summary 💰</h3>
+                    <div class="summary-item income-item">
+                        <span>Total Income:</span>
+                        <span class="income">$${totalIncome.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item expense-item">
+                        <span>Total Expense:</span>
+                        <span class="expense">$${totalExpense.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item savings-item">
+                        <span>Total Savings:</span>
+                        <span class="savings">$${totalSavings.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // === ALARM SYSTEM FUNCTIONS ===
+        async function addAlarm(time, name, repeat) {
+            if (!currentUser) return;
+            
+            const alarm = {
+                id: Date.now().toString(),
+                time: time,
+                name: name,
+                repeat: repeat,
+                active: true,
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    alarms: firebase.firestore.FieldValue.arrayUnion(alarm)
+                });
+                
+                showMessage('Alarm set successfully!', 'success');
+                await loadAlarms();
+                
+            } catch (error) {
+                console.error("Error adding alarm:", error);
+                showMessage('Failed to set alarm. Please try again.', 'error');
+            }
+        }
+
+        async function deleteAlarm(alarmId) {
+            if (!currentUser) return;
+            
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                const userData = userDoc.data();
+                const alarms = userData.alarms || [];
+                
+                const updatedAlarms = alarms.filter(alarm => alarm.id !== alarmId);
+                
+                await db.collection('users').doc(currentUser.uid).update({
+                    alarms: updatedAlarms
+                });
+                
+                showMessage('Alarm deleted!', 'success');
+                await loadAlarms();
+                
+            } catch (error) {
+                console.error("Error deleting alarm:", error);
+                showMessage('Failed to delete alarm.', 'error');
+            }
+        }
+
+        async function loadAlarms() {
+            if (!currentUser) return;
+            
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    displayAlarms(userData.alarms || []);
+                }
+            } catch (error) {
+                console.error("Error loading alarms:", error);
+            }
+        }
+
+        function displayAlarms(alarms = []) {
+            const container = document.getElementById('alarmsList');
+            
+            if (alarms.length === 0) {
+                container.innerHTML = `
+                    <div class="alarm-card">
+                        <p style="text-align: center; color: #7f8c8d;">
+                            No alarms set. Set your first alarm above! ⏰
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            alarms.sort((a, b) => a.time.localeCompare(b.time));
+            
+            let html = '';
+            alarms.forEach(alarm => {
+                const status = alarm.active ? 'Active' : 'Inactive';
+                const statusClass = alarm.active ? 'alarm-active' : 'alarm-inactive';
+                
+                html += `
+                    <div class="alarm-card">
+                        <div class="alarm-header">
+                            <span class="alarm-name"><strong>${alarm.name}</strong></span>
+                            <span class="alarm-time"><strong>${alarm.time}</strong></span>
+                        </div>
+                        <div class="alarm-details">
+                            <span>Repeat: ${alarm.repeat}</span>
+                            <span class="${statusClass}">${status}</span>
+                        </div>
+                        <button class="delete-btn" onclick="deleteAlarm('${alarm.id}')" style="margin-top: 10px; padding: 8px 15px; font-size: 14px;">
+                            Delete Alarm
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function startAlarmChecker() {
+            // Check alarms every 30 seconds
+            alarmCheckInterval = setInterval(checkAlarms, 30000);
+            checkAlarms(); // Also check immediately
+        }
+
+        async function checkAlarms() {
+            if (!currentUser) return;
+            
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (!userDoc.exists) return;
+                
+                const userData = userDoc.data();
+                const alarms = userData.alarms || [];
+                const now = new Date();
+                const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+                const currentDay = now.getDay(); // 0 = Sunday, 6 = Saturday
+                
+                alarms.forEach(alarm => {
+                    if (!alarm.active) return;
+                    
+                    if (alarm.time === currentTime) {
+                        // Check repeat conditions
+                        let shouldRing = false;
+                        
+                        switch (alarm.repeat) {
+                            case 'once':
+                                shouldRing = true;
+                                // Deactivate after ringing once
+                                deactivateAlarm(alarm.id);
+                                break;
+                            case 'daily':
+                                shouldRing = true;
+                                break;
+                            case 'weekdays':
+                                shouldRing = currentDay >= 1 && currentDay <= 5; // Monday to Friday
+                                break;
+                            case 'weekends':
+                                shouldRing = currentDay === 0 || currentDay === 6; // Saturday or Sunday
+                                break;
+                        }
+                        
+                        if (shouldRing) {
+                            triggerAlarm(alarm);
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error("Error checking alarms:", error);
+            }
+        }
+
+        async function deactivateAlarm(alarmId) {
+            if (!currentUser) return;
+            
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                const userData = userDoc.data();
+                const alarms = userData.alarms || [];
+                
+                const updatedAlarms = alarms.map(alarm => {
+                    if (alarm.id === alarmId) {
+                        return { ...alarm, active: false };
+                    }
+                    return alarm;
+                });
+                
+                await db.collection('users').doc(currentUser.uid).update({
+                    alarms: updatedAlarms
+                });
+                
+            } catch (error) {
+                console.error("Error deactivating alarm:", error);
+            }
+        }
+
+        function triggerAlarm(alarm) {
+            // Show alarm modal
+            document.getElementById('alarmModalTitle').textContent = alarm.name;
+            document.getElementById('alarmModalMessage').textContent = `Alarm time: ${alarm.time}`;
+            document.getElementById('alarmModal').style.display = 'flex';
+            
+            // You can add sound here if needed
+            // const audio = new Audio('alarm-sound.mp3');
+            // audio.play();
+        }
+
+        function closeAlarm() {
+            document.getElementById('alarmModal').style.display = 'none';
+        }
+
+        // === EVENT LISTENERS ===
+        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const income = document.getElementById('income').value;
+            const expense = document.getElementById('expense').value;
+            const description = document.getElementById('description').value;
+            
+            if (!income || !expense) {
+                showMessage('Please enter both income and expense', 'error');
+                return;
+            }
+
+            if (parseFloat(income) < 0 || parseFloat(expense) < 0) {
+                showMessage('Income and expense cannot be negative', 'error');
+                return;
+            }
+            
+            await addTransaction(income, expense, description);
+            
+            // Clear form
+            document.getElementById('income').value = '';
+            document.getElementById('expense').value = '';
+            document.getElementById('description').value = '';
+        });
+
+        document.getElementById('alarmForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const time = document.getElementById('alarmTime').value;
+            const name = document.getElementById('alarmName').value;
+            const repeat = document.getElementById('alarmRepeat').value;
+            
+            if (!time || !name) {
+                showMessage('Please enter alarm time and name', 'error');
+                return;
+            }
+            
+            await addAlarm(time, name, repeat);
+            
+            // Clear form
+            document.getElementById('alarmTime').value = '';
+            document.getElementById('alarmName').value = '';
+        });
+
+        // Initialize app when page loads
+        window.onload = initializeApp;
+
+        // Cleanup interval when page unloads
+        window.onbeforeunload = function() {
+            if (alarmCheckInterval) {
+                clearInterval(alarmCheckInterval);
+            }
+        };
+    </script>
+</body>
+</html>
