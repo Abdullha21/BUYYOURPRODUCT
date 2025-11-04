@@ -331,6 +331,16 @@
             font-size: 3em;
             margin-bottom: 20px;
         }
+
+        .debug-info {
+            background: #2c3e50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -356,6 +366,9 @@
 
             <!-- Success Message -->
             <div id="successMessage" style="display: none;" class="success"></div>
+
+            <!-- Debug Info -->
+            <div id="debugInfo" style="display: none;" class="debug-info"></div>
 
             <!-- Income Tracker Tab -->
             <div id="incomeTab" class="tab-content active">
@@ -447,7 +460,13 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("✅ Firebase initialized successfully");
+        } catch (error) {
+            console.error("❌ Firebase initialization error:", error);
+        }
+
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -455,9 +474,15 @@
         let currentUser = null;
         let alarmCheckInterval = null;
 
+        // Debug function
+        function showDebugInfo(message) {
+            const debugDiv = document.getElementById('debugInfo');
+            debugDiv.innerHTML = message;
+            debugDiv.style.display = 'block';
+        }
+
         // Tab switching
         function switchTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -465,7 +490,6 @@
                 tab.classList.remove('active');
             });
             
-            // Show selected tab
             document.getElementById(tabName).classList.add('active');
             document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
         }
@@ -481,7 +505,7 @@
             
             setTimeout(() => {
                 messageDiv.style.display = 'none';
-            }, 3000);
+            }, 5000);
         }
 
         // Show/hide sections
@@ -496,12 +520,18 @@
         async function initializeApp() {
             try {
                 showMessage('Connecting to your account...', 'success');
+                showDebugInfo('🔄 Starting authentication...');
+                
+                // Wait for auth to be ready
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 
                 // Anonymous sign-in
                 const userCredential = await auth.signInAnonymously();
                 currentUser = userCredential.user;
                 
+                showDebugInfo(`✅ User signed in: ${currentUser.uid}`);
                 console.log("User signed in anonymously:", currentUser.uid);
+                
                 await initializeUserData();
                 await loadUserData();
                 await loadAlarms();
@@ -511,24 +541,46 @@
                 showMessage('Welcome! Start tracking your income and set alarms.', 'success');
                 
             } catch (error) {
-                console.error("Authentication failed:", error);
+                console.error("❌ Authentication failed:", error);
+                showDebugInfo(`❌ Auth Error: ${error.message}`);
                 showMessage('Failed to connect. Please refresh the page.', 'error');
+                
+                // Fallback: Use local storage if Firebase fails
+                initializeLocalStorageFallback();
             }
+        }
+
+        // Fallback to local storage
+        function initializeLocalStorageFallback() {
+            showDebugInfo('🔄 Using local storage fallback...');
+            currentUser = { uid: 'local_user_' + Date.now() };
+            loadUserData();
+            loadAlarms();
+            showAppSections();
+            showMessage('Using offline mode. Data saved locally.', 'success');
         }
 
         // Create user document if not exists
         async function initializeUserData() {
-            const userDoc = await db.collection('users').doc(currentUser.uid).get();
-            
-            if (!userDoc.exists) {
-                await db.collection('users').doc(currentUser.uid).set({
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    totalIncome: 0,
-                    totalExpense: 0,
-                    totalSavings: 0,
-                    transactions: [],
-                    alarms: []
-                });
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                
+                if (!userDoc.exists) {
+                    await db.collection('users').doc(currentUser.uid).set({
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        totalIncome: 0,
+                        totalExpense: 0,
+                        totalSavings: 0,
+                        transactions: [],
+                        alarms: []
+                    });
+                    showDebugInfo('✅ New user document created');
+                } else {
+                    showDebugInfo('✅ User document loaded');
+                }
+            } catch (error) {
+                console.error("Error initializing user data:", error);
+                showDebugInfo(`❌ DB Error: ${error.message}`);
             }
         }
 
@@ -546,6 +598,7 @@
             };
             
             try {
+                // Try Firebase first
                 await db.collection('users').doc(currentUser.uid).update({
                     transactions: firebase.firestore.FieldValue.arrayUnion(transaction),
                     totalIncome: firebase.firestore.FieldValue.increment(transaction.income),
@@ -557,26 +610,75 @@
                 await loadUserData();
                 
             } catch (error) {
-                console.error("Error adding transaction:", error);
-                showMessage('Failed to add transaction. Please try again.', 'error');
+                console.error("Error adding transaction to Firebase:", error);
+                // Fallback to local storage
+                addTransactionToLocalStorage(transaction);
             }
+        }
+
+        // Local storage fallback for transactions
+        function addTransactionToLocalStorage(transaction) {
+            const key = `user_${currentUser.uid}_transactions`;
+            let transactions = JSON.parse(localStorage.getItem(key)) || [];
+            transactions.push(transaction);
+            localStorage.setItem(key, JSON.stringify(transactions));
+            
+            // Update summary in local storage
+            updateLocalStorageSummary(transaction);
+            
+            showMessage('Transaction saved locally!', 'success');
+            loadUserData();
+        }
+
+     function updateLocalStorageSummary(transaction) {
+            const summaryKey = `user_${currentUser.uid}_summary`;
+            let summary = JSON.parse(localStorage.getItem(summaryKey)) || {
+                totalIncome: 0,
+                totalExpense: 0,
+                totalSavings: 0
+            };
+            
+            summary.totalIncome += transaction.income;
+            summary.totalExpense += transaction.expense;
+            summary.totalSavings += transaction.savings;
+            
+            localStorage.setItem(summaryKey, JSON.stringify(summary));
         }
 
         async function loadUserData() {
             if (!currentUser) return;
             
             try {
+                // Try Firebase first
                 const userDoc = await db.collection('users').doc(currentUser.uid).get();
                 
                 if (userDoc.exists) {
                     const userData = userDoc.data();
                     displayTransactions(userData.transactions || []);
                     displaySummary(userData);
+                    showDebugInfo('✅ Data loaded from Firebase');
                 }
             } catch (error) {
-                console.error("Error loading data:", error);
-                showMessage('Error loading your data.', 'error');
+                console.error("Error loading data from Firebase:", error);
+                // Fallback to local storage
+                loadUserDataFromLocalStorage();
             }
+        }
+
+        function loadUserDataFromLocalStorage() {
+            const transactionsKey = `user_${currentUser.uid}_transactions`;
+            const summaryKey = `user_${currentUser.uid}_summary`;
+            
+            const transactions = JSON.parse(localStorage.getItem(transactionsKey)) || [];
+            const summary = JSON.parse(localStorage.getItem(summaryKey)) || {
+                totalIncome: 0,
+                totalExpense: 0,
+                totalSavings: 0
+            };
+            
+            displayTransactions(transactions);
+            displaySummary(summary);
+            showDebugInfo('✅ Data loaded from Local Storage');
         }
 
         function displayTransactions(transactions = []) {
@@ -611,12 +713,12 @@
                                 minute: '2-digit'
                             })}</span>
                             <span class="amount" style="color: ${savingsColor}">
-                                ${savingsSign}$${transaction.savings}
+                                ${savingsSign}$${transaction.savings.toFixed(2)}
                             </span>
                         </div>
                         <div class="transaction-details">
-                            <span><strong>Income:</strong> $${transaction.income}</span>
-                            <span><strong>Expense:</strong> $${transaction.expense}</span>
+                            <span><strong>Income:</strong> $${transaction.income.toFixed(2)}</span>
+                            <span><strong>Expense:</strong> $${transaction.expense.toFixed(2)}</span>
                         </div>
                         <div class="description">${transaction.description}</div>
                     </div>
@@ -674,9 +776,20 @@
                 await loadAlarms();
                 
             } catch (error) {
-                console.error("Error adding alarm:", error);
-                showMessage('Failed to set alarm. Please try again.', 'error');
+                console.error("Error adding alarm to Firebase:", error);
+                // Fallback to local storage
+                addAlarmToLocalStorage(alarm);
             }
+        }
+
+        function addAlarmToLocalStorage(alarm) {
+            const key = `user_${currentUser.uid}_alarms`;
+            let alarms = JSON.parse(localStorage.getItem(key)) || [];
+            alarms.push(alarm);
+            localStorage.setItem(key, JSON.stringify(alarms));
+            
+            showMessage('Alarm saved locally!', 'success');
+            loadAlarms();
         }
 
         async function deleteAlarm(alarmId) {
@@ -697,9 +810,20 @@
                 await loadAlarms();
                 
             } catch (error) {
-                console.error("Error deleting alarm:", error);
-                showMessage('Failed to delete alarm.', 'error');
+                console.error("Error deleting alarm from Firebase:", error);
+                // Fallback to local storage
+                deleteAlarmFromLocalStorage(alarmId);
             }
+        }
+
+        function deleteAlarmFromLocalStorage(alarmId) {
+            const key = `user_${currentUser.uid}_alarms`;
+            let alarms = JSON.parse(localStorage.getItem(key)) || [];
+            alarms = alarms.filter(alarm => alarm.id !== alarmId);
+            localStorage.setItem(key, JSON.stringify(alarms));
+            
+            showMessage('Alarm deleted locally!', 'success');
+            loadAlarms();
         }
 
         async function loadAlarms() {
@@ -713,8 +837,16 @@
                     displayAlarms(userData.alarms || []);
                 }
             } catch (error) {
-                console.error("Error loading alarms:", error);
+                console.error("Error loading alarms from Firebase:", error);
+                // Fallback to local storage
+                loadAlarmsFromLocalStorage();
             }
+        }
+
+        function loadAlarmsFromLocalStorage() {
+            const key = `user_${currentUser.uid}_alarms`;
+            const alarms = JSON.parse(localStorage.getItem(key)) || [];
+            displayAlarms(alarms);
         }
 
         function displayAlarms(alarms = []) {
@@ -759,8 +891,8 @@
         }
 
         function startAlarmChecker() {
-            // Check alarms every 30 seconds
-            alarmCheckInterval = setInterval(checkAlarms, 30000);
+            // Check alarms every 10 seconds
+            alarmCheckInterval = setInterval(checkAlarms, 10000);
             checkAlarms(); // Also check immediately
         }
 
@@ -768,48 +900,55 @@
             if (!currentUser) return;
             
             try {
+                // Try Firebase first
                 const userDoc = await db.collection('users').doc(currentUser.uid).get();
                 if (!userDoc.exists) return;
                 
                 const userData = userDoc.data();
                 const alarms = userData.alarms || [];
-                const now = new Date();
-                const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
-                const currentDay = now.getDay(); // 0 = Sunday, 6 = Saturday
-                
-                alarms.forEach(alarm => {
-                    if (!alarm.active) return;
-                    
-                    if (alarm.time === currentTime) {
-                        // Check repeat conditions
-                        let shouldRing = false;
-                        
-                        switch (alarm.repeat) {
-                            case 'once':
-                                shouldRing = true;
-                                // Deactivate after ringing once
-                                deactivateAlarm(alarm.id);
-                                break;
-                            case 'daily':
-                                shouldRing = true;
-                                break;
-                            case 'weekdays':
-                                shouldRing = currentDay >= 1 && currentDay <= 5; // Monday to Friday
-                                break;
-                            case 'weekends':
-                                shouldRing = currentDay === 0 || currentDay === 6; // Saturday or Sunday
-                                break;
-                        }
-                        
-                        if (shouldRing) {
-                            triggerAlarm(alarm);
-                        }
-                    }
-                });
+                checkAlarmsLogic(alarms);
                 
             } catch (error) {
-                console.error("Error checking alarms:", error);
+                console.error("Error checking alarms from Firebase:", error);
+                // Fallback to local storage
+                const key = `user_${currentUser.uid}_alarms`;
+                const alarms = JSON.parse(localStorage.getItem(key)) || [];
+                checkAlarmsLogic(alarms);
             }
+        }
+
+        function checkAlarmsLogic(alarms) {
+            const now = new Date();
+            const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+            const currentDay = now.getDay(); // 0 = Sunday, 6 = Saturday
+            
+            alarms.forEach(alarm => {
+                if (!alarm.active) return;
+                
+                if (alarm.time === currentTime) {
+                    let shouldRing = false;
+                    
+                    switch (alarm.repeat) {
+                        case 'once':
+                            shouldRing = true;
+                            deactivateAlarm(alarm.id);
+                            break;
+                        case 'daily':
+                            shouldRing = true;
+                            break;
+                        case 'weekdays':
+                            shouldRing = currentDay >= 1 && currentDay <= 5;
+                            break;
+                        case 'weekends':
+                            shouldRing = currentDay === 0 || currentDay === 6;
+                            break;
+                    }
+                    
+                    if (shouldRing) {
+                        triggerAlarm(alarm);
+                    }
+                }
+            });
         }
 
         async function deactivateAlarm(alarmId) {
@@ -832,19 +971,27 @@
                 });
                 
             } catch (error) {
-                console.error("Error deactivating alarm:", error);
+                console.error("Error deactivating alarm in Firebase:", error);
+                deactivateAlarmInLocalStorage(alarmId);
             }
         }
 
+        function deactivateAlarmInLocalStorage(alarmId) {
+            const key = `user_${currentUser.uid}_alarms`;
+            let alarms = JSON.parse(localStorage.getItem(key)) || [];
+            alarms = alarms.map(alarm => {
+                if (alarm.id === alarmId) {
+                    return { ...alarm, active: false };
+                }
+                return alarm;
+            });
+            localStorage.setItem(key, JSON.stringify(alarms));
+        }
+
         function triggerAlarm(alarm) {
-            // Show alarm modal
             document.getElementById('alarmModalTitle').textContent = alarm.name;
             document.getElementById('alarmModalMessage').textContent = `Alarm time: ${alarm.time}`;
             document.getElementById('alarmModal').style.display = 'flex';
-            
-            // You can add sound here if needed
-            // const audio = new Audio('alarm-sound.mp3');
-            // audio.play();
         }
 
         function closeAlarm() {
@@ -871,7 +1018,6 @@
             
             await addTransaction(income, expense, description);
             
-            // Clear form
             document.getElementById('income').value = '';
             document.getElementById('expense').value = '';
             document.getElementById('description').value = '';
@@ -891,7 +1037,6 @@
             
             await addAlarm(time, name, repeat);
             
-            // Clear form
             document.getElementById('alarmTime').value = '';
             document.getElementById('alarmName').value = '';
         });
@@ -899,7 +1044,7 @@
         // Initialize app when page loads
         window.onload = initializeApp;
 
-        // Cleanup interval when page unloads
+        // Cleanup
         window.onbeforeunload = function() {
             if (alarmCheckInterval) {
                 clearInterval(alarmCheckInterval);
