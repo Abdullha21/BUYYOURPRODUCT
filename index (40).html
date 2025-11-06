@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CashSwap BD - ক্যাশ লেনদেন</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        :root {
+            --primary: #4a148c;
+            --secondary: #7b1fa2;
+            --accent: #00e676;
+            --dark: #121212;
+            --darker: #0a0a0a;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            max-width: 430px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background: var(--dark);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        .tagline {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .swap-container {
+            padding: 20px;
+        }
+        
+        .method-selection {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .method-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .method-option {
+            padding: 12px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .method-option.active {
+            background: var(--primary);
+            border-color: var(--accent);
+        }
+        
+        .from-to-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .method-box {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .method-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        
+        .method-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            padding: 12px 16px;
+            background: rgba(74, 20, 140, 0.3);
+            border-radius: 12px;
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: var(--accent);
+            margin: 0 15px;
+        }
+        
+        .swap-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: var(--accent);
+        }
+        
+        .amount-input {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .currency {
+            font-size: 28px;
+            font-weight: bold;
+            margin-right: 12px;
+            color: var(--accent);
+        }
+        
+        input[type="number"] {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 28px;
+            font-weight: bold;
+            outline: none;
+            color: white;
+        }
+        
+        .info-text {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin: 5px 0;
+        }
+        
+        .account-info {
+            background: rgba(0, 230, 118, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px dashed var(--accent);
+            text-align: center;
+        }
+        
+        .account-number {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 12px 0;
+            letter-spacing: 1px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .account-description {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+        
+        .user-number-input, .transaction-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            margin: 10px 0;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+        
+        .user-number-input:focus, .transaction-input:focus {
+            border-color: var(--accent);
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .continue-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, #00c853 100%);
+            color: var(--dark);
+            border: none;
+            border-radius: 16px;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        .continue-btn:disabled {
+            background: #444;
+            color: #777;
+            cursor: not-allowed;
+        }
+        
+        .min-amount-notice {
+            text-align: center;
+            font-size: 14px;
+            color: #ff5252;
+            margin-top: 12px;
+            display: none;
+        }
+        
+        .min-amount-notice.show {
+            display: block;
+        }
+        
+        .transaction-id-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 152, 0, 0.1);
+            border-radius: 16px;
+            border: 1px dashed #ff9800;
+        }
+        
+        .transaction-id-section h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #ff9800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .admin-login-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <button class="admin-login-btn" onclick="window.open('admin.html', '_blank')">
+                <i class="fas fa-user-shield"></i> এডমিন
+            </button>
+            <div class="logo">
+                <i class="fas fa-exchange-alt"></i>
+                CashSwap BD
+            </div>
+            <div class="tagline">সহজ ও নিরাপদ ক্যাশ লেনদেন</div>
+        </div>
+        
+        <div class="swap-container">
+            <!-- Payment Method Selection -->
+            <div class="method-selection">
+                <div class="section-title">
+                    <i class="fas fa-wallet"></i>
+                    পেমেন্ট মেথড সিলেক্ট করুন
+                </div>
+                <div class="method-options">
+                    <div class="method-option active" data-from="বিকাশ" data-to="নগদ">
+                        বিকাশ → নগদ
+                    </div>
+                    <div class="method-option" data-from="নগদ" data-to="বিকাশ">
+                        নগদ → বিকাশ
+                    </div>
+                    <div class="method-option" data-from="বিকাশ" data-to="রকেট">
+                        বিকাশ → রকেট
+                    </div>
+                    <div class="method-option" data-from="রকেট" data-to="বিকাশ">
+                        রকেট → বিকাশ
+                    </div>
+                    <div class="method-option" data-from="উপায়" data-to="নগদ">
+                        উপায় → নগদ
+                    </div>
+                    <div class="method-option" data-from="নগদ" data-to="উপায়">
+                        নগদ → উপায়
+                    </div>
+                    <div class="method-option" data-from="বিকাশ" data-to="উপায়">
+                        বিকাশ → উপায়
+                    </div>
+                    <div class="method-option" data-from="উপায়" data-to="বিকাশ">
+                        উপায় → বিকাশ
+                    </div>
+                </div>
+            </div>
+
+            <div class="from-to-section">
+                <div class="method-box">
+                    <div class="method-label">থেকে</div>
+                    <div class="method-name" id="fromMethod">বিকাশ</div>
+                </div>
+                
+                <div class="arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                
+                <div class="method-box">
+                    <div class="method-label">প্রতি</div>
+                    <div class="method-name" id="toMethod">নগদ</div>
+                </div>
+            </div>
+            
+            <div class="swap-section">
+                <div class="section-title">
+                    <i class="fas fa-paper-plane"></i>
+                    আপনি পাঠাবেন
+                </div>
+                
+                <div class="amount-input">
+                    <div class="currency">৳</div>
+                    <input type="number" id="sendAmount" placeholder="0" min="100" value="100">
+                </div>
+                <div class="info-text">ন্যূনতম ১০০ টাকা</div>
+            </div>
+            
+            <div class="account-info">
+                <div class="account-description">এই নাম্বারে টাকা পাঠান:</div>
+                <div class="account-number" id="accountNumber">০১৭১২-৩৪৫৬৭৮</div>
+                <div class="account-description" id="accountDescription">
+                    বিকাশে টাকা পাঠানোর পর নিচে ট্রানজেকশন আইডি দিন
+                </div>
+            </div>
+            
+            <div class="swap-section">
+                <div class="section-title">
+                    <i class="fas fa-mobile-alt"></i>
+                    আপনি কোন নাম্বারে নিবেন?
+                </div>
+                
+                <input type="tel" class="user-number-input" id="userNumber" 
+                       placeholder="01XXXXXXXXX" maxlength="11">
+                <div class="info-text">১১ ডিজিটের মোবাইল নাম্বার লিখুন</div>
+            </div>
+            
+            <div class="transaction-id-section">
+                <h3>
+                    <i class="fas fa-receipt"></i>
+                    ট্রানজেকশন আইডি
+                </h3>
+                <input type="text" class="transaction-input" id="transactionId" 
+                       placeholder="ট্রানজেকশন আইডি লিখুন">
+                <div class="info-text">টাকা পাঠানোর পর ট্রানজেকশন আইডি এখানে লিখুন</div>
+            </div>
+            
+            <div class="min-amount-notice" id="minAmountNotice">
+                <i class="fas fa-exclamation-circle"></i>
+                ন্যূনতম ১০০ টাকা পাঠাতে হবে
+            </div>
+            
+            <button class="continue-btn" id="continueBtn">
+                সাবমিট করুন
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQwwOxIulYJsC2dwIJHESBOsCHHJzLWoQ",
+            authDomain: "swap-47f6e.firebaseapp.com",
+            projectId: "swap-47f6e",
+            storageBucket: "swap-47f6e.firebasestorage.app",
+            messagingSenderId: "71210907447",
+            appId: "1:71210907447:web:6ac329c6b76021a5720cb2"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sendAmountInput = document.getElementById('sendAmount');
+            const continueBtn = document.getElementById('continueBtn');
+            const minAmountNotice = document.getElementById('minAmountNotice');
+            const transactionIdInput = document.getElementById('transactionId');
+            const userNumberInput = document.getElementById('userNumber');
+            const fromMethod = document.getElementById('fromMethod');
+            const toMethod = document.getElementById('toMethod');
+            const accountNumber = document.getElementById('accountNumber');
+            const accountDescription = document.getElementById('accountDescription');
+
+            let accountNumbers = {
+                'বিকাশ': '০১৭১২-৩৪৫৬৭৮',
+                'নগদ': '০১৮১২-৯৮৭৬৫৪', 
+                'রকেট': '০১৯১২-১২৩৪৫৬',
+                'উপায়': '০১৬১২-৭৮৯০১২'
+            };
+
+            const accountDescriptions = {
+                'বিকাশ': 'বিকাশে টাকা পাঠানোর পর ট্রানজেকশন আইডি দিন',
+                'নগদ': 'নগদে টাকা পাঠানোর পর ট্রানজেকশন আইডি দিন',
+                'রকেট': 'রকেটে টাকা পাঠানোর পর ট্রানজেকশন আইডি দিন', 
+                'উপায়': 'উপায়ে টাকা পাঠানোর পর ট্রানজেকশন আইডি দিন'
+            };
+
+            // Payment method selection
+            document.querySelectorAll('.method-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all options
+                    document.querySelectorAll('.method-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Update from and to methods
+                    const from = this.getAttribute('data-from');
+                    const to = this.getAttribute('data-to');
+                    
+                    fromMethod.textContent = from;
+                    toMethod.textContent = to;
+                    
+                    // Update account number and description
+                    updateAccountInfo();
+                });
+            });
+
+            function loadSettings() {
+                db.collection('adminSettings').doc('paymentNumbers').get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        accountNumbers = {
+                            'বিকাশ': data.bkash || accountNumbers['বিকাশ'],
+                            'নগদ': data.nagad || accountNumbers['নগদ'],
+                            'রকেট': data.rocket || accountNumbers['রকেট'],
+                            'উপায়': data.upay || accountNumbers['উপায়']
+                        };
+                        updateAccountInfo();
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error loading settings:", error);
+                });
+            }
+
+            function updateAccountInfo() {
+                const currentFrom = fromMethod.textContent;
+                accountNumber.textContent = accountNumbers[currentFrom] || 'লোড হচ্ছে...';
+                accountDescription.textContent = accountDescriptions[currentFrom] || 'টাকা পাঠানোর পর ট্রানজেকশন আইডি দিন';
+            }
+
+            function checkRequirements() {
+                const amount = parseFloat(sendAmountInput.value) || 0;
+                const transactionId = transactionIdInput.value.trim();
+                const userNumber = userNumberInput.value.trim();
+                
+                if (amount < 100) {
+                    continueBtn.disabled = true;
+                    minAmountNotice.classList.add('show');
+                } else if (transactionId === '' || userNumber === '' || userNumber.length !== 11) {
+                    continueBtn.disabled = true;
+                    minAmountNotice.classList.remove('show');
+                } else {
+                    continueBtn.disabled = false;
+                    minAmountNotice.classList.remove('show');
+                }
+            }
+
+            function saveTransaction(transactionData) {
+                const transactionId = 'TXN_' + Date.now();
+                
+                const transaction = {
+                    ...transactionData,
+                    transactionId: transactionId,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'pending'
+                };
+                
+                return db.collection('transactions').doc(transactionId).set(transaction);
+            }
+
+            // Event listeners
+            sendAmountInput.addEventListener('input', checkRequirements);
+            transactionIdInput.addEventListener('input', checkRequirements);
+            userNumberInput.addEventListener('input', checkRequirements);
+
+            // Continue button
+            continueBtn.addEventListener('click', function() {
+                if (this.disabled) return;
+
+                const transactionData = {
+                    fromMethod: fromMethod.textContent,
+                    toMethod: toMethod.textContent,
+                    sendAmount: parseFloat(sendAmountInput.value),
+                    receiveAmount: parseFloat(sendAmountInput.value) * 0.95,
+                    userNumber: userNumberInput.value,
+                    transactionIdInput: transactionIdInput.value
+                };
+                
+                saveTransaction(transactionData)
+                    .then(() => {
+                        alert('অর্ডার সফলভাবে সাবমিট হয়েছে!');
+                        // Reset form
+                        sendAmountInput.value = 100;
+                        userNumberInput.value = '';
+                        transactionIdInput.value = '';
+                        checkRequirements();
+                    })
+                    .catch((error) => {
+                        alert('ত্রুটি: অর্ডার সাবমিট করতে পারেনি। আবার চেষ্টা করুন।');
+                    });
+            });
+
+            // Initialize
+            checkRequirements();
+            loadSettings();
+            updateAccountInfo();
+        });
+    </script>
+</body>
+</html>
