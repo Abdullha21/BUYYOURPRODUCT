@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUY YOUR PRODUCT</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+/* Entry Banner Styles */
+.entry-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.5s ease;
+}
+
+.banner-content {
+    background: white;
+    border-radius: 20px;
+    padding: 0;
+    max-width: 90%;
+    max-height: 90%;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    animation: slideUp 0.5s ease;
+    overflow: hidden;
+}
+
+.banner-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 20px 20px 0 0;
+    display: block;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    z-index: 10001;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.close-btn:hover {
+    background: #e60000;
+    transform: scale(1.2);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+}
+
+.banner-footer {
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #6a0dad, #a855f7);
+    border-radius: 0 0 20px 20px;
+}
+
+.banner-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 8px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.banner-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.9);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.banner-hidden {
+    display: none !important;
+}
+
+* {margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif;}
+body {background-color:#f5f5f5;}
+
+/* Header */
+.header {display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background-color:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+.header img.logo {height:40px;}
+.header .website-name {font-size:24px; font-weight:bold; color:#6a0dad; font-family:'Orbitron', sans-serif; text-align:center; flex-grow:1;}
+.header .cart {display:flex; align-items:center;}
+.header .cart img {height:30px;}
+.header .cart span {background-color:#6a0dad; color:white; padding:5px 10px; border-radius:50%; margin-right:10px;}
+
+/* Marquee */
+.marquee-container {overflow:hidden; background:linear-gradient(90deg,#1e1e2f,#2a2a4e); padding:8px 0; border:2px solid #00ffcc; border-radius:8px; width:100%; max-width:1200px; margin:10px auto;}
+.marquee-text {display:inline-block; white-space:nowrap; color:#00ffcc; font-size:20px; font-weight:700; font-family:'Orbitron',sans-serif; text-shadow:0 0 8px rgba(0,255,204,0.8),0 0 15px rgba(0,255,204,0.5); animation:scroll-left 20s linear infinite;}
+@keyframes scroll-left {0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
+
+/* Fixed Banner Slider */
+.banner {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    overflow: hidden;
+    height: 300px;
+    border-radius: 10px;
+}
+
+.banner-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s ease-in-out;
+}
+
+.banner-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    position: relative;
+}
+
+.banner-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.dots {
+    text-align: center;
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    z-index: 2;
+}
+
+.dot {
+    height: 12px;
+    width: 12px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background-color: #fff;
+    transform: scale(1.2);
+}
+
+/* Mobile Responsive Banner */
+@media (max-width: 768px) {
+    .banner {
+        height: 200px;
+        margin: 15px auto;
+    }
+    
+    .banner-slide img {
+        object-fit: cover;
+    }
+    
+    .dots {
+        bottom: 10px;
+    }
+    
+    .dot {
+        height: 10px;
+        width: 10px;
+        margin: 0 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner {
+        height: 180px;
+        margin: 10px auto;
+        border-radius: 8px;
+    }
+    
+    .dot {
+        height: 8px;
+        width: 8px;
+        margin: 0 3px;
+    }
+}
+  
+/* Hot Products */
+.section-title {text-align:center; font-size:24px; color:#6a0dad; margin:20px 0;}
+.category-container {display:flex; justify-content:center; gap:10px; padding:0 20px; flex-wrap:wrap;}
+.category-box {background:linear-gradient(135deg,#6a0dad,#a855f7); color:white; width:120px; border-radius:8px; padding:8px; text-align:center; text-decoration:none; display:block; position:relative; overflow:hidden; transition: transform 0.3s, box-shadow 0.3s;}
+.category-box img {max-width:100%; border-radius:6px;}
+.category-box h3 {font-size:12px; margin:6px 0; line-height:1.2;}
+.category-box:hover {transform:scale(1.1); box-shadow:0 0 15px rgba(106,13,173,0.7);}
+
+/* Latest Orders */
+#ordersContainer {max-width:1200px; margin:20px auto; padding:10px;}
+#ordersContainer .order-item {background:linear-gradient(135deg,#6a0dad,#a855f7); color:white; padding:10px; margin:5px 0; border-radius:8px; font-size:14px;}
+
+/* Support */
+.support-btn {position:fixed; bottom:20px; right:20px; display:flex; align-items:center; text-decoration:none; z-index:9999;}
+.support-text {background-color:#d60000; color:white; padding:10px 15px; font-weight:bold; border-radius:5px 0 0 5px;}
+.support-icon {background-color:#d60000; color:white; font-size:22px; padding:13px 15px; border-radius:50%; margin-left:-1px;}
+
+/* Social */
+.social-icons {text-align:center; margin-top:40px; padding-bottom:30px;}
+.social-icons .icon {display:inline-flex; align-items:center; justify-content:center; margin:10px; width:60px; height:60px; background:#fff; border-radius:50%; font-size:26px; color:#333; box-shadow:0 4px 10px rgba(0,0,0,0.15); transition:all 0.3s; text-decoration:none;}
+.social-icons .icon:hover {transform:scale(1.1); background-color:#e0e0e0;}
+
+/* Footer */
+footer {text-align:center; padding:15px 0; background-color:#f0f0f0; margin-top:40px; font-size:14px; color:#555;}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .header .website-name {font-size:20px;}
+    .marquee-text {font-size:16px;}
+    .section-title {font-size:20px;}
+    .category-box {width:100px;}
+    .category-box h3 {font-size:11px;}
+    
+    /* How to Order Section */
+    .video-container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+    
+    .video-container iframe {
+        height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {padding:8px 15px;}
+    .header .website-name {font-size:18px;}
+    .header img.logo {height:35px;}
+    .marquee-text {font-size:14px;}
+    .section-title {font-size:18px; margin:15px 0;}
+    .category-box {width:90px; padding:6px;}
+    .category-box h3 {font-size:10px;}
+    
+    /* Support Button */
+    .support-btn {bottom:15px; right:15px;}
+    .support-text {padding:8px 12px; font-size:14px;}
+    .support-icon {padding:10px 12px; font-size:20px;}
+}
+</style>
+
+<script>
+// Entry Banner JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    function closeBanner() {
+        const banner = document.getElementById('entryBanner');
+        if (banner) {
+            banner.classList.add('banner-hidden');
+        }
+    }
+
+    // Make closeBanner function globally available
+    window.closeBanner = closeBanner;
+
+    // Close banner when clicking outside the content
+    document.getElementById('entryBanner').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeBanner();
+        }
+    });
+
+    // Optional: Close banner with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeBanner();
+        }
+    });
+});
+</script>
+</head>
+<body>
+
+<!-- Entry Banner -->
+<div id="entryBanner" class="entry-banner">
+    <div class="banner-content">
+        <button class="close-btn" onclick="closeBanner()">×</button>
+        <!-- আপনার ব্যানার ছবির URL এখানে দিন -->
+        <img src="https://uploads.onecompiler.io/42weeh2u8/43vpaywhh/1000024076.png" alt="NOTICE" class="banner-image">
+        <div class="banner-footer">
+            <div class="banner-title">🚀 WELCOME TO BUY YOUR PRODUCT</div>
+            <div class="banner-subtitle">Best recharge services in Bangladesh </div>
+        </div>
+    </div>
+</div>
+
+<div class="header">
+  <img src="https://uploads.onecompiler.io/42weeh2u8/43jacqcnx/1000017904.png" alt="Logo" class="logo">
+  <div class="website-name" id="siteName">Buy Your Product</div>
+  <div class="cart"><img src="https://uploads.onecompiler.io/42weeh2u8/43hswpykf/1000017652.png" alt="Cart"></div>
+</div>
+
+<div class="marquee-container">
+  <div class="marquee-text" id="marqueeText">Loading...</div>
+</div>
+
+<!-- Fixed Banner Slider -->
+<div class="banner">
+  <div class="banner-wrapper" id="bannerWrapper"></div>
+  <div class="dots" id="bannerDots"></div>
+</div>
+
+<!-- How to Order Section -->
+<div style="text-align: center; padding: 30px 20px;">
+    <h2 style="font-size: 28px; font-weight: bold; color: #333; margin-bottom: 20px;">
+        How to Order
+    </h2>
+    <div style="max-width: 400px; margin: auto;" class="video-container">
+        <iframe width="100%" height="250" 
+            src="https://www.youtube.com/embed/KfeLu62qOFk" 
+            title="How to Order" frameborder="0" allowfullscreen style="border-radius: 10px;">
+        </iframe>
+    </div>
+</div>
+
+<h2 class="section-title">HOT PRODUCTS AVAILABLE FOR YOU</h2>
+<div class="category-container" id="categoryContainer"></div>
+
+<h2 class="section-title">LATEST ORDERS / NOTIFICATIONS</h2>
+<div id="ordersContainer"></div>
+
+<a href="#" class="support-btn" target="_blank" id="supportLink">
+  <div class="support-text">SUPPORT!</div>
+  <div class="support-icon">📞</div>
+</a>
+
+<div class="social-icons" id="socialIcons"></div>
+
+<footer id="footerText">© 2025 All rights reserved | Developed By MD ABDULLH KHAN</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+  authDomain: "test-30208.firebaseapp.com",
+  projectId: "test-30208",
+  storageBucket: "test-30208.appspot.com",
+  messagingSenderId: "511922448499",
+  appId: "1:511922448499:web:c3d192dc7ded1256282206"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadData() {
+  const docRef = doc(db, "mainpage", "content");
+  const docSnap = await getDoc(docRef);
+  if(docSnap.exists()){
+    const data = docSnap.data();
+
+    // Marquee
+    document.getElementById("marqueeText").innerText = data.marquee || '';
+
+    // Site Name
+    document.getElementById("siteName").innerText = data.siteName || '';
+
+    // Support link
+    document.getElementById("supportLink").href = data.supportLink || '#';
+
+    // Fixed Banner Implementation
+    const wrapper = document.getElementById("bannerWrapper");
+    const dots = document.getElementById("bannerDots");
+    wrapper.innerHTML = '';
+    dots.innerHTML = '';
+    
+    if(data.banners && data.banners.length > 0){
+      data.banners.forEach((b, i)=>{
+        // Create banner slide
+        const slide = document.createElement('div');
+        slide.classList.add('banner-slide');
+        
+        const link = document.createElement('a');
+        link.href = b.link || '#';
+        link.target = "_blank";
+        link.style.display = 'block';
+        link.style.width = '100%';
+        link.style.height = '100%';
+        
+        const img = document.createElement('img');
+        img.src = b.image || '';
+        img.alt = b.alt || 'Banner';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        
+        link.appendChild(img);
+        slide.appendChild(link);
+        wrapper.appendChild(slide);
+
+        // Create dot
+        const dot = document.createElement('span');
+        dot.classList.add('dot');
+        if(i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => showBanner(i));
+        dots.appendChild(dot);
+      });
+    }
+
+    // Categories
+    const categoryContainer = document.getElementById("categoryContainer");
+    categoryContainer.innerHTML = '';
+    if(data.categories){
+      data.categories.forEach(cat=>{
+        const a = document.createElement('a'); 
+        a.href = cat.link || '#'; 
+        a.classList.add('category-box'); 
+        a.target = "_blank";
+        const img = document.createElement('img'); 
+        img.src = cat.image || ''; 
+        img.alt = cat.name || '';
+        const h3 = document.createElement('h3'); 
+        h3.innerText = cat.name || '';
+        a.appendChild(img); 
+        a.appendChild(h3);
+        categoryContainer.appendChild(a);
+      });
+    }
+
+    // Social Links
+    const socialIcons = document.getElementById("socialIcons");
+    socialIcons.innerHTML='';
+    if(data.social){
+      data.social.forEach(s=>{
+        const a = document.createElement('a'); 
+        a.href = s.link || '#'; 
+        a.classList.add('icon'); 
+        a.target = "_blank";
+        a.innerHTML = `<i class="${s.icon || ''}"></i>`;
+        socialIcons.appendChild(a);
+      });
+    }
+
+    // Latest Orders
+    const ordersContainer = document.getElementById('ordersContainer');
+    ordersContainer.innerHTML = '';
+    if(data.orders && data.orders.length > 0){
+      const latestOrders = data.orders.slice(-5).reverse();
+      latestOrders.forEach(order=>{
+        const div = document.createElement('div'); 
+        div.classList.add('order-item');
+        div.innerHTML = `<strong>Product:</strong> ${order.product || ''} | 
+                         <strong>Price:</strong> ${order.price || ''} | 
+                         <strong>Completed At:</strong> ${order.time || ''}`;
+        ordersContainer.appendChild(div);
+      });
+    } else {
+      ordersContainer.innerHTML = '<p style="text-align:center; color:#555;">No orders yet</p>';
+    }
+  }
+}
+
+loadData();
+
+// Fixed Banner Slider Function
+let currentIndex = 0;
+let bannerInterval;
+
+function showBanner(index) {
+    const wrapper = document.getElementById("bannerWrapper");
+    const dots = document.querySelectorAll('.dot');
+    const totalSlides = wrapper.children.length;
+    
+    if (totalSlides > 0) {
+        // Move the wrapper
+        wrapper.style.transform = `translateX(-${index * 100}%)`;
+        
+        // Update dots
+        dots.forEach(dot => dot.classList.remove('active'));
+        if (dots[index]) {
+            dots[index].classList.add('active');
+        }
+        
+        currentIndex = index;
+    }
+}
+
+function startBannerAutoSlide() {
+    const wrapper = document.getElementById("bannerWrapper");
+    const totalSlides = wrapper.children.length;
+    
+    if (totalSlides > 1) {
+        bannerInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            showBanner(currentIndex);
+        }, 4000);
+    }
+}
+
+function stopBannerAutoSlide() {
+    if (bannerInterval) {
+        clearInterval(bannerInterval);
+    }
+}
+
+// Initialize banner when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Start auto slide after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        startBannerAutoSlide();
+    }, 1000);
+    
+    // Pause auto slide when user hovers over banner
+    const banner = document.querySelector('.banner');
+    if (banner) {
+        banner.addEventListener('mouseenter', stopBannerAutoSlide);
+        banner.addEventListener('mouseleave', startBannerAutoSlide);
+        
+        // For touch devices
+        banner.addEventListener('touchstart', stopBannerAutoSlide);
+        banner.addEventListener('touchend', () => {
+            setTimeout(startBannerAutoSlide, 3000);
+        });
+    }
+});
+
+// Make functions globally available
+window.showBanner = showBanner;
+</script>
+</body>
+</html>

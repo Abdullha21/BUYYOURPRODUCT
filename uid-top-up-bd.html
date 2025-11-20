@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Back Button Start -->
+  <style>
+    #back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #ff4d4d;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      z-index: 999;
+    }
+
+    #back-button:hover {
+      background-color: #e60000;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    #back-button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+
+  <button id="back-button" onclick="goBack()">← Back</button>
+
+  <script>
+    function goBack() {
+      window.location.href = "homepage.html";
+    }
+  </script>
+  <!-- Back Button End -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FF UID TOP UP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: slideIn 0.6s ease-out;
+      transform: translateY(0);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      animation: fadeIn 1s ease;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .section {
+      margin-bottom: 25px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards;
+      animation-delay: calc(0.1s * var(--index));
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section h3 {
+      margin-bottom: 12px;
+      color: #2c3e50;
+      position: relative;
+      font-size: 18px;
+    }
+
+    .section h3::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(to right, #e74c3c, transparent);
+      transition: width 0.4s ease;
+    }
+
+    .section h3:hover::after {
+      width: 100%;
+    }
+
+    .products button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: 2px solid transparent;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      font-weight: bold;
+    }
+
+    .products button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .products button:hover::before {
+      left: 100%;
+    }
+
+    .products button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #764ba2, #667eea);
+    }
+
+    .products button.selected {
+      border-color: #e74c3c;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      transform: scale(1.02);
+      box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    input[type="text"], input[type="email"], select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 2px solid #bdc3c7;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    input[type="text"]:focus, input[type="email"]:focus, select:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+      transform: scale(1.01);
+      outline: none;
+    }
+
+    .payment-methods {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .payment-methods img {
+      height: 45px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .payment-methods img:hover {
+      transform: scale(1.15) rotate(5deg);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .payment-methods img.selected {
+      border-color: #e74c3c;
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .info-box {
+      margin-top: 10px;
+      font-size: 14px;
+      background: #ecf0f1;
+      padding: 12px;
+      border-radius: 8px;
+      animation: popIn 0.5s ease;
+      border-left: 4px solid #3498db;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 15px;
+      border: none;
+      width: 100%;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+      background: linear-gradient(45deg, #c0392b, #e74c3c);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Automatic Payment Image */
+    .payment-image {
+      height: 110px;
+      width: auto;
+      cursor: pointer;
+      margin: 15px auto;
+      display: block;
+      border: 3px solid transparent;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .payment-image:hover {
+      transform: scale(1.15);
+      box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+      border-color: #e74c3c;
+    }
+    .payment-image.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .notice-box {
+      background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+      color: #2d3436;
+      border: none;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 25px;
+      font-size: 16px;
+      font-weight: 500;
+      animation: slideInRight 0.8s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .notice-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #d63031;
+      text-align: center;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .support-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      z-index: 9999;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    .support-text {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 12px 18px;
+      font-weight: bold;
+      border-radius: 8px 0 0 8px;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .support-icon {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      font-size: 24px;
+      padding: 14px 16px;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+      margin-left: -1px;
+      transition: transform 0.3s ease;
+    }
+
+    .support-btn:hover .support-text,
+    .support-btn:hover .support-icon {
+      transform: scale(1.1);
+    }
+
+    #price-display {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #e74c3c;
+      font-size: 18px;
+      text-align: center;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #e74c3c;
+    }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>🚀 FF UID TOP UP</h2>
+    <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
+      <div class="section" style="--index: 1;">
+        <h3>🎯 1. Select Top Up Amount</h3>
+        <div class="products" id="productList">
+          <!-- Products will be loaded from Firebase -->
+        </div>
+        <input type="hidden" name="selected_product" id="selected_product" required>
+      </div>
+      <div class="section" style="--index: 2;">
+        <h3>👤 2. Player Information</h3>
+        <input type="text" name="uid" placeholder="Enter your Free Fire UID" required>
+      </div>
+      <div class="section" style="--index: 3;">
+        <h3>📧 3. Order Confirm Notification Gmail</h3>
+        <input type="email" name="email" placeholder="Enter your Gmail address" required>
+      </div>
+      <div class="section" style="--index: 4;">
+        <h3>💳 4. Select Payment Method</h3>
+        <div class="payment-methods">
+          <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
+          <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
+        </div>
+        <input type="hidden" name="payment_method" id="payment_method" required>
+        <div class="info-box" id="paymentInfo" style="display:none;"></div>
+      </div>
+      <div class="section" style="--index: 5;">
+        <h3>⚡ 5. Automatic Payment</h3>
+        <img src="https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg" alt="Payment Method" id="autoPaymentImg" class="payment-image disabled">
+        <input type="text" name="trx_id" value="প্রথমে উপরের বক্স ক্লিক করে পেমেন্ট করে এসে অর্ডার কনফার্ম করো ।" readonly required>
+      </div>
+      <div id="price-display" style="margin-top: 10px; font-weight: bold; color: #d60000;"></div>
+      
+      <button type="button" class="btn" id="paymentBtn" disabled>🎮 Confirm Top Up Order</button>
+    </form>
+    <!-- Notice Box -->
+    <div class="notice-box">
+      <div class="notice-title" id="noticeTitle">📢 Free Fire Top Up Notice</div>
+      <div id="noticeContent">
+        🏆 Largest Free Fire Top Up Site In Bangladesh <br><br>
+        <strong>⚠️ নোটিশ:</strong> যেকোন অর্ডার জনিত সমস্যায় মেসেঞ্জারে অর্ডারের স্ক্রিনশর্ট এবং পেমেন্টের এর লাস্ট ৪ নাম্বার দেন লিখে মেসেজ দিন |
+      </div>
+    </div>
+    <!-- SUPPORT BUTTON -->
+    <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
+      <div class="support-text">SUPPORT!</div>
+      <div class="support-icon">📞</div>
+    </a>
+  </div>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+      authDomain: "test-30208.firebaseapp.com",
+      projectId: "test-30208",
+      storageBucket: "test-30208.firebasestorage.app",
+      messagingSenderId: "511922448499",
+      appId: "1:511922448499:web:c3d192dc7ded1256282206"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // DOM Elements
+    const selectedProductInput = document.getElementById('selected_product');
+    const priceDisplay = document.getElementById('price-display');
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+    const form = document.getElementById('topupForm');
+    const autoPaymentImg = document.getElementById('autoPaymentImg');
+    const paymentBtn = document.getElementById('paymentBtn');
+    let selectedPaymentLink = '';
+    let paymentCompleted = false;
+
+    // Load products from SPECIFIC collection for FF UID Top Up page only
+    function loadProducts() {
+      db.collection('ff_uid_topup_products').orderBy('name').onSnapshot(snapshot => {
+        const productList = document.getElementById('productList');
+        productList.innerHTML = '';
+        
+        if (snapshot.empty) {
+          productList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px; background: #f8f9fa; border-radius: 8px;">No Free Fire top up products available at the moment.</p>';
+          return;
+        }
+        
+        snapshot.forEach(doc => {
+          const product = doc.data();
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.value = product.name;
+          button.setAttribute('data-payment-link', product.paymentLink);
+          button.textContent = product.name;
+          
+          button.addEventListener('click', function() {
+            document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedProductInput.value = this.value;
+            selectedPaymentLink = this.getAttribute('data-payment-link');
+            
+            const parts = this.value.split('-');
+            const price = parts[1]?.trim();
+            priceDisplay.textContent = "💰 Price: " + price;
+            priceDisplay.style.color = '#e74c3c';
+
+            autoPaymentImg.classList.remove('disabled');
+            if (paymentMethod.value === 'bKash') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
+              autoPaymentImg.alt = 'bKash';
+            } else if (paymentMethod.value === 'Nagad') {
+              autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png';
+              autoPaymentImg.alt = 'Nagad';
+            }
+            paymentBtn.disabled = true;
+            paymentCompleted = false;
+          });
+          
+          productList.appendChild(button);
+        });
+      }, error => {
+        console.error('Error loading FF UID Top Up products:', error);
+        document.getElementById('productList').innerHTML = '<p style="text-align: center; color: red; padding: 20px; background: #ffeaa7; border-radius: 8px;">Error loading products. Please try again later.</p>';
+      });
+    }
+
+    // Load notice from SPECIFIC collection for FF UID Top Up page only
+    function loadNotice() {
+      db.collection('ff_uid_topup_notices').doc('current').onSnapshot(doc => {
+        if (doc.exists) {
+          const notice = doc.data();
+          document.getElementById('noticeTitle').textContent = notice.title;
+          document.getElementById('noticeContent').innerHTML = notice.content;
+        }
+      }, error => {
+        console.error('Error loading FF UID Top Up notice:', error);
+      });
+    }
+
+    // Payment Method Selection
+    bkashBtn.addEventListener('click', () => {
+      bkashBtn.classList.add('selected');
+      nagadBtn.classList.remove('selected');
+      paymentMethod.value = 'bKash';
+      paymentInfo.style.display = 'none';
+      if (selectedPaymentLink) {
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/442t72jm3/1000026261.png';
+        autoPaymentImg.alt = 'bKash';
+        autoPaymentImg.classList.remove('disabled');
+      }
+    });
+
+    nagadBtn.addEventListener('click', () => {
+      nagadBtn.classList.add('selected');
+      bkashBtn.classList.remove('selected');
+      paymentMethod.value = 'Nagad';
+      paymentInfo.style.display = 'none';
+      if (selectedPaymentLink) {
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/442t72jm3/1000026261.png';
+        autoPaymentImg.alt = 'Nagad';
+        autoPaymentImg.classList.remove('disabled');
+      }
+    });
+
+    // Automatic Payment Image Click
+    autoPaymentImg.addEventListener('click', function() {
+      if (autoPaymentImg.classList.contains('disabled') || !selectedPaymentLink) {
+        alert('Please select a top up amount and payment method first!');
+        return;
+      }
+      
+      window.open(selectedPaymentLink, '_blank');
+      priceDisplay.textContent = '🔄 Please complete your payment in the new tab';
+      priceDisplay.style.color = '#e74c3c';
+      autoPaymentImg.classList.add('disabled');
+      paymentCompleted = true;
+
+      setTimeout(() => {
+        paymentBtn.disabled = false;
+        paymentBtn.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+      }, 15000);
+    });
+
+    // Confirm Order Button Click
+    paymentBtn.addEventListener('click', function() {
+      if (!selectedPaymentLink) {
+        alert('Please select a top up amount first!');
+        return;
+      }
+      
+      const uid = form.querySelector('[name="uid"]').value;
+      const email = form.querySelector('[name="email"]').value;
+      const paymentMethodValue = paymentMethod.value;
+      
+      if (!uid || !email || !paymentMethodValue) {
+        alert('Please fill all required fields!');
+        return;
+      }
+      
+      if (!paymentCompleted) {
+        alert('Please complete the payment first using the Automatic Payment image!');
+        return;
+      }
+      
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form)
+      }).then(response => {
+        priceDisplay.textContent = '✅ Your Free Fire top up order has been confirmed! You will receive diamonds soon.';
+        priceDisplay.style.color = 'green';
+        
+        window.open('homepage.html', '_blank');
+        
+        form.reset();
+        autoPaymentImg.classList.add('disabled');
+        autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
+        paymentBtn.disabled = true;
+        paymentBtn.style.background = '#bdc3c7';
+        document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+        bkashBtn.classList.remove('selected');
+        nagadBtn.classList.remove('selected');
+        priceDisplay.textContent = '';
+      }).catch(error => {
+        alert('Error submitting form!');
+      });
+    });
+
+    // Load initial data
+    loadProducts();
+    loadNotice();
+  </script>
+</body>
+</html>
