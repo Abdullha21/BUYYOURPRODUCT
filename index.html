@@ -588,4 +588,12 @@
                 e.preventDefault();
                 const href = box.getAttribute('href');
                 box.classList.add('clicked');
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 400); // Match ripple animation duration
+            });
+        });
+    </script>
+</body>
+</html>
      
