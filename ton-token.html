@@ -68,29 +68,74 @@
       margin-bottom: 10px; 
       color: #B300B3; 
     }
+
+    /* PRODUCT BOX (FF UID STYLE) */
+    .products {
+      display: grid;
+      grid-template-columns: 1fr 1fr;  /* দুই কলাম */
+      gap: 10px;
+    }
     .products button {
       display: block;
       width: 100%;
-      margin: 5px 0;
-      padding: 10px;
-      background-color: #eee;
+      margin: 0;
+      padding: 12px 10px;
+      background-color: #f7f7f7;
+      border-radius: 10px;
       border: 2px solid transparent;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
+      position: relative;           /* টিক মার্কের জন্য */
+      text-align: left;
+      font-weight: 600;
+      min-height: 60px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .products button span.price {
+      display: block;
+      margin-top: 5px;
+      color: #ff7a00;
+      font-weight: 700;
+    }
+
+    /* টিক মার্ক গোল আইকন */
+    .products button::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #cfcfcf;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: 0.2s;
     }
     .products button.selected {
-      border-color: red;
-      background-color: #ffe6e6;
+      border-color: #32cd32;
+      background-color: #e9ffe9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(50,205,50,0.3);
     }
+    .products button.selected::after {
+      content: "✔";
+      background: #32cd32;
+      border-color: #32cd32;
+    }
+
     .products button:hover {
-      transform: scale(1.1);
-      background-color: #e0e0e0;
-      box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
-      animation: glow 1s ease-in-out infinite alternate;
+      transform: translateY(-2px);
+      background-color: #eeeeee;
+      box-shadow: 0 4px 10px rgba(179, 0, 179, 0.3);
     }
-    .products button:active {
-      animation: shake 0.3s ease;
-    }
+
     input[type="text"], input[type="email"], select {
       width: 100%;
       padding: 10px;
@@ -178,19 +223,9 @@
       cursor: not-allowed;
     }
     /* Animation Keyframes */
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      50% { transform: translateX(8px); }
-      75% { transform: translateX(-8px); }
-    }
     @keyframes pulse {
       0% { transform: scale(1.1); box-shadow: 0 0 20px rgba(204, 0, 204, 0.7); }
       100% { transform: scale(1.15); box-shadow: 0 0 30px rgba(204, 0, 204, 1); }
-    }
-    @keyframes glow {
-      0% { box-shadow: 0 0 15px rgba(179, 0, 179, 0.5); }
-      100% { box-shadow: 0 0 25px rgba(179, 0, 179, 0.8); }
     }
     @keyframes inputGlow {
       0% { box-shadow: 0 0 12px rgba(179, 0, 179, 0.7); }
@@ -286,7 +321,7 @@
         <input type="hidden" name="payment_method" id="payment_method" required>
         <div class="info-box" id="paymentInfo" style="display:none;"></div>
       </div>
-      <div class="section" style="--index: 5;">
+      <div class="section" style="--index: 5%;">
         <h3>5. Automatic Payment</h3>
         <img src="https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg" alt="Payment Method" id="autoPaymentImg" class="payment-image disabled">
         <input type="text" name="trx_id" value="প্রথমে উপরের বক্স ক্লিক করে পেমেন্ট করে এসে অর্ডার কনফার্ম করো ।" readonly required>
@@ -340,7 +375,8 @@
 
     // Load products from SPECIFIC collection for TON page only
     function loadProducts() {
-      db.collection('ton_products').orderBy('name').onSnapshot(snapshot => {
+      // createdAt দিয়ে সিরিয়াল ঠিক থাকবে (FF UID এর মত)
+      db.collection('ton_products').orderBy('createdAt').onSnapshot(snapshot => {
         const productList = document.getElementById('productList');
         productList.innerHTML = '';
         
@@ -355,17 +391,25 @@
           button.type = 'button';
           button.value = product.name;
           button.setAttribute('data-payment-link', product.paymentLink);
-          button.textContent = product.name;
+
+          // নাম + নিচে প্রাইস আলাদা করে শো
+          const parts = product.name.split('-');
+          const title = parts[0]?.trim() || product.name;
+          const priceText = parts[1]?.trim() || "";
+
+          button.innerHTML = `
+            <span class="title">${title}</span>
+            ${priceText ? `<span class="price">${priceText}</span>` : ""}
+          `;
           
           button.addEventListener('click', function() {
             document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
             this.classList.add('selected');
-            selectedProductInput.value = this.value;
+            selectedProductInput.value = product.name;
             selectedPaymentLink = this.getAttribute('data-payment-link');
             
-            const parts = this.value.split('-');
             const price = parts[1]?.trim();
-            priceDisplay.textContent = "Price: " + price;
+            priceDisplay.textContent = price ? "Price: " + price : "";
             priceDisplay.style.color = '#d60000';
 
             autoPaymentImg.classList.remove('disabled');
