@@ -75,27 +75,72 @@
       color: #B300B3; 
       font-size: 18px;
     }
-    .products button {
-      display: block;
-      width: 100%;
-      margin: 8px 0;
-      padding: 12px;
-      background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+
+    /* ---------- বক্স সিস্টেম (FF Top Up স্টাইলে) ---------- */
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .product-card {
+      position: relative;
+      background: linear-gradient(135deg, #f8f9ff, #ece9ff);
       border: 2px solid transparent;
-      border-radius: 8px;
+      border-radius: 10px;
+      padding: 10px 10px 12px 10px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: 500;
+      transition: all 0.25s ease;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     }
-    .products button.selected {
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(179, 0, 179, 0.25);
+    }
+
+    .product-card.selected {
       border-color: #ff4d4d;
-      background: linear-gradient(135deg, #ffe6e6, #ffcccc);
-      transform: scale(1.02);
+      box-shadow: 0 8px 22px rgba(255, 77, 77, 0.4);
+      transform: translateY(-3px) scale(1.02);
+      background: linear-gradient(135deg, #ffe6e6, #ffd6f5);
     }
-    .products button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(179, 0, 179, 0.3);
+
+    .product-name {
+      font-weight: 700;
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 4px;
     }
+
+    .product-price {
+      font-weight: 600;
+      color: #d60000;
+      font-size: 13px;
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #28a745;
+      color: #fff;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .product-card.selected .checkmark {
+      display: flex;
+    }
+    /* ---------- বক্স সিস্টেম শেষ ---------- */
+
     input[type="text"], input[type="email"], select {
       width: 100%;
       padding: 12px;
@@ -228,26 +273,6 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       margin-left: -1px;
     }
-    .admin-btn {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background: #28a745;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      font-weight: 600;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
-      z-index: 999;
-    }
-    .admin-btn:hover {
-      background: #218838;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -256,14 +281,13 @@
 </head>
 <body>
   <div class="container">
-    <h2>🎮 LEVEL UP PASS & Evo Access- FREE FIRE</h2>
+    <h2>🎮 LEVEL UP PASS & Evo Access - FREE FIRE</h2>
     <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
       
       <!-- Product Selection - Loaded from Firebase -->
       <div class="section">
         <h3>1. SELECT LEVEL UP & Evo Access PACKAGE</h3>
         <div class="products" id="productList">
-          <!-- Products will be loaded from Firebase -->
           <div style="text-align: center; color: #666; padding: 20px;">
             Loading packages...
           </div>
@@ -320,6 +344,7 @@
       <div class="support-text">SUPPORT</div>
       <div class="support-icon">💬</div>
     </a>
+  </div>
 
   <script>
     // Firebase Configuration
@@ -346,13 +371,12 @@
     const form = document.getElementById('topupForm');
     const autoPaymentImg = document.getElementById('autoPaymentImg');
     const paymentBtn = document.getElementById('paymentBtn');
-    const noticeBox = document.getElementById('noticeBox');
     const noticeContent = document.getElementById('noticeContent');
     
     let selectedPaymentLink = '';
     let paymentCompleted = false;
 
-    // Load Products from Firebase
+    // Load Products from Firebase (BOX SYSTEM)
     function loadProducts() {
       db.collection('levelup_products').orderBy('name').onSnapshot(snapshot => {
         productList.innerHTML = '';
@@ -364,35 +388,46 @@
         
         snapshot.forEach(doc => {
           const product = doc.data();
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.textContent = product.name;
-          button.setAttribute('data-payment-link', product.paymentLink);
-          
-          button.addEventListener('click', function() {
-            // Remove selected class from all buttons
-            document.querySelectorAll('#productList button').forEach(btn => {
-              btn.classList.remove('selected');
-            });
-            
-            // Add selected class to clicked button
+          const fullName = product.name || '';
+          const parts = fullName.split('-');
+          const namePart = parts[0] ? parts[0].trim() : fullName;
+          const pricePart = parts[1] ? parts[1].trim() : '';
+
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          card.dataset.fullName = fullName;
+          card.dataset.price = pricePart;
+          card.dataset.paymentLink = product.paymentLink;
+
+          card.innerHTML = `
+            <div class="checkmark">✓</div>
+            <div class="product-name">${namePart}</div>
+            <div class="product-price">${pricePart}</div>
+          `;
+
+          card.addEventListener('click', function() {
+            // Remove selected from all
+            document.querySelectorAll('#productList .product-card').forEach(c => c.classList.remove('selected'));
+
+            // Add selected to this
             this.classList.add('selected');
-            selectedProductInput.value = this.textContent;
-            selectedPaymentLink = this.getAttribute('data-payment-link');
-            
-            // Price Display
-            const parts = this.textContent.split('-');
-            const price = parts[1]?.trim();
-            priceDisplay.textContent = "💰 Total Amount: " + price;
+
+            selectedProductInput.value = this.dataset.fullName;
+            selectedPaymentLink = this.dataset.paymentLink;
+
+            if (this.dataset.price) {
+              priceDisplay.textContent = "💰 Total Amount: " + this.dataset.price;
+            } else {
+              priceDisplay.textContent = "";
+            }
             priceDisplay.style.color = '#d60000';
 
-            // Enable Payment Image
             autoPaymentImg.classList.remove('disabled');
             paymentBtn.disabled = true;
             paymentCompleted = false;
           });
-          
-          productList.appendChild(button);
+
+          productList.appendChild(card);
         });
       });
     }
@@ -438,14 +473,12 @@
         return;
       }
       
-      // Open Payment Link in New Tab
       window.open(selectedPaymentLink, '_blank');
       priceDisplay.textContent = '🔄 Please complete payment in the new tab...';
       priceDisplay.style.color = '#ff9800';
       autoPaymentImg.classList.add('disabled');
       paymentCompleted = true;
 
-      // Enable Confirm Button after 10 seconds
       setTimeout(() => {
         paymentBtn.disabled = false;
         priceDisplay.textContent = '✅ Payment completed! Click CONFIRM ORDER';
@@ -460,7 +493,6 @@
         return;
       }
       
-      // Form Validation
       const uid = form.querySelector('[name="uid"]').value;
       const email = form.querySelector('[name="email"]').value;
       const paymentMethodValue = paymentMethod.value;
@@ -475,7 +507,6 @@
         return;
       }
       
-      // Submit Form
       fetch(form.action, {
         method: 'POST',
         body: new FormData(form)
@@ -483,14 +514,12 @@
         priceDisplay.textContent = '🎉 Order Confirmed! You will receive email confirmation.';
         priceDisplay.style.color = '#28a745';
         
-        // Open Success Page
         window.open('https://abdullha21.github.io/BUYYOURPRODUCT/index%20(6).html', '_blank');
         
-        // Reset Form
         form.reset();
         autoPaymentImg.classList.add('disabled');
         paymentBtn.disabled = true;
-        document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('#productList .product-card').forEach(b => b.classList.remove('selected'));
         bkashBtn.classList.remove('selected');
         nagadBtn.classList.remove('selected');
         priceDisplay.textContent = '';
@@ -500,20 +529,10 @@
       });
     });
 
-    // Admin Panel Function
-    function openAdmin() {
-      const password = prompt('Enter Admin Password:');
-      if (password === '76843') {
-        window.open('admin-levelup.html', '_blank');
-      } else {
-        alert('Incorrect password!');
-      }
-    }
-
     // Initialize
     loadProducts();
     loadNotice();
-    bkashBtn.click(); // Set default payment method
+    bkashBtn.click(); // default payment method
   </script>
 </body>
 </html>
