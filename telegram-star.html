@@ -110,46 +110,62 @@
       width: 100%;
     }
 
-    .products button {
-      display: block;
-      width: 100%;
-      margin: 5px 0;
-      padding: 10px;
-      background-color: #eee;
-      border: 2px solid transparent;
+    /* 🔥 FF UID Style Product Grid + Card */
+    .products {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px 6px;
+      text-align: center;
+      border: 2px solid #e4e6eb;
+      font-size: 14px;
       cursor: pointer;
-      border-radius: 8px;
-      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
       position: relative;
-      overflow: hidden;
+      transition: 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    .products button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-      transition: left 0.5s ease;
-    }
-
-    .products button:hover::before {
-      left: 100%;
-    }
-
-    .products button:hover {
-      transform: translateY(-3px);
+    .card:hover {
+      transform: translateY(-2px);
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      background-color: #f5f5f5;
+      background-color: #fdfdfd;
     }
 
-    .products button.selected {
-      border-color: red;
-      background-color: #ffe6e6;
-      transform: scale(1.02);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    .card .title {
+      display: block;
+    }
+
+    .card .price {
+      display: block;
+      margin-top: 6px;
+      font-weight: 700;
+      color: #ff8700;
+      font-size: 15px;
+    }
+
+    .card.selected {
+      border-color: #32cd32;
+      box-shadow: 0 0 10px rgba(50,205,50,0.5);
+      transform: translateY(-2px);
+    }
+
+    .card .checkmark {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 18px;
+      color: #32cd32;
+      display: none;
+      font-weight: bold;
+    }
+
+    .card.selected .checkmark {
+      display: block;
     }
 
     input[type="text"], select {
@@ -172,7 +188,7 @@
       transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     }
 
-    input[type="text"]:focus, select:focus {
+    input[type="text"]:focus, select:focus, input[type="email"]:focus {
       border-color: #B300B3;
       box-shadow: 0 0 8px rgba(179,0,179,0.3);
       transform: scale(1.01);
@@ -378,7 +394,7 @@
         <input type="hidden" name="payment_method" id="payment_method" required>
         <div class="info-box" id="paymentInfo" style="display:none;"></div>
       </div>
-      <div class="section" style="--index: 5;">
+      <div class="section" style="--index: 5%;">
         <h3>5. Automatic Payment</h3>
         <img src="https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg" alt="Payment Method" id="autoPaymentImg" class="payment-image disabled">
         <input type="text" name="trx_id" value="প্রথমে উপরের বক্স ক্লিক করে পেমেন্ট করে এসে অর্ডার কনফার্ম করো ।" readonly required>
@@ -443,21 +459,32 @@
         
         snapshot.forEach(doc => {
           const product = doc.data();
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.value = product.name;
-          button.setAttribute('data-payment-link', product.paymentLink);
-          button.textContent = product.name;
           
-          button.addEventListener('click', function() {
-            document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+          // Split name -> title + price
+          const parts = product.name.split('-');
+          const titleText = (parts[0] || product.name).trim();
+          const priceText = parts[1] ? parts[1].trim() : '';
+
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.setAttribute('data-payment-link', product.paymentLink);
+
+          card.innerHTML = `
+            <span class="title">${titleText}</span>
+            ${priceText ? `<span class="price">${priceText}</span>` : ''}
+            <span class="checkmark">✔</span>
+          `;
+
+          card.addEventListener('click', function() {
+            document.querySelectorAll('#productList .card').forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
-            selectedProductInput.value = this.value;
-            selectedPaymentLink = this.getAttribute('data-payment-link');
-            
-            const parts = this.value.split('-');
-            const price = parts[1]?.trim();
-            priceDisplay.textContent = "Price: " + price;
+
+            selectedProductInput.value = product.name;
+            selectedPaymentLink = product.paymentLink;
+
+            const parts2 = product.name.split('-');
+            const price2 = parts2[1] ? parts2[1].trim() : '';
+            priceDisplay.textContent = price2 ? "Price: " + price2 : product.name;
             priceDisplay.style.color = '#d60000';
 
             autoPaymentImg.classList.remove('disabled');
@@ -472,7 +499,7 @@
             paymentCompleted = false;
           });
           
-          productList.appendChild(button);
+          productList.appendChild(card);
         });
       }, error => {
         console.error('Error loading Telegram Star products:', error);
@@ -572,10 +599,12 @@
         autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
         paymentBtn.disabled = true;
         paymentBtn.style.background = '#ccc';
-        document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('#productList .card').forEach(c => c.classList.remove('selected'));
         bkashBtn.classList.remove('selected');
         nagadBtn.classList.remove('selected');
         priceDisplay.textContent = '';
+        selectedPaymentLink = '';
+        paymentCompleted = false;
       }).catch(error => {
         alert('Error submitting form!');
       });
@@ -587,4 +616,3 @@
   </script>
 </body>
 </html>
-
