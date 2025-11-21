@@ -118,54 +118,70 @@
       font-size: 20px;
     }
 
+    /* ====== BOX SYSTEM (FF UID STYLE) ====== */
+
     .products {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
     }
 
     .product-btn {
-      background: linear-gradient(135deg, #1e3a8a, #3730a3);
-      color: white;
-      border: 2px solid transparent;
-      padding: 15px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 16px;
-      font-weight: 500;
-      text-align: left;
       position: relative;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 14px;
+      padding: 12px 8px;
+      cursor: pointer;
+      border: 2px solid rgba(148, 163, 184, 0.4);
+      text-align: center;
+      transition: all 0.2s ease;
+      min-height: 80px;
       overflow: hidden;
-    }
-
-    .product-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.5s ease;
-    }
-
-    .product-btn:hover::before {
-      left: 100%;
     }
 
     .product-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(30, 58, 138, 0.4);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.7);
       border-color: #4f46e5;
     }
 
     .product-btn.selected {
-      background: linear-gradient(135deg, #059669, #10b981);
       border-color: #10b981;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
       transform: scale(1.02);
-      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+      background: linear-gradient(145deg, #022c22, #064e3b);
     }
+
+    .product-title {
+      display: block;
+      font-size: 14px;
+      color: #e5e7eb;
+      line-height: 1.2;
+    }
+
+    .product-price {
+      display: block;
+      margin-top: 6px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #ffa726;
+    }
+
+    .product-check {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 18px;
+      color: #10b981;
+      display: none;
+      font-weight: 700;
+    }
+
+    .product-btn.selected .product-check {
+      display: block;
+    }
+
+    /* ====== FORM INPUTS ====== */
 
     input[type="text"], input[type="email"], select {
       width: 100%;
@@ -388,7 +404,7 @@
       
       <!-- 1. Select Crypto Fee Package -->
       <div class="section" style="--index: 1;">
-        <h3><i class="fas fa-coins"></i> 1. Select Fee Package</h3>
+        <h3>1. Select Fee Package</h3>
         <div class="products" id="productList">
           <!-- Products will be loaded from Firebase -->
         </div>
@@ -397,19 +413,19 @@
 
       <!-- 2. Crypto Wallet Address -->
       <div class="section" style="--index: 2;">
-        <h3><i class="fas fa-wallet"></i> 2. Wallet Address</h3>
+        <h3>2. Wallet Address</h3>
         <input type="text" name="uid" placeholder="Enter your crypto wallet address" required>
       </div>
 
       <!-- 3. Email for Notification -->
       <div class="section" style="--index: 3;">
-        <h3><i class="fas fa-envelope"></i> 3. Notification Email</h3>
+        <h3>3. Notification Email</h3>
         <input type="email" name="email" placeholder="Enter your email for confirmation" required>
       </div>
 
       <!-- 4. Payment Method -->
       <div class="section" style="--index: 4;">
-        <h3><i class="fas fa-credit-card"></i> 4. Payment Method</h3>
+        <h3>4. Payment Method</h3>
         <div class="payment-methods">
           <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
           <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
@@ -419,7 +435,7 @@
 
       <!-- 5. Automatic Payment -->
       <div class="section" style="--index: 5;">
-        <h3><i class="fas fa-bolt"></i> 5. Automatic Payment</h3>
+        <h3>5. Automatic Payment</h3>
         <img src="https://uploads.onecompiler.io/42weeh2u8/43vsuy8av/1000024209.jpg" alt="Payment Method" id="autoPaymentImg" class="payment-image disabled">
         <input type="text" name="trx_id" value="প্রথমে উপরের বক্স ক্লিক করে পেমেন্ট করে এসে অর্ডার কনফার্ম করো ।" readonly required>
       </div>
@@ -429,7 +445,7 @@
       
       <!-- Confirm Order Button -->
       <button type="button" class="btn" id="paymentBtn" disabled>
-        <i class="fas fa-lock"></i> Confirm Crypto Fee Purchase
+        Confirm Crypto Fee Purchase
       </button>
     </form>
 
@@ -489,12 +505,21 @@
         
         snapshot.forEach(doc => {
           const product = doc.data();
+          const fullName = product.name || "";
+          const parts = fullName.split('-');
+          const title = (parts[0] || '').trim();
+          const priceText = (parts[1] || '').trim();
+
           const button = document.createElement('button');
           button.type = 'button';
-          button.value = product.name;
+          button.value = fullName;
           button.setAttribute('data-payment-link', product.paymentLink);
-          button.textContent = product.name;
           button.className = 'product-btn';
+          button.innerHTML = `
+            <span class="product-title">${title}</span>
+            <span class="product-price">${priceText}</span>
+            <span class="product-check">✔</span>
+          `;
           
           button.addEventListener('click', function() {
             document.querySelectorAll('#productList .product-btn').forEach(b => b.classList.remove('selected'));
@@ -502,9 +527,9 @@
             selectedProductInput.value = this.value;
             selectedPaymentLink = this.getAttribute('data-payment-link');
             
-            const parts = this.value.split('-');
-            const price = parts[1]?.trim();
-            priceDisplay.textContent = "💰 Price: " + price;
+            const parts2 = this.value.split('-');
+            const price = parts2[1] ? parts2[1].trim() : '';
+            priceDisplay.textContent = price ? ("💰 Price: " + price) : '';
             priceDisplay.style.color = '#ffa726';
 
             autoPaymentImg.classList.remove('disabled');
@@ -521,14 +546,10 @@
           
           productList.appendChild(button);
         });
-
-        // Add animation delays
-        document.querySelectorAll('.section').forEach((section, index) => {
-          section.style.animationDelay = `${index * 0.2}s`;
-        });
       }, error => {
         console.error('Error loading crypto fee products:', error);
-        document.getElementById('productList').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 20px; background: rgba(239,68,68,0.1); border-radius: 10px;">Error loading packages. Please try again later.</p>';
+        document.getElementById('productList').innerHTML =
+          '<p style="text-align: center; color: #ef4444; padding: 20px; background: rgba(239,68,68,0.1); border-radius: 10px;">Error loading packages. Please try again later.</p>';
       });
     }
 
@@ -635,8 +656,5 @@
     loadProducts();
     loadNotice();
   </script>
-
-  <!-- Font Awesome -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
 </html>
