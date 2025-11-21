@@ -118,22 +118,46 @@
       width: 100%;
     }
 
+    /* ==== নতুন কার্ড স্টাইল প্রোডাক্টের জন্য ==== */
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
     .products button {
       display: block;
       width: 100%;
-      margin: 8px 0;
-      padding: 12px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-      border: 2px solid transparent;
+      padding: 12px 8px;
+      background: #ffffff;
+      color: #333;
+      border: 2px solid #e0e0e0;
       cursor: pointer;
-      border-radius: 10px;
-      transition: all 0.3s ease;
+      border-radius: 14px;
+      transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
-      font-weight: bold;
+      font-weight: normal;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      text-align: center;
     }
 
+    .product-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .product-price {
+      display: block;
+      margin-top: 6px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #ff8800;
+    }
+
+    /* পুরোনো শাইন এফেক্ট রেখে দিলাম, চাইলে মুছে দিতে পারো */
     .products button::before {
       content: '';
       position: absolute;
@@ -151,15 +175,30 @@
 
     .products button:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-      background: linear-gradient(135deg, #764ba2, #667eea);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
     }
 
+    /* সিলেক্টেড হলে বর্ডার + সবুজ glow */
     .products button.selected {
-      border-color: #e74c3c;
-      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      border-color: #2ecc71;
       transform: scale(1.02);
-      box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
+      box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.4);
+      background: #ffffff;
+    }
+
+    /* ডান কোনায় ঠিক ✔ চিহ্ন */
+    .products button .checkmark {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 18px;
+      color: #2ecc71;
+      font-weight: bold;
+      display: none;
+    }
+
+    .products button.selected .checkmark {
+      display: block;
     }
 
     input[type="text"], input[type="email"], select {
@@ -477,7 +516,17 @@
           button.type = 'button';
           button.value = product.name;
           button.setAttribute('data-payment-link', product.paymentLink);
-          button.textContent = product.name;
+
+          // name format ধরেছি: "90 Diamond - 70৳"
+          const parts = (product.name || '').split('-');
+          const title = parts[0] ? parts[0].trim() : product.name;
+          const price = parts[1] ? parts[1].trim() : '';
+
+          button.innerHTML = `
+            <span class="product-title">${title}</span>
+            <span class="product-price">${price}</span>
+            <span class="checkmark">✔</span>
+          `;
           
           button.addEventListener('click', function() {
             document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
@@ -485,9 +534,9 @@
             selectedProductInput.value = this.value;
             selectedPaymentLink = this.getAttribute('data-payment-link');
             
-            const parts = this.value.split('-');
-            const price = parts[1]?.trim();
-            priceDisplay.textContent = "💰 Price: " + price;
+            const parts2 = this.value.split('-');
+            const price2 = parts2[1]?.trim() || '';
+            priceDisplay.textContent = price2 ? ("💰 Price: " + price2) : "💰 Price updated";
             priceDisplay.style.color = '#e74c3c';
 
             autoPaymentImg.classList.remove('disabled');
