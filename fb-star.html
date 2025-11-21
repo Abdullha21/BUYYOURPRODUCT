@@ -58,10 +58,9 @@
     function goBack() {
       window.location.href = "homepage.html";
     }
-
-
   </script>
   <!-- Back Button End -->
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Facebook Star Recharge</title>
@@ -90,29 +89,68 @@
       margin-bottom: 10px; 
       color: #B300B3; 
     }
-    .products button {
-      display: block;
-      width: 100%;
-      margin: 5px 0;
-      padding: 10px;
-      background-color: #eee;
-      border: 2px solid transparent;
+
+    /* === নতুন SUDO BOX / CARD স্টাইল (FF UID এর মতো) === */
+    .products {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .product-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px 6px;
+      text-align: center;
+      border: 2px solid #ddd;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
       cursor: pointer;
-      transition: all 0.3s ease;
+      position: relative;
+      transition: all 0.25s ease;
+      font-size: 14px;
     }
-    .products button.selected {
-      border-color: red;
-      background-color: #ffe6e6;
+
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(179, 0, 179, 0.35);
+      border-color: #B300B3;
     }
-    .products button:hover {
-      transform: scale(1.1);
-      background-color: #e0e0e0;
-      box-shadow: 0 0 15px rgba(179, 0, 179, 0.5);
-      animation: glow 1s ease-in-out infinite alternate;
+
+    .product-title {
+      display: block;
+      font-weight: 600;
+      color: #333;
     }
-    .products button:active {
-      animation: shake 0.3s ease;
+
+    .product-price {
+      display: block;
+      margin-top: 6px;
+      font-weight: 700;
+      color: #d60000;
+      font-size: 15px;
     }
+
+    .checkmark {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 18px;
+      color: #32cd32;
+      display: none;
+      font-weight: bold;
+    }
+
+    .product-card.selected {
+      border-color: #32cd32;
+      box-shadow: 0 0 10px rgba(50,205,50,0.5);
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    .product-card.selected .checkmark {
+      display: block;
+    }
+    /* === SUDO BOX END === */
+
     input[type="text"], input[type="email"], select {
       width: 100%;
       padding: 10px;
@@ -200,19 +238,9 @@
       cursor: not-allowed;
     }
     /* Animation Keyframes */
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      50% { transform: translateX(8px); }
-      75% { transform: translateX(-8px); }
-    }
     @keyframes pulse {
       0% { transform: scale(1.1); box-shadow: 0 0 20px rgba(204, 0, 204, 0.7); }
       100% { transform: scale(1.15); box-shadow: 0 0 30px rgba(204, 0, 204, 1); }
-    }
-    @keyframes glow {
-      0% { box-shadow: 0 0 15px rgba(179, 0, 179, 0.5); }
-      100% { box-shadow: 0 0 25px rgba(179, 0, 179, 0.8); }
     }
     @keyframes inputGlow {
       0% { box-shadow: 0 0 12px rgba(179, 0, 179, 0.7); }
@@ -373,20 +401,33 @@
         
         snapshot.forEach(doc => {
           const product = doc.data();
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.value = product.name;
-          button.setAttribute('data-payment-link', product.paymentLink);
-          button.textContent = product.name;
           
-          button.addEventListener('click', function() {
-            document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          card.setAttribute('data-payment-link', product.paymentLink || '');
+          card.setAttribute('data-name', product.name);
+
+          // name থেকে প্রাইস আলাদা করা
+          const parts = (product.name || '').split('-');
+          const titleText = parts[0] ? parts[0].trim() : product.name;
+          const priceText = parts[1] ? parts[1].trim() : '';
+
+          card.innerHTML = `
+            <span class="product-title">${titleText}</span>
+            <span class="product-price">${priceText}</span>
+            <span class="checkmark">✔</span>
+          `;
+          
+          card.addEventListener('click', function() {
+            document.querySelectorAll('#productList .product-card').forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
-            selectedProductInput.value = this.value;
+
+            const fullName = this.getAttribute('data-name');
+            selectedProductInput.value = fullName;
             selectedPaymentLink = this.getAttribute('data-payment-link');
-            
-            const parts = this.value.split('-');
-            const price = parts[1]?.trim();
+
+            const parts = fullName.split('-');
+            const price = parts[1]?.trim() || '';
             priceDisplay.textContent = "Price: " + price;
             priceDisplay.style.color = '#d60000';
 
@@ -402,7 +443,7 @@
             paymentCompleted = false;
           });
           
-          productList.appendChild(button);
+          productList.appendChild(card);
         });
       }, error => {
         console.error('Error loading products:', error);
@@ -502,7 +543,7 @@
         autoPaymentImg.src = 'https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg';
         paymentBtn.disabled = true;
         paymentBtn.style.background = '#ccc';
-        document.querySelectorAll('#productList button').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('#productList .product-card').forEach(c => c.classList.remove('selected'));
         bkashBtn.classList.remove('selected');
         nagadBtn.classList.remove('selected');
         priceDisplay.textContent = '';
@@ -517,5 +558,3 @@
   </script>
 </body>
 </html>
-
-
