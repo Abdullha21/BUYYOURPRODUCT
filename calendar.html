@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar-save-money-Account</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: #0f0f0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            border: 1px solid #2a2a2a;
+        }
+        
+        h1, h2, h3 {
+            color: #00ff88;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        input, textarea, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: 2px solid #00ff88;
+            background: #333333;
+        }
+        
+        button {
+            background: #00ff88;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background: #00cc70;
+            transform: translateY(-2px);
+        }
+        
+        .logout-btn {
+            background: #ff4444;
+            float: right;
+            width: auto;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+        
+        .calc-btn {
+            background: #ff9500;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+        
+        .calc-btn:hover {
+            background: #e68500;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        #calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+        }
+        
+        .calendar-header {
+            background: #2a2a2a;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #00ff88;
+            font-size: 14px;
+        }
+        
+        .day {
+            background: #2a2a2a;
+            padding: 12px 8px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            min-height: 100px;
+            opacity: 1;
+            transform: scale(0.95);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        
+        .day:hover {
+            transform: scale(1);
+            border-color: #00ff88;
+        }
+        
+        .day.today {
+            border: 2px solid #00ff88;
+            transform: scale(1);
+            background: #1a2a1a;
+        }
+        
+        .day.has-data {
+            background: linear-gradient(135deg, #003320 0%, #002211 100%);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+            animation: pulseGlow 2s infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(0, 255, 136, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 136, 0.7); }
+            100% { box-shadow: 0 0 10px rgba(0, 255, 136, 0.4); }
+        }
+        
+        .day-number {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+        
+        .day-amount {
+            font-size: 12px;
+            margin: 3px 0;
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .day-source {
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 5px;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+        
+        .month-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .month-nav button {
+            width: 50px;
+            padding: 10px;
+            background: #333;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .month-nav button:hover {
+            background: #444;
+        }
+        
+        .summary p {
+            font-size: 1.2em;
+            margin: 10px 0;
+            padding: 8px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        
+        .profit {
+            font-size: 1.6em !important;
+            font-weight: bold;
+            color: #00ff88 !important;
+            padding: 15px !important;
+            background: #1a2a1a !important;
+        }
+        
+        .loss {
+            color: #ff4444 !important;
+            background: #2a1a1a !important;
+        }
+        
+        .modal, .calc-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            overflow: auto;
+        }
+        
+        .modal-content, .calc-content {
+            background: #1a1a1a;
+            margin: 5% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 15px;
+            position: relative;
+            border: 2px solid #00ff88;
+        }
+        
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 35px;
+            cursor: pointer;
+            color: #aaa;
+            transition: 0.3s;
+        }
+        
+        .close:hover {
+            color: #ff4444;
+        }
+        
+        .delete-btn {
+            background: #ff4444;
+            margin-top: 15px;
+        }
+        
+        .delete-btn:hover {
+            background: #cc0000;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00ff88;
+            font-size: 14px;
+        }
+        
+        .calc-display {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 28px;
+            text-align: right;
+            margin-bottom: 20px;
+            min-height: 70px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #444;
+        }
+        
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .calculator button {
+            padding: 15px;
+            font-size: 18px;
+            background: #2a2a2a;
+            color: white;
+        }
+        
+        .calculator button:hover {
+            background: #3a3a3a;
+        }
+        
+        .calculator button.operator {
+            background: #ff9500;
+            color: white;
+        }
+        
+        .calculator button.operator:hover {
+            background: #e68500;
+        }
+        
+        .calculator button.equal {
+            background: #00ff88;
+            color: black;
+        }
+        
+        .calculator button.zero {
+            grid-column: span 2;
+        }
+        
+        .converter {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        
+        .converter h3 {
+            color: #ff9500;
+            margin-bottom: 15px;
+        }
+        
+        .converter-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .converter-group input {
+            flex: 1;
+        }
+        
+        .converter-group button {
+            width: auto;
+            min-width: 100px;
+        }
+        
+        .rate-display {
+            text-align: center;
+            color: #00ff88;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+        
+        .error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .success {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .loader {
+            border: 4px solid #2a2a2a;
+            border-top: 4px solid #00ff88;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .card {
+                padding: 15px;
+            }
+            
+            #calendar {
+                gap: 5px;
+            }
+            
+            .day {
+                min-height: 80px;
+                padding: 8px 4px;
+            }
+            
+            .day-number {
+                font-size: 14px;
+            }
+            
+            .day-amount {
+                font-size: 10px;
+            }
+            
+            .day-source {
+                font-size: 8px;
+            }
+            
+            .calendar-header {
+                font-size: 12px;
+                padding: 8px 4px;
+            }
+        }
+               /* existing styles এর নিচে যোগ করুন */
+        
+        .developer-credit {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 26, 0.95);
+            color: #888;
+            text-align: center;
+            padding: 12px;
+            font-size: 14px;
+            border-top: 1px solid #00ff88;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+        
+        .developer-credit a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        
+        .developer-credit a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        
+        .developer-credit .version {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+        }
+        
+        .developer-logo {
+            font-size: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginSection" class="card">
+            <h2>লগইন / সাইনআপ</h2>
+            <div class="error" id="loginError"></div>
+            <div class="success" id="loginSuccess"></div>
+            <div class="form-group">
+                <label for="email">ইমেইল</label>
+                <input type="email" id="email" placeholder="আপনার ইমেইল ঠিকানা">
+            </div>
+            <div class="form-group">
+                <label for="password">পাসওয়ার্ড</label>
+                <input type="password" id="password" placeholder="আপনার পাসওয়ার্ড">
+            </div>
+            <button onclick="login()">লগইন</button>
+            <button onclick="signup()">নতুন অ্যাকাউন্ট তৈরি করুন</button>
+            <div class="loader" id="authLoader"></div>
+        </div>
+
+        <div id="appSection" class="hidden">
+            <div class="header">
+                <h1>Calendar save money Account</h1>
+                <button class="logout-btn" onclick="logout()">লগ আউট</button>
+                <div style="clear: both;"></div>
+            </div>
+            
+            <div class="card">
+                <div class="month-nav">
+                    <button onclick="prevMonth()">←</button>
+                    <h2 id="monthYear"></h2>
+                    <button onclick="nextMonth()">→</button>
+                </div>
+                
+                <button class="calc-btn" onclick="openCalculator()">📱 ক্যালকুলেটর + কনভার্টার</button>
+                
+                <div id="calendar">
+                    <!-- Calendar will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="summary card">
+                <h3>এই মাসের মোট হিসাব</h3>
+                <p>মোট ইনকাম: <span id="totalIncome">0.00</span> USDT</p>
+                <p>মোট খরচ: <span id="totalExpense">0.00</span> USDT</p>
+                <p>মোট ইনভেস্ট: <span id="totalInvest">0.00</span> USDT</p>
+                <p class="profit" id="profitLoss">লাভ/লস: 0.00 USDT</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <h3 id="modalDate"></h3>
+            <div class="error" id="modalError"></div>
+            
+            <div class="form-group">
+                <label for="income">ইনকাম (USDT)</label>
+                <input type="number" step="0.01" id="income" placeholder="ইনকামের পরিমাণ">
+            </div>
+            
+            <div class="form-group">
+                <label for="incomeSource">ইনকামের উৎস</label>
+                <input type="text" id="incomeSource" placeholder="কোথা থেকে? (Binance, Referral...)" list="incomeSources">
+            </div>
+            
+            <div class="form-group">
+                <label for="expense">খরচ (USDT)</label>
+                <input type="number" step="0.01" id="expense" placeholder="খরচের পরিমাণ">
+            </div>
+            
+            <div class="form-group">
+                <label for="expenseCategory">খরচের ধরণ</label>
+                <input type="text" id="expenseCategory" placeholder="কোথায় খরচ? (Food, Fee...)" list="expenseCategories">
+            </div>
+            
+            <div class="form-group">
+                <label for="invest">ইনভেস্ট (USDT)</label>
+                <input type="number" step="0.01" id="invest" placeholder="ইনভেস্টের পরিমাণ">
+            </div>
+            
+            <div class="form-group">
+                <label for="investPlatform">ইনভেস্ট প্ল্যাটফর্ম</label>
+                <input type="text" id="investPlatform" placeholder="কোথায় ইনভেস্ট? (Staking, Futures...)" list="investPlatforms">
+            </div>
+            
+            <div class="form-group">
+                <label for="note">নোট</label>
+                <textarea id="note" rows="3" placeholder="যেকোনো বিশেষ নোট"></textarea>
+            </div>
+            
+            <button onclick="saveDay()">💾 ডেটা সেভ করুন</button>
+            <button class="delete-btn" id="deleteBtn" onclick="deleteDay()" style="display:none;">🗑️ ডেটা ডিলিট করুন</button>
+        </div>
+    </div>
+
+    <!-- Datalists for suggestions -->
+    <datalist id="incomeSources">
+        <option value="Binance">
+        <option value="Bybit">
+        <option value="OKX">
+        <option value="Referral">
+        <option value="YouTube">
+        <option value="Telegram">
+        <option value="Airdrop">
+        <option value="Trading">
+        <option value="Staking">
+        <option value="Freelancing">
+    </datalist>
+    
+    <datalist id="expenseCategories">
+        <option value="Food">
+        <option value="Rent">
+        <option value="Ads">
+        <option value="Fee">
+        <option value="Withdrawal">
+        <option value="Gift">
+        <option value="Shopping">
+        <option value="Transport">
+        <option value="Bills">
+    </datalist>
+    
+    <datalist id="investPlatforms">
+        <option value="Staking">
+        <option value="Futures">
+        <option value="Spot">
+        <option value="Node">
+        <option value="Launchpad">
+        <option value="Liquidity Pool">
+        <option value="Savings">
+    </datalist>
+
+    <!-- Calculator Modal -->
+    <div id="calcModal" class="calc-modal">
+        <div class="calc-content">
+            <span class="close" onclick="closeCalcModal()">×</span>
+            <h2 style="color:#ff9500;text-align:center;">🧮 ক্যালকুলেটর + কনভার্টার</h2>
+            
+            <div class="calc-display" id="calcDisplay">0</div>
+            
+            <div class="calculator">
+                <button class="calc-btn" onclick="clearCalc()">C</button>
+                <button class="calc-btn" onclick="deleteLast()">⌫</button>
+                <button class="calc-btn operator" onclick="appendToCalc('/')">/</button>
+                <button class="calc-btn operator" onclick="appendToCalc('*')">×</button>
+                
+                <button class="calc-btn" onclick="appendToCalc('7')">7</button>
+                <button class="calc-btn" onclick="appendToCalc('8')">8</button>
+                <button class="calc-btn" onclick="appendToCalc('9')">9</button>
+                <button class="calc-btn operator" onclick="appendToCalc('-')">-</button>
+                
+                <button class="calc-btn" onclick="appendToCalc('4')">4</button>
+                <button class="calc-btn" onclick="appendToCalc('5')">5</button>
+                <button class="calc-btn" onclick="appendToCalc('6')">6</button>
+                <button class="calc-btn operator" onclick="appendToCalc('+')">+</button>
+                
+                <button class="calc-btn" onclick="appendToCalc('1')">1</button>
+                <button class="calc-btn" onclick="appendToCalc('2')">2</button>
+                <button class="calc-btn" onclick="appendToCalc('3')">3</button>
+                <button class="calc-btn equal" onclick="calculate()">=</button>
+                
+                <button class="calc-btn zero" onclick="appendToCalc('0')">0</button>
+                <button class="calc-btn" onclick="appendToCalc('.')">.</button>
+                <button class="calc-btn" onclick="appendToCalc('(')">(</button>
+                <button class="calc-btn" onclick="appendToCalc(')')">)</button>
+            </div>
+            
+            <div class="converter">
+                <h3>💰 USDT - টাকা কনভার্টার</h3>
+                <div class="rate-display">
+                    বর্তমান রেট: ১ USDT = <span id="rateDisplay">120</span> টাকা
+                </div>
+                
+                <div class="converter-group">
+                    <input type="number" id="takaInput" placeholder="টাকার পরিমাণ">
+                    <button onclick="takaToUsdt()" style="background:#00ff88;">→ USDT</button>
+                </div>
+                
+                <div class="converter-group">
+                    <input type="number" step="0.01" id="usdtInput" placeholder="USDT পরিমাণ">
+                    <button onclick="usdtToTaka()" style="background:#ff9500;">→ টাকা</button>
+                </div>
+                
+                <button onclick="updateRate()" style="background:#2a2a2a; margin-top:10px;">🔄 রেট আপডেট করুন</button>
+                <input type="number" id="newRate" placeholder="নতুন রেট (টাকা)" style="margin-top:10px;">
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            getDocs, 
+            deleteDoc, 
+            query, 
+            where,
+            Timestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOfdNrWquXTJE1t04P3BHqRa5iCI8jHK0",
+            authDomain: "calendar-888d2.firebaseapp.com",
+            projectId: "calendar-888d2",
+            storageBucket: "calendar-888d2.firebasestorage.app",
+            messagingSenderId: "778995585586",
+            appId: "1:778995585586:web:885962728d935d7c1da22b",
+            measurementId: "G-JHKNCR2WTS"
+        };
+
+        // Initialize Firebase
+   const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global variables
+        let currentUser = null;
+        let currentMonth = new Date();
+        let selectedDate = null;
+        let USDT_RATE = localStorage.getItem('usdt_rate') || 120;
+        let monthlyData = {};
+
+        // Authentication state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('appSection').classList.remove('hidden');
+                loadAndRender();
+            } else {
+                currentUser = null;
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('appSection').classList.add('hidden');
+            }
+        });
+
+        // Show/hide loader
+        function showLoader(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function hideLoader(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Show/hide messages
+        function showMessage(type, id, message) {
+            const element = document.getElementById(id);
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+
+        // Authentication functions
+        window.login = async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!email || !password) {
+                showMessage('error', 'loginError', 'ইমেইল এবং পাসওয়ার্ড দিন');
+                return;
+            }
+            
+            showLoader('authLoader');
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage('success', 'loginSuccess', 'লগইন সফল!');
+            } catch (error) {
+                showMessage('error', 'loginError', error.message);
+            } finally {
+                hideLoader('authLoader');
+            }
+        };
+
+        window.signup = async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!email || !password) {
+                showMessage('error', 'loginError', 'ইমেইল এবং পাসওয়ার্ড দিন');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('error', 'loginError', 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে');
+                return;
+            }
+            
+            showLoader('authLoader');
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showMessage('success', 'loginSuccess', 'অ্যাকাউন্ট তৈরি সফল!');
+            } catch (error) {
+                showMessage('error', 'loginError', error.message);
+            } finally {
+                hideLoader('authLoader');
+            }
+        };
+
+        window.logout = async () => {
+            try {
+                await signOut(auth);
+                showMessage('success', 'loginSuccess', 'লগআউট সফল!');
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        };
+
+        // Load and render calendar data
+        const loadAndRender = async () => {
+            if (!currentUser) return;
+            
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+            // Update month-year display
+            document.getElementById('monthYear').textContent = 
+                currentMonth.toLocaleDateString('bn-BD', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+            
+            // Calculate date range for query
+            const start = new Date(year, month, 1);
+            const end = new Date(year, month + 1, 0, 23, 59, 59);
+            
+            monthlyData = {};
+            
+            try {
+                const q = query(
+                    collection(db, 'users', currentUser.uid, 'days'),
+                    where('timestamp', '>=', Timestamp.fromDate(start)),
+                    where('timestamp', '<=', Timestamp.fromDate(end))
+                );
+                
+                const snapshot = await getDocs(q);
+                snapshot.forEach(doc => {
+                    monthlyData[doc.id] = doc.data();
+                });
+                
+                renderCalendar();
+                updateSummary();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        };
+
+        // Render calendar
+        const renderCalendar = () => {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date().toISOString().slice(0, 10);
+            
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            
+            // Add day headers
+            const daysOfWeek = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'];
+            daysOfWeek.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-header';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
+            
+            // Add empty cells for days before first day of month
+            for (let i = 0; i < firstDay; i++) {
+                calendar.appendChild(document.createElement('div'));
+            }
+            
+            // Add day cells
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let totalInvest = 0;
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayData = monthlyData[dateStr] || {};
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day';
+                
+                // Calculate profit/loss for the day
+                const income = dayData.income || 0;
+                const expense = dayData.expense || 0;
+                const invest = dayData.invest || 0;
+                const profit = income - expense - invest;
+                
+                // Update totals
+                totalIncome += income;
+                totalExpense += expense;
+                totalInvest += invest;
+                
+                // Build day content
+                let content = `<div class="day-number">${day}</div>`;
+                
+                if (income > 0) {
+                    content += `<div class="day-amount" style="color:#00ff88;">+${income.toFixed(2)}</div>`;
+                }
+                if (expense > 0) {
+                    content += `<div class="day-amount" style="color:#ff4444;">-${expense.toFixed(2)}</div>`;
+                }
+                if (invest > 0) {
+                    content += `<div class="day-amount" style="color:#ff9500;">${invest.toFixed(2)}</div>`;
+                }
+                
+                // Add source info if available
+                if (dayData.incomeSource || dayData.expenseCategory || dayData.investPlatform) {
+                    const sources = [];
+                    if (dayData.incomeSource) sources.push(dayData.incomeSource);
+                    if (dayData.expenseCategory) sources.push(dayData.expenseCategory);
+                    if (dayData.investPlatform) sources.push(dayData.investPlatform);
+                    content += `<div class="day-source">${sources.join(', ')}</div>`;
+                }
+                
+                dayEl.innerHTML = content;
+                
+                // Add classes based on data
+                if (dateStr === today) {
+                    dayEl.classList.add('today');
+                }
+                if (Object.keys(dayData).length > 0) {
+                    dayEl.classList.add('has-data');
+                }
+                
+                // Add click event
+                dayEl.onclick = () => openModal(dateStr);
+                calendar.appendChild(dayEl);
+            }
+            
+            // Update summary
+            document.getElementById('totalIncome').textContent = totalIncome.toFixed(2);
+            document.getElementById('totalExpense').textContent = totalExpense.toFixed(2);
+            document.getElementById('totalInvest').textContent = totalInvest.toFixed(2);
+            
+            const totalProfit = totalIncome - totalExpense - totalInvest;
+            const profitEl = document.getElementById('profitLoss');
+            profitEl.textContent = `লাভ/লস: ${totalProfit.toFixed(2)} USDT`;
+            profitEl.className = totalProfit >= 0 ? 'profit' : 'profit loss';
+        };
+
+        // Update summary without re-rendering calendar
+        const updateSummary = () => {
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let totalInvest = 0;
+            
+            Object.values(monthlyData).forEach(dayData => {
+                totalIncome += dayData.income || 0;
+                totalExpense += dayData.expense || 0;
+                totalInvest += dayData.invest || 0;
+            });
+            
+            document.getElementById('totalIncome').textContent = totalIncome.toFixed(2);
+            document.getElementById('totalExpense').textContent = totalExpense.toFixed(2);
+            document.getElementById('totalInvest').textContent = totalInvest.toFixed(2);
+            
+            const totalProfit = totalIncome - totalExpense - totalInvest;
+            const profitEl = document.getElementById('profitLoss');
+            profitEl.textContent = `লাভ/লস: ${totalProfit.toFixed(2)} USDT`;
+            profitEl.className = totalProfit >= 0 ? 'profit' : 'profit loss';
+        };
+
+        // Modal functions
+        window.openModal = (date) => {
+            selectedDate = date;
+            const dateObj = new Date(date);
+            document.getElementById('modalDate').textContent = 
+                dateObj.toLocaleDateString('bn-BD', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            
+            const dayData = monthlyData[date] || {};
+            
+            document.getElementById('income').value = dayData.income || '';
+            document.getElementById('incomeSource').value = dayData.incomeSource || '';
+            document.getElementById('expense').value = dayData.expense || '';
+            document.getElementById('expenseCategory').value = dayData.expenseCategory || '';
+            document.getElementById('invest').value = dayData.invest || '';
+            document.getElementById('investPlatform').value = dayData.investPlatform || '';
+            document.getElementById('note').value = dayData.note || '';
+            
+            document.getElementById('deleteBtn').style.display = Object.keys(dayData).length > 0 ? 'block' : 'none';
+            document.getElementById('modal').style.display = 'block';
+        };
+
+        window.saveDay = async () => {
+            if (!currentUser) return;
+            
+            const income = parseFloat(document.getElementById('income').value) || 0;
+            const expense = parseFloat(document.getElementById('expense').value) || 0;
+            const invest = parseFloat(document.getElementById('invest').value) || 0;
+            
+            // Validate at least one field has value
+            if (income === 0 && expense === 0 && invest === 0) {
+                showMessage('error', 'modalError', 'কমপক্ষে একটি ফিল্ড পূরণ করুন');
+                return;
+            }
+            
+            const data = {
+                income: income,
+                incomeSource: document.getElementById('incomeSource').value.trim(),
+                expense: expense,
+                expenseCategory: document.getElementById('expenseCategory').value.trim(),
+                invest: invest,
+                investPlatform: document.getElementById('investPlatform').value.trim(),
+                note: document.getElementById('note').value.trim(),
+                timestamp: Timestamp.fromDate(new Date(selectedDate))
+            };
+            
+            try {
+                await setDoc(doc(db, 'users', currentUser.uid, 'days', selectedDate), data);
+                monthlyData[selectedDate] = data;
+                closeModal();
+                renderCalendar();
+                updateSummary();
+            } catch (error) {
+                console.error('Error saving data:', error);
+                showMessage('error', 'modalError', 'ডেটা সেভ করতে সমস্যা হয়েছে');
+            }
+        };
+
+        window.deleteDay = async () => {
+            if (!currentUser || !confirm('আপনি কি নিশ্চিত যে আপনি এই দিনের ডেটা মুছে ফেলতে চান?')) {
+                return;
+            }
+            
+            try {
+                await deleteDoc(doc(db, 'users', currentUser.uid, 'days', selectedDate));
+                delete monthlyData[selectedDate];
+                closeModal();
+                renderCalendar();
+                updateSummary();
+            } catch (error) {
+                console.error('Error deleting data:', error);
+                showMessage('error', 'modalError', 'ডেটা ডিলিট করতে সমস্যা হয়েছে');
+            }
+        };
+
+        window.closeModal = () => {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('modalError').style.display = 'none';
+        };
+
+        // Month navigation
+        window.prevMonth = () => {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            loadAndRender();
+        };
+
+        window.nextMonth = () => {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            loadAndRender();
+        };
+
+        // Calculator functions
+        let calcExpression = '';
+        
+        window.appendToCalc = (value) => {
+            calcExpression += value;
+            document.getElementById('calcDisplay').textContent = calcExpression || '0';
+        };
+
+        window.clearCalc = () => {
+            calcExpression = '';
+            document.getElementById('calcDisplay').textContent = '0';
+        };
+
+        window.deleteLast = () => {
+            calcExpression = calcExpression.slice(0, -1);
+            document.getElementById('calcDisplay').textContent = calcExpression || '0';
+        };
+
+        window.calculate = () => {
+            try {
+                // Replace × with * for eval
+                const expression = calcExpression.replace(/×/g, '*');
+                const result = eval(expression);
+                calcExpression = result.toString();
+                document.getElementById('calcDisplay').textContent = result;
+            } catch (error) {
+                document.getElementById('calcDisplay').textContent = 'Error';
+                calcExpression = '';
+            }
+        };
+
+        window.openCalculator = () => {
+            document.getElementById('calcModal').style.display = 'block';
+            document.getElementById('rateDisplay').textContent = USDT_RATE;
+            clearCalc();
+        };
+
+        window.closeCalcModal = () => {
+            document.getElementById('calcModal').style.display = 'none';
+        };
+
+        window.takaToUsdt = () => {
+            const taka = parseFloat(document.getElementById('takaInput').value);
+            if (!isNaN(taka) && taka > 0) {
+                const usdt = taka / USDT_RATE;
+                document.getElementById('usdtInput').value = usdt.toFixed(4);
+                alert(`${taka} টাকা = ${usdt.toFixed(4)} USDT`);
+            }
+        };
+
+        window.usdtToTaka = () => {
+            const usdt = parseFloat(document.getElementById('usdtInput').value);
+            if (!isNaN(usdt) && usdt > 0) {
+                const taka = usdt * USDT_RATE;
+                document.getElementById('takaInput').value = taka.toFixed(2);
+                alert(`${usdt} USDT = ${taka.toFixed(2)} টাকা`);
+            }
+        };
+
+        window.updateRate = () => {
+            const newRate = parseFloat(document.getElementById('newRate').value);
+            if (!isNaN(newRate) && newRate > 0) {
+                USDT_RATE = newRate;
+                localStorage.setItem('usdt_rate', newRate);
+                document.getElementById('rateDisplay').textContent = newRate;
+                document.getElementById('newRate').value = '';
+                alert(`রেট আপডেট হয়েছে: ১ USDT = ${newRate} টাকা`);
+            }
+        };
+
+        // Close modals when clicking outside
+        window.onclick = (event) => {
+            const modal = document.getElementById('modal');
+            const calcModal = document.getElementById('calcModal');
+            
+            if (event.target === modal) {
+                closeModal();
+            }
+            if (event.target === calcModal) {
+                closeCalcModal();
+            }
+        };
+
+        // Close modals with Escape key
+        document.onkeydown = (event) => {
+            if (event.key === 'Escape') {
+                closeModal();
+                closeCalcModal();
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current month display
+            document.getElementById('monthYear').textContent = 
+                currentMonth.toLocaleDateString('bn-BD', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+        });
+    </script>
+  <!-- ফুটার ক্রেডিট -->
+    <div class="developer-credit">
+        <span class="developer-logo">🚀</span>
+        <strong>Developed by</strong> 
+        <a href="https://t.me/abdullha2" target="_blank">Abdullah Khan</a>
+        <span class="version">v1.0.1</span>
+    </div>
+
+
+</body>
+</html>
