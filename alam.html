@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USDT ট্র্যাকার - Sound সহ এলার্ম</title>
+    <style>
+        /* এলার্ম CSS */
+        .alarm-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid #333;
+        }
+        
+        .alarm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .alarm-btn {
+            background: #ff9500;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+        
+        .alarm-btn:hover {
+            background: #e68500;
+            transform: translateY(-2px);
+        }
+        
+        .alarm-badge {
+            background: red;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .alarm-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            overflow-y: auto;
+        }
+        
+        .alarm-content {
+            background: #1a1a1a;
+            margin: 50px auto;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 15px;
+            border: 2px solid #ff9500;
+        }
+        
+        .alarm-item {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 5px solid #ff9500;
+        }
+        
+        .alarm-time {
+            color: #ff9500;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .alarm-reason {
+            color: #00ff88;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .alarm-days {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .alarm-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .delete-alarm {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff9500;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            box-shadow: 0 5px 25px rgba(255,149,0,0.5);
+            z-index: 9999;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification-message {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .notification-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .snooze-btn {
+            background: #2a2a2a;
+            color: #00ff88;
+            border: 2px solid #00ff88;
+        }
+        
+        .close-btn {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .test-sound-btn {
+            background: #00ff88;
+            color: black;
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .day-checkboxes {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .day-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #aaa;
+        }
+        
+        .day-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .sound-test {
+            margin-top: 20px;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            border: 1px solid #00ff88;
+        }
+        
+        .sound-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .sound-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .sound-btn:hover {
+            background: #444;
+        }
+        
+        .active-sound {
+            background: #00ff88 !important;
+            color: black !important;
+        }
+        
+        .volume-control {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .volume-slider {
+            flex: 1;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #00ff88;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .alarm-ringing {
+            animation: ring 0.5s infinite alternate;
+        }
+        
+        @keyframes ring {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+        
+        .permission-warning {
+            background: #ff4444;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- আগের সব HTML কোড -->
+        
+        <!-- এলার্ম সেকশন যোগ করুন -->
+        <div class="alarm-section card">
+            <div class="alarm-header">
+                <h3 style="color:#ff9500;">🔔 এলার্ম সিস্টেম</h3>
+                <button class="alarm-btn" onclick="openAlarmModal()">
+                    ⏰ এলার্ম ম্যানেজ করুন
+                    <span id="activeAlarms" class="alarm-badge">0</span>
+                </button>
+            </div>
+            
+            <div class="permission-warning" id="permissionWarning">
+                ⚠️ এলার্মের জন্য পারমিশন দিন। পারমিশন না দিলে এলার্ম বাজবে না।
+            </div>
+            
+            <div id="nextAlarmInfo" style="color:#aaa; font-size:14px; margin-top:10px; padding:10px; background:#2a2a2a; border-radius:8px;">
+                পরবর্তী এলার্ম: লোড হচ্ছে...
+            </div>
+            
+            <div class="sound-test">
+                <h4 style="color:#00ff88; margin-bottom:10px;">🔊 Sound টেস্ট করুন</h4>
+                <div class="sound-buttons" id="soundButtons">
+                    <!-- Sound buttons will be added here -->
+                </div>
+                <div class="volume-control">
+                    <span style="color:#aaa;">🔊 ভলিউম:</span>
+                    <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider" oninput="updateVolume()">
+                    <span id="volumeValue" style="color:#00ff88; width:40px;">50%</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- বাকি সব -->
+    </div>
+    
+    <!-- এলার্ম মডাল -->
+    <div id="alarmModal" class="alarm-modal">
+        <div class="alarm-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="color:#ff9500; margin:0;">⏰ নতুন এলার্ম</h2>
+                <button onclick="closeAlarmModal()" style="background:none; border:none; color:#aaa; font-size:30px; cursor:pointer;">×</button>
+            </div>
+            
+            <div style="margin-bottom:15px;">
+                <label style="color:#00ff88; display:block; margin-bottom:5px;">সময় সেট করুন</label>
+                <input type="time" id="alarmTime" style="width:100%; padding:12px; background:#2a2a2a; border:none; border-radius:8px; color:white; font-size:16px;">
+            </div>
+            
+            <div style="margin-bottom:15px;">
+                <label style="color:#00ff88; display:block; margin-bottom:5px;">এলার্মের কারণ</label>
+                <input type="text" id="alarmReason" placeholder="যেমন: ট্রেডিং টাইম, রিপোর্ট চেক" style="width:100%; padding:12px; background:#2a2a2a; border:none; border-radius:8px; color:white; font-size:16px;">
+            </div>
+            
+            <div style="margin-bottom:15px;">
+                <label style="color:#00ff88; display:block; margin-bottom:5px;">পুনরাবৃত্তি</label>
+                <select id="alarmRepeat" style="width:100%; padding:12px; background:#2a2a2a; border:none; border-radius:8px; color:white; font-size:16px;">
+                    <option value="once">একবার</option>
+                    <option value="daily">প্রতিদিন</option>
+                    <option value="weekdays">শুধু কর্মদিবস (সোম-শুক্র)</option>
+                    <option value="weekends">শুধু সাপ্তাহিক ছুটি (শনি-রবি)</option>
+                    <option value="weekly">সাপ্তাহিক</option>
+                    <option value="custom">কাস্টম দিন</option>
+                </select>
+            </div>
+            
+            <div id="customDays" style="display:none; margin-bottom:15px;">
+                <label style="color:#00ff88; display:block; margin-bottom:5px;">দিন নির্বাচন করুন</label>
+                <div class="day-checkboxes">
+                    <label class="day-checkbox">
+                        <input type="checkbox" name="day" value="0"> রবি
+                    </label>
+                    <label class="day-checkbox">
+                        <input type="checkbox" name="day" value="1"> সোম
+                    </label>
+                    <label class="day-checkbox">
+                        <input type="checkbox" name="day" value="2"> মঙ্গল
+                    </label>
+                    <label class="day-checkbox">
+                        <input type="checkbox" name="day" value="3"> বুধ
+                    </label>
+                    <label class="day-checkbox">
+                        <input type="checkbox" name="day" value="4"> বৃহস্পতি
+                    </label>
+                    <label class="day-checkbox">
+                        <input type="checkbox" name="day" value="5"> শুক্র
+                    </label>
+                    <label class="day-checkbox">
+                        <input type="checkbox" name="day" value="6"> শনি
+                    </label>
+                </div>
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <label style="color:#00ff88; display:block; margin-bottom:5px;">Sound সিলেক্ট করুন</label>
+                <select id="alarmSound" style="width:100%; padding:12px; background:#2a2a2a; border:none; border-radius:8px; color:white; font-size:16px;">
+                    <option value="classic">ক্লাসিক এলার্ম</option>
+                    <option value="digital">ডিজিটাল এলার্ম</option>
+                    <option value="beep">বিপ এলার্ম</option>
+                    <option value="bell">বেল এলার্ম</option>
+                    <option value="chime">চাইম এলার্ম</option>
+                    <option value="siren">সাইরেন</option>
+                </select>
+            </div>
+            
+            <button onclick="saveAlarm()" style="background:#00ff88; color:black; padding:15px; width:100%; border:none; border-radius:8px; font-size:18px; cursor:pointer; font-weight:bold; margin-bottom:20px;">
+                💾 এলার্ম সেভ করুন
+            </button>
+            
+            <button onclick="testSelectedSound()" class="test-sound-btn">
+                🔊 বর্তমান Sound টেস্ট করুন
+            </button>
+            
+            <h3 style="color:#00ff88; margin:25px 0 15px 0; border-bottom:2px solid #00ff88; padding-bottom:10px;">আপনার এলার্ম গুলো</h3>
+            
+            <div id="alarmList" style="max-height:300px; overflow-y:auto;">
+                <!-- এলার্ম লিস্ট -->
+            </div>
+        </div>
+    </div>
+      <!-- Sound ফাইল গুলো -->
+    <audio id="soundClassic" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-classic-alarm-995.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundDigital" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-digital-clock-digital-alarm-buzzer-992.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundBeep" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundBell" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundChime" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-morning-clock-alarm-1003.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundSiren" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-siren-alert-994.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- বর্তমান সাউন্ড প্লেয়ার -->
+    <audio id="currentAlarmSound" preload="auto"></audio>
+
+    <!-- Firebase + এলার্ম সিস্টেম -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            getDocs, 
+            deleteDoc, 
+            query, 
+            where,
+            onSnapshot,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase কনফিগারেশন
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOfdNrWquXTJE1t04P3BHqRa5iCI8jHK0",
+            authDomain: "calendar-888d2.firebaseapp.com",
+            projectId: "calendar-888d2",
+            storageBucket: "calendar-888d2.firebasestorage.app",
+            messagingSenderId: "778995585586",
+            appId: "1:778995585586:web:885962728d935d7c1da22b",
+            measurementId: "G-JHKNCR2WTS"
+        };
+
+        // Firebase ইনিশিয়ালাইজ
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // গ্লোবাল ভেরিয়েবল
+        let currentUser = null;
+        let alarms = [];
+        let currentAlarm = null;
+        let alarmInterval = null;
+        let volume = 50;
+        let selectedSound = 'classic';
+        let permissionGranted = false;
+
+        // Sound URLs
+        const soundUrls = {
+            classic: "https://assets.mixkit.co/sfx/preview/mixkit-classic-alarm-995.mp3",
+            digital: "https://assets.mixkit.co/sfx/preview/mixkit-digital-clock-digital-alarm-buzzer-992.mp3",
+            beep: "https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3",
+            bell: "https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3",
+            chime: "https://assets.mixkit.co/sfx/preview/mixkit-morning-clock-alarm-1003.mp3",
+            siren: "https://assets.mixkit.co/sfx/preview/mixkit-siren-alert-994.mp3"
+        };
+
+        // Sound বাটন লোড
+        function loadSoundButtons() {
+            const soundButtons = document.getElementById('soundButtons');
+            const sounds = [
+                {id: 'classic', name: 'ক্লাসিক', emoji: '🔔'},
+                {id: 'digital', name: 'ডিজিটাল', emoji: '📟'},
+                {id: 'beep', name: 'বিপ', emoji: '🔊'},
+                {id: 'bell', name: 'বেল', emoji: '🔔'},
+                {id: 'chime', name: 'চাইম', emoji: '🎵'},
+                {id: 'siren', name: 'সাইরেন', emoji: '🚨'}
+            ];
+            
+            soundButtons.innerHTML = '';
+            sounds.forEach(sound => {
+                const btn = document.createElement('button');
+                btn.className = `sound-btn ${selectedSound === sound.id ? 'active-sound' : ''}`;
+                btn.innerHTML = `${sound.emoji} ${sound.name}`;
+                btn.onclick = () => selectSound(sound.id);
+                soundButtons.appendChild(btn);
+            });
+        }
+
+        // Sound সিলেক্ট
+        function selectSound(soundId) {
+            selectedSound = soundId;
+            document.getElementById('alarmSound').value = soundId;
+            loadSoundButtons();
+            testSound(soundId);
+        }
+
+        // Sound টেস্ট
+        function testSound(soundId) {
+            const audio = document.getElementById(`sound${soundId.charAt(0).toUpperCase() + soundId.slice(1)}`);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.volume = volume / 100;
+                audio.play().catch(e => {
+                    console.log('Sound error:', e);
+                    alert('Sound প্লে করতে সমস্যা। ব্রাউজার পারমিশন চেক করুন।');
+                });
+            }
+        }
+
+        // সিলেক্টেড Sound টেস্ট
+        function testSelectedSound() {
+            const soundId = document.getElementById('alarmSound').value;
+            testSound(soundId);
+        }
+
+        // ভলিউম আপডেট
+        function updateVolume() {
+            volume = document.getElementById('volumeSlider').value;
+            document.getElementById('volumeValue').textContent = `${volume}%`;
+            
+            // সব সাউন্ডের ভলিউম আপডেট
+            const sounds = ['Classic', 'Digital', 'Beep', 'Bell', 'Chime', 'Siren'];
+            sounds.forEach(sound => {
+                const audio = document.getElementById(`sound${sound}`);
+                if (audio) {
+                    audio.volume = volume / 100;
+                }
+            });
+        }
+
+        // অথেন্টিকেশন স্টেট
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                checkNotificationPermission();
+                loadAlarmsFromFirebase();
+                setupAlarmListener();
+            } else {
+                currentUser = null;
+                alarms = [];
+                updateAlarmUI();
+            }
+        });
+
+        // নোটিফিকেশন পারমিশন চেক
+        function checkNotificationPermission() {
+            if (!("Notification" in window)) {
+                showPermissionWarning("এই ব্রাউজার নোটিফিকেশন সাপোর্ট করে না");
+                permissionGranted = false;
+                return;
+            }
+            
+            if (Notification.permission === "granted") {
+                permissionGranted = true;
+                document.getElementById('permissionWarning').style.display = 'none';
+            } else if (Notification.permission === "denied") {
+                showPermissionWarning("নোটিফিকেশন পারমিশন ডিনাই করা হয়েছে। সেটিংস থেকে পারমিশন দিন।");
+                permissionGranted = false;
+            } else {
+                requestNotificationPermission();
+            }
+        }
+
+        // পারমিশন রিকোয়েস্ট
+        function requestNotificationPermission() {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    permissionGranted = true;
+                    document.getElementById('permissionWarning').style.display = 'none';
+                } else {
+                    showPermissionWarning("পারমিশন দেওয়া হয়নি। এলার্ম কাজ করবে না।");
+                    permissionGranted = false;
+                }
+            });
+        }
+
+        // পারমিশন ওয়ার্নিং
+        function showPermissionWarning(message) {
+            const warning = document.getElementById('permissionWarning');
+            warning.innerHTML = `⚠️ ${message} <button onclick="requestNotificationPermission()" style="background:#00ff88; color:black; border:none; padding:5px 10px; border-radius:5px; margin-left:10px; cursor:pointer;">পারমিশন দিন</button>`;
+            warning.style.display = 'block';
+        }
+
+        // Firebase থেকে এলার্ম লোড
+        async function loadAlarmsFromFirebase() {
+            if (!currentUser) return;
+            
+            try {
+                const q = query(collection(db, 'users', currentUser.uid, 'alarms'));
+                const querySnapshot = await getDocs(q);
+                
+                alarms = [];
+                querySnapshot.forEach(doc => {
+                    alarms.push({ id: doc.id, ...doc.data() });
+                });
+                
+                updateAlarmUI();
+                startAlarmChecker();
+            } catch (error) {
+                console.error('Alarm load error:', error);
+            }
+        }
+
+        // রিয়েলটাইম এলার্ম লিসেনার
+        function setupAlarmListener() {
+            if (!currentUser) return;
+            
+            const q = query(collection(db, 'users', currentUser.uid, 'alarms'));
+            onSnapshot(q, (snapshot) => {
+                alarms = [];
+                snapshot.forEach(doc => {
+                    alarms.push({ id: doc.id, ...doc.data() });
+                });
+                updateAlarmUI();
+            });
+        }
+
+        // এলার্ম মডাল খুলুন
+        function openAlarmModal() {
+            document.getElementById('alarmModal').style.display = 'block';
+            loadAlarmsToList();
+            
+            // Repeat select change handler
+            document.getElementById('alarmRepeat').onchange = function() {
+                document.getElementById('customDays').style.display = 
+                    this.value === 'custom' ? 'block' : 'none';
+            };
+        }
+
+        // এলার্ম মডাল বন্ধ করুন
+        function closeAlarmModal() {
+            document.getElementById('alarmModal').style.display = 'none';
+        }
+
+        // নতুন এলার্ম সেভ করুন
+        async function saveAlarm() {
+            if (!currentUser) {
+                alert('দয়া করে প্রথমে লগইন করুন');
+                return;
+            }
+            
+            const time = document.getElementById('alarmTime').value;
+            const reason = document.getElementById('alarmReason').value.trim();
+            const repeat = document.getElementById('alarmRepeat').value;
+            const sound = document.getElementById('alarmSound').value;
+            
+            if (!time || !reason) {
+                alert('সময় এবং কারণ লিখুন');
+                return;
+            }
+            
+            // Custom days collect
+            let customDays = [];
+            if (repeat === 'custom') {
+                const checkboxes = document.querySelectorAll('input[name="day"]:checked');
+                checkboxes.forEach(cb => customDays.push(parseInt(cb.value)));
+                if (customDays.length === 0) {
+                    alert('কমপক্ষে একটি দিন সিলেক্ট করুন');
+                    return;
+                }
+            }
+            
+            const alarmId = `alarm_${Date.now()}`;
+            const alarmData = {
+                id: alarmId,
+                time: time,
+                reason: reason,
+                repeat: repeat,
+                sound: sound,
+                customDays: customDays,
+                active: true,
+                createdAt: serverTimestamp(),
+                userId: currentUser.uid,
+                nextTrigger: calculateNextTrigger(time, repeat, customDays)
+            };
+            
+            try {
+                await setDoc(doc(db, 'users', currentUser.uid, 'alarms', alarmId), alarmData);
+                
+                // ফর্ম ক্লিয়ার
+                document.getElementById('alarmTime').value = '';
+                document.getElementById('alarmReason').value = '';
+                document.getElementById('customDays').style.display = 'none';
+                
+                alert('এলার্ম সেট করা হয়েছে!');
+            } catch (error) {
+                console.error('Alarm save error:', error);
+                alert('এলার্ম সেট করতে সমস্যা হয়েছে');
+            }
+        }
+      
+      // পরবর্তী ট্রিগার ক্যালকুলেট
+        function calculateNextTrigger(time, repeat, customDays = []) {
+            const now = new Date();
+            const [hours, minutes] = time.split(':');
+            const alarmTime = new Date();
+            alarmTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            
+            // যদি আজকের সময় পার হয়ে গিয়ে থাকে
+            if (alarmTime < now) {
+                alarmTime.setDate(alarmTime.getDate() + 1);
+            }
+            
+            // Repeat logic
+            if (repeat === 'once') {
+                return alarmTime.getTime();
+            }
+            
+            if (repeat === 'daily') {
+                return alarmTime.getTime();
+            }
+            
+            if (repeat === 'weekdays') {
+                while ([0, 6].includes(alarmTime.getDay())) {
+                    alarmTime.setDate(alarmTime.getDate() + 1);
+                }
+                return alarmTime.getTime();
+            }
+            
+            if (repeat === 'weekends') {
+                while (![0, 6].includes(alarmTime.getDay())) {
+                    alarmTime.setDate(alarmTime.getDate() + 1);
+                }
+                return alarmTime.getTime();
+            }
+            
+            if (repeat === 'weekly') {
+                return alarmTime.getTime();
+            }
+            
+            if (repeat === 'custom' && customDays.length > 0) {
+                while (!customDays.includes(alarmTime.getDay())) {
+                    alarmTime.setDate(alarmTime.getDate() + 1);
+                }
+                return alarmTime.getTime();
+            }
+            
+            return alarmTime.getTime();
+        }
+
+        // এলার্ম লিস্ট লোড
+        function loadAlarmsToList() {
+            const alarmList = document.getElementById('alarmList');
+            
+            if (alarms.length === 0) {
+                alarmList.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">কোন এলার্ম নেই</p>';
+                return;
+            }
+            
+            alarmList.innerHTML = '';
+            
+            alarms.forEach(alarm => {
+                const alarmItem = document.createElement('div');
+                alarmItem.className = 'alarm-item';
+                
+                const repeatText = getRepeatText(alarm.repeat, alarm.customDays);
+                const soundText = getSoundText(alarm.sound);
+                
+                alarmItem.innerHTML = `
+                    <div class="alarm-time">🕐 ${alarm.time}</div>
+                    <div class="alarm-reason">📝 ${alarm.reason}</div>
+                    <div class="alarm-days">
+                        ${repeatText} | ${soundText}
+                    </div>
+                    <div class="alarm-actions">
+                        <button class="delete-alarm" onclick="deleteAlarm('${alarm.id}')">
+                            ❌ ডিলিট
+                        </button>
+                        <button style="background:#333; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-size:14px;" onclick="testAlarmSound('${alarm.sound}')">
+                            🔊 টেস্ট
+                        </button>
+                    </div>
+                `;
+                
+                alarmList.appendChild(alarmItem);
+            });
+        }
+
+        // Repeat টেক্সট
+        function getRepeatText(repeat, customDays = []) {
+            const texts = {
+                'once': 'একবার',
+                'daily': 'প্রতিদিন',
+                'weekdays': 'শুধু কর্মদিবস',
+                'weekends': 'শুধু ছুটির দিন',
+                'weekly': 'সাপ্তাহিক',
+                'custom': 'কাস্টম দিন'
+            };
+            
+            let text = texts[repeat] || repeat;
+            
+            if (repeat === 'custom' && customDays.length > 0) {
+                const dayNames = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহস্পতি', 'শুক্র', 'শনি'];
+                const days = customDays.map(day => dayNames[day]).join(', ');
+                text = `নির্দিষ্ট দিন: ${days}`;
+            }
+            
+            return text;
+        }
+
+        // Sound টেক্সট
+        function getSoundText(sound) {
+            const texts = {
+                'classic': 'ক্লাসিক',
+                'digital': 'ডিজিটাল',
+                'beep': 'বিপ',
+                'bell': 'বেল',
+                'chime': 'চাইম',
+                'siren': 'সাইরেন'
+            };
+            return texts[sound] || sound;
+        }
+
+        // এলার্ম ডিলিট
+        async function deleteAlarm(alarmId) {
+            if (!confirm('এই এলার্ম ডিলিট করতে চান?')) return;
+            
+            try {
+                await deleteDoc(doc(db, 'users', currentUser.uid, 'alarms', alarmId));
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('ডিলিট করতে সমস্যা হয়েছে');
+            }
+        }
+
+        // এলার্ম Sound টেস্ট
+        function testAlarmSound(soundId) {
+            testSound(soundId);
+        }
+
+        // UI আপডেট
+        function updateAlarmUI() {
+            const activeAlarms = alarms.filter(alarm => alarm.active);
+            document.getElementById('activeAlarms').textContent = activeAlarms.length;
+            
+            // পরবর্তী এলার্ম
+            const now = Date.now();
+            const upcomingAlarms = activeAlarms
+                .filter(alarm => alarm.nextTrigger > now)
+                .sort((a, b) => a.nextTrigger - b.nextTrigger);
+            
+            if (upcomingAlarms.length > 0) {
+                const nextAlarm = upcomingAlarms[0];
+                const nextTime = new Date(nextAlarm.nextTrigger);
+                const timeStr = nextTime.toLocaleTimeString('bn-BD', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                document.getElementById('nextAlarmInfo').innerHTML = `
+                    <strong style="color:#ff9500">পরবর্তী এলার্ম:</strong><br>
+                    🕐 ${timeStr} - ${nextAlarm.reason}<br>
+                    <small style="color:#aaa">${getRepeatText(nextAlarm.repeat, nextAlarm.customDays)}</small>
+                `;
+            } else {
+                document.getElementById('nextAlarmInfo').innerHTML = 'পরবর্তী এলার্ম: নেই';
+            }
+        }
+
+        // এলার্ম চেকার শুরু করুন
+        function startAlarmChecker() {
+            if (alarmInterval) clearInterval(alarmInterval);
+            
+            alarmInterval = setInterval(() => {
+                checkAlarms();
+            }, 60000); // প্রতি মিনিটে চেক
+            
+            // প্রথম চেক
+            checkAlarms();
+        }
+
+        // এলার্ম চেক
+        function checkAlarms() {
+            if (!permissionGranted) return;
+            
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            const currentDay = now.getDay();
+            
+            alarms.forEach(alarm => {
+                if (!alarm.active) return;
+                
+                const [hours, minutes] = alarm.time.split(':');
+                const alarmTime = parseInt(hours) * 60 + parseInt(minutes);
+                
+                // সময় মিলছে কিনা
+                if (Math.abs(currentTime - alarmTime) <= 1) {
+                    // Repeat চেক
+                    if (shouldTriggerAlarm(alarm, currentDay)) {
+                        triggerAlarm(alarm);
+                    }
+                }
+            });
+        }
+
+        // এলার্ম ট্রিগার হওয়া উচিত কিনা
+        function shouldTriggerAlarm(alarm, currentDay) {
+            if (alarm.repeat === 'once') return true;
+            if (alarm.repeat === 'daily') return true;
+            if (alarm.repeat === 'weekdays') return currentDay >= 1 && currentDay <= 5;
+            if (alarm.repeat === 'weekends') return currentDay === 0 || currentDay === 6;
+            if (alarm.repeat === 'weekly') return true;
+            if (alarm.repeat === 'custom') {
+                return alarm.customDays && alarm.customDays.includes(currentDay);
+            }
+            return true;
+        }
+
+        // এলার্ম ট্রিগার
+        function triggerAlarm(alarm) {
+            currentAlarm = alarm;
+            
+            // Sound বাজাও
+            playAlarmSound(alarm.sound);
+            
+            // নোটিফিকেশন দেখাও
+            showAlarmNotification(alarm.reason);
+            
+            // ব্রাউজার নোটিফিকেশন
+            if (Notification.permission === "granted") {
+                new Notification("🔔 এলার্ম!", {
+                    body: alarm.reason,
+                    icon: "https://cdn-icons-png.flaticon.com/512/3208/3208720.png",
+                    tag: "usdt-alarm"
+                });
+            }
+            
+            // Firebase-এ লগ
+            if (currentUser) {
+                logAlarmTrigger(alarm.id);
+            }
+        }
+
+        // Alarm sound বাজাও
+        function playAlarmSound(soundId) {
+            const audio = document.getElementById('currentAlarmSound');
+            audio.src = soundUrls[soundId];
+            audio.volume = volume / 100;
+            audio.loop = true;
+            
+            audio.play().catch(e => {
+                console.log('Alarm sound error:', e);
+                // Fallback to embedded sound
+                testSound(soundId);
+            });
+        }
+
+        // এলার্ম নোটিফিকেশন দেখাও
+        function showAlarmNotification(message) {
+            document.getElementById('notificationTitle').textContent = 'এলার্ম!';
+            document.getElementById('notificationMessage').textContent = message;
+            document.getElementById('alarmNotification').style.display = 'block';
+            
+            // 30 সেকেন্ড পর অটো বন্ধ
+            setTimeout(() => {
+                if (document.getElementById('alarmNotification').style.display === 'block') {
+                    stopAlarm();
+                }
+            }, 30000);
+        }
+
+        // এলার্ম স্টপ
+        function stopAlarm() {
+            const audio = document.getElementById('currentAlarmSound');
+            audio.pause();
+            audio.currentTime = 0;
+            document.getElementById('alarmNotification').style.display = 'none';
+            currentAlarm = null;
+        }
+
+        // স্নুজ
+        function snoozeAlarm() {
+            stopAlarm();
+            setTimeout(() => {
+                if (currentAlarm) {
+                    triggerAlarm(currentAlarm);
+                }
+            }, 5 * 60 * 1000); // 5 মিনিট
+        }
+
+        // Firebase-এ এলার্ম লগ
+        async function logAlarmTrigger(alarmId) {
+            if (!currentUser) return;
+            
+            try {
+                await setDoc(doc(db, 'users', currentUser.uid, 'alarm_logs', `log_${Date.now()}`), {
+                    alarmId: alarmId,
+                    triggeredAt: serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Log error:', error);
+            }
+        }
+
+        // পেইজ লোড হলে
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSoundButtons();
+            updateVolume();
+            
+            // ভলিউম স্লাইডার ইভেন্ট
+            document.getElementById('volumeSlider').addEventListener('input', updateVolume);
+            
+            // Repeat select change
+            document.getElementById('alarmRepeat').addEventListener('change', function() {
+                document.getElementById('customDays').style.display = 
+                    this.value === 'custom' ? 'block' : 'none';
+            });
+        });
+
+        // গ্লোবাল ফাংশন
+        window.openAlarmModal = openAlarmModal;
+        window.closeAlarmModal = closeAlarmModal;
+        window.saveAlarm = saveAlarm;
+        window.deleteAlarm = deleteAlarm;
+        window.testSelectedSound = testSelectedSound;
+        window.testAlarmSound = testAlarmSound;
+        window.requestNotificationPermission = requestNotificationPermission;
+        window.updateVolume = updateVolume;
+        window.stopAlarm = stopAlarm;
+        window.snoozeAlarm = snoozeAlarm;
+        window.selectSound = selectSound;
+
+        // বাইরে ক্লিক করলে মডাল বন্ধ
+        window.onclick = function(event) {
+            if (event.target.id === 'alarmModal') {
+                closeAlarmModal();
+            }
+        };
+    </script>
+</body>
+</html>
