@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -20,14 +21,14 @@
         .hidden { display:none !important; }
         #calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin:20px 0; }
         .calendar-header { background:#1e2535; padding:12px; border-radius:10px; text-align:center; font-weight:bold; color:#00ff88; font-size:14px; }
-        .day { background:#1e2535; padding:12px 8px; border-radius:12px; text-align:center; cursor:pointer; min-height:100px; transition:all 0.4s ease; position:relative; overflow:hidden; border:2px solid transparent; }
+        .day { background:#1e2535; padding:6px 4px; border-radius:12px; text-align:center; cursor:pointer; min-height:70px; transition:all 0.4s ease; position:relative; overflow:hidden; border:2px solid transparent; }
         .day:hover { transform:scale(1.04); border-color:#00ff88; box-shadow:0 0 20px rgba(0,255,136,0.3); }
         .day.today { border:2px solid #00ff88; background:#142022; transform:scale(1.03); }
         .day.has-data { background:linear-gradient(135deg,#003320,#002211); transform:scale(1.06); box-shadow:0 0 25px rgba(0,255,136,0.5); animation:pulseGlow 2.5s infinite; }
         @keyframes pulseGlow { 0%{box-shadow:0 0 12px rgba(0,255,136,0.4);} 50%{box-shadow:0 0 30px rgba(0,255,136,0.8);} 100%{box-shadow:0 0 12px rgba(0,255,136,0.4);} }
-        .day-number { font-size:18px; font-weight:bold; margin-bottom:5px; color:#ffffff; }
-        .day-amount { font-size:12px; margin:3px 0; padding:2px 6px; border-radius:6px; background:rgba(0,0,0,0.4); }
-        .day-source { font-size:10px; color:#bbb; margin-top:5px; word-break:break-all; }
+        .day-number { font-size:16px; font-weight:bold; margin-bottom:2px; color:#ffffff; }
+        .day-amount { font-size:11px; margin:1px 0; padding:1px 4px; border-radius:4px; background:rgba(0,0,0,0.4); }
+        .day-source { font-size:9px; color:#bbb; margin-top:2px; word-break:break-word; display:none; }
         .month-nav { display:flex; justify-content:space-between; align-items:center; margin:20px 0; }
         .month-nav button { width:50px; padding:10px; background:#1e2535; color:#00ff88; font-size:20px; border-radius:10px; }
         .month-nav button:hover { background:#2a344a; }
@@ -58,7 +59,20 @@
         .developer-credit { position:fixed; bottom:0; left:0; right:0; background:rgba(26,30,46,0.95); color:#888; text-align:center; padding:12px; font-size:14px; border-top:1px solid #00ff88; z-index:999; backdrop-filter:blur(10px); }
         .developer-credit a { color:#00ff88; text-decoration:none; font-weight:bold; transition:0.3s; }
         .developer-credit a:hover { color:#ffffff; text-shadow:0 0 12px #00ff88; }
-        @media (max-width:768px) { .hamburger { font-size:30px; } .side-menu { width:280px; padding:20px; } .app-name { font-size:1.4em; } }
+        @media (max-width:768px) { 
+            .hamburger { font-size:30px; } 
+            .side-menu { width:280px; padding:20px; } 
+            .app-name { font-size:1.4em; } 
+            .day { min-height:65px; padding:4px 2px; }
+            .day-number { font-size:14px; }
+            .day-amount { font-size:10px; }
+        }
+        @media (max-width:480px) {
+            .day { min-height:60px; }
+            .calendar-header { font-size:12px; padding:8px; }
+            #calendar { gap:6px; }
+            .card { padding:15px; }
+        }
     </style>
 </head>
 <body>
@@ -107,8 +121,7 @@
                 </div>
                 <button class="hamburger" onclick="openSideMenu()">☰</button>
             </div>
-            
-            <div class="card">
+                        <div class="card">
                 <div class="month-nav">
                     <button onclick="prevMonth()">←</button>
                     <h2 id="monthYear"></h2>
@@ -316,9 +329,7 @@
                 renderCalendar();
                 updateSummary();
             } catch (error) { console.error('Error loading data:', error); }
-        };
-
-        const renderCalendar = () => {
+        };const renderCalendar = () => {
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth();
             const firstDay = new Date(year, month, 1).getDay();
@@ -347,17 +358,14 @@
                 if (inc > 0) html += `<div class="day-amount" style="color:#00ff88;">+${inc.toFixed(2)}</div>`;
                 if (exp > 0) html += `<div class="day-amount" style="color:#ff4444;">-${exp.toFixed(2)}</div>`;
                 if (inv > 0) html += `<div class="day-amount" style="color:#ff9500;">${inv.toFixed(2)}</div>`;
-                if (data.incomeSource || data.expenseCategory || data.investPlatform) {
-                    const srcs = [data.incomeSource, data.expenseCategory, data.investPlatform].filter(Boolean);
-                    html += `<div class="day-source">${srcs.join(', ')}</div>`;
-                }
+                // কোথা থেকে লাভ/লস এসেছে তা হোম পেইজে শো করবে না - .day-source সরিয়ে দেওয়া হয়েছে
                 el.innerHTML = html;
                 if (dateStr === today) el.classList.add('today');
                 if (Object.keys(data).length > 0) el.classList.add('has-data');
                 el.onclick = () => openModal(dateStr);
                 calendar.appendChild(el);
             }
-  document.getElementById('totalIncome').textContent = ti.toFixed(2);
+            document.getElementById('totalIncome').textContent = ti.toFixed(2);
             document.getElementById('totalExpense').textContent = te.toFixed(2);
             document.getElementById('totalInvest').textContent = tiv.toFixed(2);
             const tp = ti - te - tiv;
@@ -466,7 +474,6 @@
                 overlay.classList.remove('show');
             }
         }
-
         function openLastMonthReport() {
             closeSideMenu();
             window.open('last-month-report.html', '_blank');
@@ -488,7 +495,6 @@
 
             document.getElementById('monthYear').textContent = currentMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
         });
-
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeSideMenu();
