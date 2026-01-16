@@ -32,6 +32,64 @@
         .button-group { display:flex; gap:15px; margin-top:20px; }
         .button-group button { flex:1; }
         
+        /* লোডিং সিস্টেম */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(0, 255, 136, 0.3);
+            border-radius: 50%;
+            border-top-color: #00ff88;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: #00ff88;
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .small-loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 255, 136, 0.3);
+            border-radius: 50%;
+            border-top-color: #00ff88;
+            animation: spin 1s ease-in-out infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: #1e2535;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10000;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00cc70);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
         /* অ্যাডভান্সড ফিচার */
         .advanced-features { margin-top:30px; padding:20px; background:rgba(30,37,53,0.5); border-radius:12px; border-left:4px solid #00ff88; }
         .feature-list { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:15px; margin-top:15px; }
@@ -39,7 +97,7 @@
         .feature-item:hover { border-color:#00ff88; transform:translateY(-3px); }
         .feature-icon { font-size:24px; margin-bottom:10px; }
         
-        /* ক্যালেন্ডার স্টাইল (মোবাইল ফ্রেন্ডলি) */
+        /* ক্যালেন্ডার স্টাইল */
         #calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin:20px 0; }
         .calendar-header { background:#1e2535; padding:12px; border-radius:10px; text-align:center; font-weight:bold; color:#00ff88; font-size:14px; }
         .day { background:#1e2535; padding:6px 4px; border-radius:12px; text-align:center; cursor:pointer; min-height:70px; transition:all 0.4s ease; position:relative; overflow:hidden; border:2px solid transparent; }
@@ -63,7 +121,6 @@
         .delete-btn { background:linear-gradient(90deg,#ff4444,#cc0000); margin-top:15px; }
         .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; flex-wrap:nowrap; }
         .logo-title { display:flex; align-items:center; gap:12px; }
-        .logo { font-size:36px; }
         .app-name { font-size:1.7em; color:#00ff88; white-space:nowrap; }
         .hamburger { font-size:36px; background:none; border:none; color:#00ff88; cursor:pointer; padding:6px 12px; border-radius:50%; transition:all 0.3s; margin-left:auto; }
         .hamburger:hover { background:rgba(0,255,136,0.18); transform:scale(1.15); }
@@ -80,8 +137,7 @@
         .developer-credit { position:fixed; bottom:0; left:0; right:0; background:rgba(26,30,46,0.95); color:#888; text-align:center; padding:12px; font-size:14px; border-top:1px solid #00ff88; z-index:999; backdrop-filter:blur(10px); }
         .developer-credit a { color:#00ff88; text-decoration:none; font-weight:bold; transition:0.3s; }
         .developer-credit a:hover { color:#ffffff; text-shadow:0 0 12px #00ff88; }
-        
-        @media (max-width:768px) { 
+                @media (max-width:768px) { 
             .hamburger { font-size:30px; } 
             .side-menu { width:280px; padding:20px; } 
             .app-name { font-size:1.4em; } 
@@ -102,7 +158,18 @@
         }
     </style>
 </head>
-<body>
+<body> 
+    <!-- লোডিং সিস্টেম -->
+    <div id="globalLoader" class="loader-overlay">
+        <div style="text-align: center;">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingMessage">লোড হচ্ছে...</div>
+        </div>
+    </div>
+
+    <div id="progressContainer" class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+    </div>
 
     <div class="overlay" id="overlay" onclick="closeSideMenu()"></div>
 
@@ -123,21 +190,17 @@
     </div>
 
     <div class="container">
-        <!-- লগইন/সাইনআপ সেকশন -->
         <div id="loginSection" class="card auth-container">
-            <!-- লোগো -->
             <div class="login-logo">
                 <img src="https://uploads.onecompiler.io/42weeh2u8/44afppfx3/1000029290.png" alt="Calendar Save Money Logo">
                 <h1>Calendar Save Money Account</h1>
             </div>
             
-            <!-- ট্যাব সিস্টেম -->
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="showAuthForm('login')">লগইন</button>
                 <button class="auth-tab" onclick="showAuthForm('signup')">সাইনআপ</button>
             </div>
             
-            <!-- লগইন ফর্ম -->
             <div id="loginForm" class="auth-form active">
                 <div class="error" id="loginError"></div>
                 <div class="success" id="loginSuccess"></div>
@@ -153,12 +216,13 @@
                 </div>
                 
                 <div class="button-group">
-                    <button onclick="login()">লগইন</button>
+                    <button onclick="login()" id="loginBtn">
+                        <span id="loginText">লগইন</span>
+                    </button>
                     <button onclick="showAuthForm('signup')" style="background:#2a344a; color:#fff;">অ্যাকাউন্ট নেই?</button>
                 </div>
             </div>
             
-            <!-- সাইনআপ ফর্ম -->
             <div id="signupForm" class="auth-form">
                 <div class="error" id="signupError"></div>
                 <div class="success" id="signupSuccess"></div>
@@ -179,12 +243,13 @@
                 </div>
                 
                 <div class="button-group">
-                    <button onclick="signup()">সাইনআপ</button>
+                    <button onclick="signup()" id="signupBtn">
+                        <span id="signupText">সাইনআপ</span>
+                    </button>
                     <button onclick="showAuthForm('login')" style="background:#2a344a; color:#fff;">ইতিমধ্যে অ্যাকাউন্ট আছে?</button>
                 </div>
             </div>
             
-            <!-- অ্যাডভান্সড ফিচার -->
             <div class="advanced-features">
                 <h4>📱 অ্যাপের বিশেষ ফিচারসমূহ:</h4>
                 <div class="feature-list">
@@ -216,7 +281,6 @@
             </div>
         </div>
 
-        <!-- মেইন অ্যাপ সেকশন -->
         <div id="appSection" class="hidden">
             <div class="header">
                 <div class="logo-title">
@@ -244,8 +308,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Day Modal -->
+        <!-- Day Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">×</span>
@@ -331,7 +394,7 @@
         <span class="developer-logo">🚀</span>
         <strong>Developed by</strong> 
         <a href="https://t.me/abdullha2" target="_blank">Abdullah Khan</a>
-        <span class="version">v1.1.1</span>
+        <span class="version">v1.3.0</span>
     </div>
 
     <script type="module">
@@ -357,7 +420,90 @@
         let currentMonth = new Date();
         let selectedDate = null;
         let monthlyData = {};
-        let isLightTheme = false; // থিম স্টেট
+        let isLightTheme = false;
+
+        // ========== লোডিং সিস্টেম ফাংশন ==========
+        function showGlobalLoader(message = 'লোড হচ্ছে...') {
+            const loader = document.getElementById('globalLoader');
+            const messageEl = document.getElementById('loadingMessage');
+            if (loader && messageEl) {
+                messageEl.textContent = message;
+                loader.style.display = 'flex';
+            }
+        }
+
+        function hideGlobalLoader() {
+            const loader = document.getElementById('globalLoader');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+        }
+
+        function showButtonLoader(buttonId, loadingText = 'প্রসেসিং...') {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                const textSpan = button.querySelector('span');
+                if (textSpan) {
+                    button.setAttribute('data-original-text', textSpan.textContent);
+                    textSpan.innerHTML = `<div class="small-loader"></div> ${loadingText}`;
+                }
+                button.disabled = true;
+                button.style.opacity = '0.7';
+            }
+        }
+
+        function hideButtonLoader(buttonId) {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                const originalText = button.getAttribute('data-original-text') || button.textContent;
+                const textSpan = button.querySelector('span');
+                if (textSpan) {
+                    textSpan.textContent = originalText;
+                }
+                button.disabled = false;
+                button.style.opacity = '1';
+            }
+        }
+
+        function showProgressBar() {
+            const container = document.getElementById('progressContainer');
+            if (container) {
+                container.style.display = 'block';
+            }
+        }
+
+        function updateProgressBar(percent) {
+            const bar = document.getElementById('progressBar');
+            if (bar) {
+                bar.style.width = percent + '%';
+            }
+        }
+
+        function hideProgressBar() {
+            const container = document.getElementById('progressContainer');
+            const bar = document.getElementById('progressBar');
+            if (container && bar) {
+                bar.style.width = '100%';
+                setTimeout(() => {
+                    container.style.display = 'none';
+                    bar.style.width = '0%';
+                }, 300);
+            }
+        }
+
+        const loadingMessages = [
+            "ডেটা লোড হচ্ছে...",
+            "ক্যালেন্ডার প্রস্তুত করা হচ্ছে...",
+            "আপনার তথ্য নিয়ে কাজ করা হচ্ছে...",
+            "অপেক্ষা করুন...",
+            "প্রসেসিং...",
+            "সব কিছু ঠিক করা হচ্ছে..."
+        ];
+
+        function getRandomLoadingMessage() {
+            return loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+        }
+        // ========== লোডিং সিস্টেম ফাংশন শেষ ==========
 
         // লগইন/সাইনআপ ট্যাব সিস্টেম
         window.showAuthForm = (formType) => {
@@ -367,12 +513,10 @@
             if (formType === 'login') {
                 document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
                 document.getElementById('loginForm').classList.add('active');
-                // ফোকাস সেট
                 setTimeout(() => document.getElementById('loginEmail').focus(), 100);
             } else {
                 document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
                 document.getElementById('signupForm').classList.add('active');
-                // ফোকাস সেট
                 setTimeout(() => document.getElementById('signupEmail').focus(), 100);
             }
         };
@@ -383,30 +527,39 @@
             if (isLightTheme) {
                 document.body.style.background = "linear-gradient(135deg,#f5f5f5,#e8e8e8)";
                 document.body.style.color = "#333";
-                // থিম পরিবর্তনের নোটিফিকেশন
                 alert("থিম লাইট মোডে পরিবর্তন করা হয়েছে");
             } else {
                 document.body.style.background = "linear-gradient(135deg,#0a0f1a,#121a2e)";
                 document.body.style.color = "#e0e0e0";
-                // থিম পরিবর্তনের নোটিফিকেশন
                 alert("থিম ডার্ক মোডে পরিবর্তন করা হয়েছে");
             }
-            // মেনু বন্ধ করুন
             closeSideMenu();
-            // লোকাল স্টোরেজে সেভ
             localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
         };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                showGlobalLoader('অ্যাপ প্রস্তুত হচ্ছে...');
+                showProgressBar();
+                updateProgressBar(20);
+                
                 currentUser = user;
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('appSection').classList.remove('hidden');
-                loadAndRender();
+                
+                updateProgressBar(50);
+                
+                setTimeout(() => {
+                    updateProgressBar(70);
+                    loadAndRender();
+                }, 300);
+                
             } else {
                 currentUser = null;
                 document.getElementById('loginSection').classList.remove('hidden');
                 document.getElementById('appSection').classList.add('hidden');
+                hideGlobalLoader();
+                hideProgressBar();
             }
         });
 
@@ -429,20 +582,27 @@
         window.login = async () => {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
+            
             if (!email || !password) {
                 return showMessage('error', 'loginError', 'ইমেইল এবং পাসওয়ার্ড দিন');
             }
-            showLoader('authLoader');
+            showButtonLoader('loginBtn', 'লগইন হচ্ছে...');
+            showProgressBar();
+            updateProgressBar(30);
+            
             try {
                 await signInWithEmailAndPassword(auth, email, password);
+                updateProgressBar(70);
                 showMessage('success', 'loginSuccess', 'লগইন সফল!');
             } catch (error) {
                 let errorMsg = 'লগইন ব্যর্থ!';
                 if (error.code === 'auth/invalid-credential') errorMsg = 'ভুল ইমেইল বা পাসওয়ার্ড';
                 else if (error.code === 'auth/user-not-found') errorMsg = 'অ্যাকাউন্ট নেই';
                 showMessage('error', 'loginError', errorMsg);
-            } finally { 
-                hideLoader('authLoader'); 
+            } finally {
+                updateProgressBar(100);
+                hideButtonLoader('loginBtn');
+                setTimeout(() => hideProgressBar(), 200);
             }
         };
 
@@ -461,54 +621,95 @@
                 return showMessage('error', 'signupError', 'পাসওয়ার্ড মিলছে না');
             }
             
-            showLoader('authLoader');
+            showButtonLoader('signupBtn', 'অ্যাকাউন্ট তৈরি হচ্ছে...');
+            showProgressBar();
+            updateProgressBar(20);
+            
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
+                updateProgressBar(60);
                 showMessage('success', 'signupSuccess', 'অ্যাকাউন্ট তৈরি সফল!');
-                // অটো লগইন করবে
+                
+                updateProgressBar(80);
                 setTimeout(() => {
-                    login(email, password);
-                }, 1500);
+                    login();
+                }, 500);
+                
             } catch (error) {
                 let errorMsg = 'সাইনআপ ব্যর্থ!';
                 if (error.code === 'auth/email-already-in-use') errorMsg = 'ইমেইল ইতিমধ্যে ব্যবহার中';
                 showMessage('error', 'signupError', errorMsg);
-            } finally { 
-                hideLoader('authLoader'); 
+            } finally {
+                updateProgressBar(100);
+                hideButtonLoader('signupBtn');
+                setTimeout(() => hideProgressBar(), 200);
             }
         };
 
         window.logout = async () => {
+            showGlobalLoader('লগআউট হচ্ছে...');
+            showProgressBar();
+            updateProgressBar(30);
+            
             try {
+                updateProgressBar(60);
                 await signOut(auth);
+                updateProgressBar(80);
                 closeSideMenu();
                 showMessage('success', 'loginSuccess', 'লগআউট সফল!');
-            } catch (error) { 
-                console.error('Logout error:', error); 
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                updateProgressBar(100);
+                setTimeout(() => {
+                    hideGlobalLoader();
+                    hideProgressBar();
+                }, 200);
             }
         };
 
         const loadAndRender = async () => {
             if (!currentUser) return;
-            const year = currentMonth.getFullYear();
-            const month = currentMonth.getMonth();
-            document.getElementById('monthYear').textContent = currentMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
-            const start = new Date(year, month, 1);
-            const end = new Date(year, month + 1, 0, 23, 59, 59);
-            monthlyData = {};
+            
+            showGlobalLoader(getRandomLoadingMessage());
+            showProgressBar();
+            updateProgressBar(10);
+            
             try {
+                const year = currentMonth.getFullYear();
+                const month = currentMonth.getMonth();
+                document.getElementById('monthYear').textContent = currentMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
+                
+                updateProgressBar(30);
+                const start = new Date(year, month, 1);
+                const end = new Date(year, month + 1, 0, 23, 59, 59);
+                monthlyData = {};
+                
+                updateProgressBar(50);
                 const q = query(collection(db, 'users', currentUser.uid, 'days'),
                     where('timestamp', '>=', Timestamp.fromDate(start)),
                     where('timestamp', '<=', Timestamp.fromDate(end)));
+                
+                updateProgressBar(70);
                 const snapshot = await getDocs(q);
                 snapshot.forEach(doc => monthlyData[doc.id] = doc.data());
+                
+                updateProgressBar(80);
                 renderCalendar();
+                updateProgressBar(90);
                 updateSummary();
-            } catch (error) { 
-                console.error('Error loading data:', error); 
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showMessage('error', 'modalError', 'ডেটা লোড করতে সমস্যা হয়েছে');
+            } finally {
+                updateProgressBar(100);
+                setTimeout(() => {
+                    hideGlobalLoader();
+                    hideProgressBar();
+                }, 200);
             }
         };
-
         const renderCalendar = () => {
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth();
@@ -593,12 +794,19 @@
 
         window.saveDay = async () => {
             if (!currentUser) return;
+            
             const income = parseFloat(document.getElementById('income').value) || 0;
             const expense = parseFloat(document.getElementById('expense').value) || 0;
             const invest = parseFloat(document.getElementById('invest').value) || 0;
+            
             if (income === 0 && expense === 0 && invest === 0) {
                 return showMessage('error', 'modalError', 'কমপক্ষে একটি ফিল্ড পূরণ করুন');
             }
+            
+            showGlobalLoader('ডেটা সেভ হচ্ছে...');
+            showProgressBar();
+            updateProgressBar(30);
+            
             const data = {
                 income,
                 incomeSource: document.getElementById('incomeSource').value.trim(),
@@ -609,29 +817,53 @@
                 note: document.getElementById('note').value.trim(),
                 timestamp: Timestamp.fromDate(new Date(selectedDate))
             };
+            
             try {
+                updateProgressBar(60);
                 await setDoc(doc(db, 'users', currentUser.uid, 'days', selectedDate), data);
+                updateProgressBar(80);
                 monthlyData[selectedDate] = data;
                 closeModal();
                 renderCalendar();
                 updateSummary();
+                showMessage('success', 'modalSuccess', 'ডেটা সফলভাবে সেভ হয়েছে!');
             } catch (error) {
                 console.error('Error saving data:', error);
                 showMessage('error', 'modalError', 'ডেটা সেভ করতে সমস্যা হয়েছে');
+            } finally {
+                updateProgressBar(100);
+                setTimeout(() => {
+                    hideGlobalLoader();
+                    hideProgressBar();
+                }, 250);
             }
         };
 
         window.deleteDay = async () => {
             if (!currentUser || !confirm('আপনি কি নিশ্চিত যে আপনি এই দিনের ডেটা মুছে ফেলতে চান?')) return;
+            
+            showGlobalLoader('ডেটা ডিলিট হচ্ছে...');
+            showProgressBar();
+            updateProgressBar(30);
+            
             try {
+                updateProgressBar(60);
                 await deleteDoc(doc(db, 'users', currentUser.uid, 'days', selectedDate));
+                updateProgressBar(80);
                 delete monthlyData[selectedDate];
                 closeModal();
                 renderCalendar();
                 updateSummary();
+                showMessage('success', 'modalSuccess', 'ডেটা সফলভাবে ডিলিট হয়েছে!');
             } catch (error) {
                 console.error('Error deleting data:', error);
                 showMessage('error', 'modalError', 'ডেটা ডিলিট করতে সমস্যা হয়েছে');
+            } finally {
+                updateProgressBar(100);
+                setTimeout(() => {
+                    hideGlobalLoader();
+                    hideProgressBar();
+                }, 300);
             }
         };
 
@@ -641,16 +873,17 @@
         };
 
         window.prevMonth = () => { 
+            showGlobalLoader('পূর্ববর্তী মাস লোড হচ্ছে...');
             currentMonth.setMonth(currentMonth.getMonth() - 1); 
             loadAndRender(); 
         };
         
         window.nextMonth = () => { 
+            showGlobalLoader('পরবর্তী মাস লোড হচ্ছে...');
             currentMonth.setMonth(currentMonth.getMonth() + 1); 
             loadAndRender(); 
         };
 
-        // সাইড মেনু ফাংশন
         function openSideMenu() {
             const menu = document.getElementById('sideMenu');
             const overlay = document.getElementById('overlay');
@@ -679,7 +912,6 @@
             window.open('export-data.html', '_blank');
         }
 
-        // ইভেন্ট লিসেনার
         document.addEventListener('DOMContentLoaded', () => {
             const hamburger = document.querySelector('.hamburger');
             if (hamburger) {
@@ -690,10 +922,8 @@
 
             document.getElementById('monthYear').textContent = currentMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
             
-            // ইনপুট ফিল্ডে অটো ফোকাস
             document.getElementById('loginEmail').focus();
             
-            // থিম লোড
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
                 isLightTheme = true;
