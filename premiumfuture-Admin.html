@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - PremiumStore</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ========== ADMIN PANEL CSS ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+        }
+
+        /* Admin Container */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .admin-sidebar h2 {
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-sidebar h2 i {
+            color: #fbbf24;
+        }
+
+        .admin-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            text-align: left;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .admin-nav-btn i {
+            width: 24px;
+        }
+
+        .admin-nav-btn:hover, .admin-nav-btn.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            transform: translateX(5px);
+        }
+
+        /* Main Content */
+        .admin-main {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        /* Tabs */
+        .admin-tab {
+            display: none;
+            animation: adminFadeIn 0.3s;
+        }
+
+        .admin-tab.active {
+            display: block;
+        }
+
+        @keyframes adminFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .admin-tab h2 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        /* Add Button */
+        .admin-add-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 1rem 0;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .admin-add-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(59,130,246,0.3);
+        }
+
+        /* Grid */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .admin-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .admin-card-content {
+            padding: 1rem;
+        }
+
+        .admin-card h3 {
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .admin-card p {
+            color: #3b82f6;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .admin-delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .admin-delete-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        /* Modal */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-modal-content {
+            background: white;
+            width: 90%;
+            max-width: 550px;
+            padding: 2rem;
+            border-radius: 20px;
+            animation: adminSlideUp 0.3s;
+        }
+
+        @keyframes adminSlideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .admin-modal-content h3 {
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+        }
+
+        .admin-modal-content input,
+        .admin-modal-content textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .admin-modal-content textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .admin-modal-content button {
+            margin: 0.5rem 0.5rem 0 0;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .admin-save-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .admin-cancel-btn {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        /* Settings Form */
+        .admin-settings-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+        }
+
+        .admin-settings-form h3 {
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+
+        .admin-settings-form input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .admin-settings-form button {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 80px;
+                padding: 1rem;
+            }
+            .admin-sidebar h2 span,
+            .admin-nav-btn span:not(i) {
+                display: none;
+            }
+            .admin-main {
+                margin-left: 80px;
+            }
+            .admin-nav-btn {
+                justify-content: center;
+            }
+            .admin-nav-btn i {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <h2><i class="fas fa-crown"></i> <span>Admin Panel</span></h2>
+            <nav>
+                <button class="admin-nav-btn active" data-tab="products">
+                    <i class="fas fa-box"></i> <span>Products</span>
+                </button>
+                <button class="admin-nav-btn" data-tab="banners">
+                    <i class="fas fa-images"></i> <span>Banners</span>
+                </button>
+                <button class="admin-nav-btn" data-tab="settings">
+                    <i class="fas fa-cog"></i> <span>Settings</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Products Tab -->
+            <div id="productsTab" class="admin-tab active">
+                <h2><i class="fas fa-box"></i> Manage Products</h2>
+                <button class="admin-add-btn" onclick="showProductModal()">
+                    <i class="fas fa-plus"></i> Add New Product
+                </button>
+                <div id="productsList" class="admin-grid"></div>
+            </div>
+
+            <!-- Banners Tab -->
+            <div id="bannersTab" class="admin-tab">
+                <h2><i class="fas fa-images"></i> Manage Banners</h2>
+                <button class="admin-add-btn" onclick="showBannerModal()">
+                    <i class="fas fa-plus"></i> Add New Banner
+                </button>
+                <div id="bannersList" class="admin-grid"></div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="admin-tab">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <div class="admin-settings-form">
+                    <h3><i class="fab fa-telegram"></i> Social Links</h3>
+                    <input type="url" id="telegramLink" placeholder="Telegram Link (https://t.me/...)">
+                    <input type="url" id="whatsappLink" placeholder="WhatsApp Link (https://wa.me/...)">
+                    <input type="url" id="messengerLink" placeholder="Messenger Link (https://m.me/...)">
+                    <button onclick="saveSocialLinks()">Save Changes</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <h3><i class="fas fa-plus"></i> Add Product</h3>
+            <input type="text" id="productName" placeholder="Product Name">
+            <input type="number" id="productPrice" placeholder="Price (USD)">
+            <input type="url" id="productImage" placeholder="Image URL">
+            <textarea id="productFeatures" placeholder="Features (one per line)&#10;Example:&#10;High Quality&#10;Lifetime Access&#10;24/7 Support"></textarea>
+            <input type="url" id="purchaseLink" placeholder="Purchase / Order Link">
+            <textarea id="whatsappLinks" placeholder="WhatsApp Links (one per line)&#10;Example:&#10;https://wa.me/1234567890&#10;https://wa.me/0987654321"></textarea>
+            <button class="admin-save-btn" onclick="saveProduct()">Save Product</button>
+            <button class="admin-cancel-btn" onclick="closeProductModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Banner Modal -->
+    <div id="bannerModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <h3><i class="fas fa-plus"></i> Add Banner</h3>
+            <input type="url" id="bannerImage" placeholder="Banner Image URL">
+            <button class="admin-save-btn" onclick="saveBanner()">Save Banner</button>
+            <button class="admin-cancel-btn" onclick="closeBannerModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Config (Same as main page)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQW9wJme2hCnGqaSocSyMZriz0AtWEKsU",
+            authDomain: "premium-store-17a23.firebaseapp.com",
+            projectId: "premium-store-17a23",
+            storageBucket: "premium-store-17a23.firebasestorage.app",
+            messagingSenderId: "1068634444182",
+            appId: "1:1068634444182:web:55bc823641dede5e948db7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Tab Switching
+        document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.getElementById(`${tab}Tab`).classList.add('active');
+                
+                if (tab === 'products') loadProducts();
+                if (tab === 'banners') loadBanners();
+            });
+        });
+
+        // Load Products
+        async function loadProducts() {
+            const productsRef = collection(db, 'products');
+            const snapshot = await getDocs(productsRef);
+            const container = document.getElementById('productsList');
+            
+            container.innerHTML = '';
+            snapshot.forEach(doc => {
+                const product = doc.data();
+                container.innerHTML += `
+                    <div class="admin-card">
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                        <div class="admin-card-content">
+                            <h3>${product.name}</h3>
+                            <p>$${product.price}</p>
+                            <small>Features: ${product.features?.length || 0} items</small>
+                        </div>
+                        <button class="admin-delete-btn" onclick="deleteProduct('${doc.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // Load Banners
+        async function loadBanners() {
+            const bannersRef = collection(db, 'banners');
+            const snapshot = await getDocs(bannersRef);
+            const container = document.getElementById('bannersList');
+            
+            container.innerHTML = '';
+            snapshot.forEach(doc => {
+                const banner = doc.data();
+                container.innerHTML += `
+                    <div class="admin-card">
+                        <img src="${banner.imageUrl}" alt="Banner">
+                        <button class="admin-delete-btn" onclick="deleteBanner('${doc.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // Save Product
+        window.saveProduct = async function() {
+            const name = document.getElementById('productName').value;
+            const price = document.getElementById('productPrice').value;
+            const imageUrl = document.getElementById('productImage').value;
+            const features = document.getElementById('productFeatures').value.split('\n').filter(f => f.trim());
+            const purchaseLink = document.getElementById('purchaseLink').value;
+            const whatsappLinks = document.getElementById('whatsappLinks').value.split('\n').filter(l => l.trim());
+            
+            if (!name || !price || !imageUrl) {
+                alert('Please fill all required fields!');
+                return;
+            }
+            
+            await addDoc(collection(db, 'products'), {
+                name,
+                price: parseFloat(price),
+                imageUrl,
+                features,
+                purchaseLink,
+                whatsappLinks,
+                createdAt: new Date()
+            });
+            
+            closeProductModal();
+            loadProducts();
+            alert('Product added successfully!');
+        };
+
+        // Save Banner
+        window.saveBanner = async function() {
+            const imageUrl = document.getElementById('bannerImage').value;
+            
+            if (!imageUrl) {
+                alert('Please enter banner image URL!');
+                return;
+            }
+            
+            await addDoc(collection(db, 'banners'), {
+                imageUrl,
+                createdAt: new Date()
+            });
+            
+            closeBannerModal();
+            loadBanners();
+            alert('Banner added successfully!');
+        };
+
+        // Delete Product
+        window.deleteProduct = async function(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                await deleteDoc(doc(db, 'products', id));
+                loadProducts();
+                alert('Product deleted!');
+            }
+        };
+
+        // Delete Banner
+        window.deleteBanner = async function(id) {
+            if (confirm('Are you sure you want to delete this banner?')) {
+                await deleteDoc(doc(db, 'banners', id));
+                loadBanners();
+                alert('Banner deleted!');
+            }
+        };
+
+        // Save Social Links
+        window.saveSocialLinks = async function() {
+            const telegram = document.getElementById('telegramLink').value;
+            const whatsapp = document.getElementById('whatsappLink').value;
+            const messenger = document.getElementById('messengerLink').value;
+            
+            await setDoc(doc(db, 'settings', 'socialLinks'), {
+                telegram,
+                whatsapp,
+                messenger,
+                updatedAt: new Date()
+            });
+            
+            alert('Social links saved successfully!');
+        };
+
+        // Load Social Links for editing
+        async function loadSocialLinksForEdit() {
+            const settingsRef = doc(db, 'settings', 'socialLinks');
+            const settingsDoc = await getDoc(settingsRef);
+            
+            if (settingsDoc.exists()) {
+                const links = settingsDoc.data();
+                document.getElementById('telegramLink').value = links.telegram || '';
+                document.getElementById('whatsappLink').value = links.whatsapp || '';
+                document.getElementById('messengerLink').value = links.messenger || '';
+            }
+        }
+
+        // Modal Functions
+        window.showProductModal = function() {
+            document.getElementById('productModal').style.display = 'flex';
+        };
+
+        window.closeProductModal = function() {
+            document.getElementById('productModal').style.display = 'none';
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productImage').value = '';
+            document.getElementById('productFeatures').value = '';
+            document.getElementById('purchaseLink').value = '';
+            document.getElementById('whatsappLinks').value = '';
+        };
+
+        window.showBannerModal = function() {
+            document.getElementById('bannerModal').style.display = 'flex';
+        };
+
+        window.closeBannerModal = function() {
+            document.getElementById('bannerModal').style.display = 'none';
+            document.getElementById('bannerImage').value = '';
+        };
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const productModal = document.getElementById('productModal');
+            const bannerModal = document.getElementById('bannerModal');
+            if (event.target === productModal) closeProductModal();
+            if (event.target === bannerModal) closeBannerModal();
+        };
+
+        // Initialize
+        loadProducts();
+        loadBanners();
+        loadSocialLinksForEdit();
+    </script>
+</body>
+</html>

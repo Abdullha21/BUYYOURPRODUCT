@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PremiumStore | Premium Digital Products</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ========== MAIN PAGE CSS ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .main-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .main-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-logo i {
+            -webkit-text-fill-color: #667eea;
+            margin-right: 10px;
+            animation: rotate 3s infinite;
+        }
+
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(360deg); }
+        }
+
+        .main-nav-links a {
+            color: #333;
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .main-nav-links a:hover { color: #667eea; }
+
+        /* Hero Slider */
+        .main-hero {
+            margin-top: 70px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-banner-slider {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+        }
+
+        .main-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .main-slide.active { opacity: 1; }
+
+        .main-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .main-slider-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .main-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .main-dot.active {
+            background: #667eea;
+            transform: scale(1.2);
+        }
+
+        /* Products Section */
+        .main-products-section {
+            padding: 4rem 2rem;
+            background: #f8f9fa;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .main-section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .main-product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .main-product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .main-product-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+        .main-product-card:hover .main-product-image {
+            transform: scale(1.05);
+        }
+
+        .main-product-info {
+            padding: 1.5rem;
+        }
+
+        .main-product-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .main-product-price {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .main-features-list {
+            margin: 1rem 0;
+            padding-left: 1rem;
+        }
+
+        .main-features-list li {
+            margin: 0.5rem 0;
+            color: #666;
+            list-style: none;
+        }
+
+        .main-features-list li i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+        .main-btn-buy {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .main-btn-buy:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        /* Modal */
+        .main-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .main-modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 20px;
+            animation: slideUp 0.3s;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .main-modal-content img {
+            width: 100%;
+            border-radius: 15px;
+            margin: 1rem 0;
+        }
+
+        .main-close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .main-close:hover { color: #333; }
+
+        /* Contact Section */
+        .main-contact-section {
+            padding: 4rem 2rem;
+            background: white;
+        }
+
+        .main-social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .main-social-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            transition: 0.3s;
+            animation: pulse 2s infinite;
+            text-decoration: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .main-social-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        .main-footer {
+            text-align: center;
+            padding: 2rem;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .main-nav-links a {
+                margin: 0 1rem;
+            }
+            .main-products-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-banner-slider {
+                height: 300px;
+            }
+            .main-social-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="main-navbar">
+        <div class="main-nav-container">
+            <div class="main-logo">
+                <i class="fas fa-crown"></i>
+                <span>PremiumStore</span>
+            </div>
+            <div class="main-nav-links">
+                <a href="#home">Home</a>
+                <a href="#products">Products</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Slider -->
+    <section class="main-hero" id="home">
+        <div class="main-banner-slider" id="bannerSlider"></div>
+        <div class="main-slider-dots" id="sliderDots"></div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="main-products-section" id="products">
+        <div class="main-container">
+            <h2 class="main-section-title">
+                <i class="fas fa-gem"></i> Premium Product itam
+            </h2>
+            <div class="main-products-grid" id="productsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="main-modal">
+        <div class="main-modal-content">
+            <span class="main-close" onclick="closeModal()">&times;</span>
+            <div id="modalDetails"></div>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <section class="main-contact-section" id="contact">
+        <div class="main-container">
+            <h2 class="main-section-title">Connect With Us</h2>
+            <div class="main-social-links" id="socialLinks"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <p>Developed by ABDULLAH KHAN</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Config (Replace with your own)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQW9wJme2hCnGqaSocSyMZriz0AtWEKsU",
+            authDomain: "premium-store-17a23.firebaseapp.com",
+            projectId: "premium-store-17a23",
+            storageBucket: "premium-store-17a23.firebasestorage.app",
+            messagingSenderId: "1068634444182",
+            appId: "1:1068634444182:web:55bc823641dede5e948db7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentSlide = 0;
+        let slideInterval;
+
+        // Load Banners
+        async function loadBanners() {
+            const bannersRef = collection(db, 'banners');
+            const snapshot = await getDocs(bannersRef);
+            const slider = document.getElementById('bannerSlider');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            slider.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            
+            let index = 0;
+            snapshot.forEach(doc => {
+                const banner = doc.data();
+                const slide = document.createElement('div');
+                slide.className = 'main-slide';
+                if (index === 0) slide.classList.add('active');
+                slide.innerHTML = `<img src="${banner.imageUrl}" alt="Banner">`;
+                slider.appendChild(slide);
+                
+                const dot = document.createElement('div');
+                dot.className = 'main-dot';
+                if (index === 0) dot.classList.add('active');
+                dot.onclick = () => goToSlide(index);
+                dotsContainer.appendChild(dot);
+                
+                index++;
+            });
+            
+            if (index > 0) startAutoSlide();
+        }
+
+        function startAutoSlide() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 3000);
+        }
+
+        function nextSlide() {
+            const slides = document.querySelectorAll('.main-slide');
+            const dots = document.querySelectorAll('.main-dot');
+            if (slides.length === 0) return;
+            
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            
+            currentSlide = (currentSlide + 1) % slides.length;
+            
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        function goToSlide(index) {
+            const slides = document.querySelectorAll('.main-slide');
+            const dots = document.querySelectorAll('.main-dot');
+            
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            
+            currentSlide = index;
+            
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+            
+            startAutoSlide();
+        }
+
+        // Load Products
+        async function loadProducts() {
+            const productsRef = collection(db, 'products');
+            const snapshot = await getDocs(productsRef);
+            const grid = document.getElementById('productsGrid');
+            
+            grid.innerHTML = '';
+            snapshot.forEach(doc => {
+                const product = doc.data();
+                const productId = doc.id;
+                
+                const card = document.createElement('div');
+                card.className = 'main-product-card';
+                card.innerHTML = `
+                    <img src="${product.imageUrl}" alt="${product.name}" class="main-product-image">
+                    <div class="main-product-info">
+                        <h3 class="main-product-title">${product.name}</h3>
+                        <div class="main-product-price">$${product.price}</div>
+                        <ul class="main-features-list">
+                            ${product.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
+                        </ul>
+                        <button class="main-btn-buy" onclick="viewProduct('${productId}')">
+                            <i class="fas fa-shopping-cart"></i> View Details
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // View Product
+        window.viewProduct = async function(productId) {
+            const productRef = doc(db, 'products', productId);
+            const productDoc = await getDoc(productRef);
+            const product = productDoc.data();
+            
+            const modal = document.getElementById('productModal');
+            const modalDetails = document.getElementById('modalDetails');
+            
+            modalDetails.innerHTML = `
+                <h2 style="color:#667eea">${product.name}</h2>
+                <img src="${product.imageUrl}" alt="${product.name}">
+                <div style="font-size: 2rem; font-weight: bold; margin: 1rem 0; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">$${product.price}</div>
+                <h3><i class="fas fa-star"></i> Premium Features:</h3>
+                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                    ${product.features.map(f => `<li style="margin: 0.5rem 0;"><i class="fas fa-check-circle" style="color:#667eea"></i> ${f}</li>`).join('')}
+                </ul>
+                <h3><i class="fab fa-whatsapp"></i> Order via link :</h3>
+                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                    ${product.whatsappLinks.map(link => `<li style="margin: 0.5rem 0;"><a href="${link}" target="_blank" style="color:#25D366; text-decoration:none;"><i class="fab fa-whatsapp"></i> ${link}</a></li>`).join('')}
+                </ul>
+                <button class="main-btn-buy" onclick="window.open('${product.purchaseLink}', '_blank')" style="margin-top: 1rem;">
+                    <i class="fas fa-shopping-cart"></i> Order Now
+                </button>
+            `;
+            
+            modal.style.display = 'block';
+        };
+
+        // Close Modal
+        window.closeModal = function() {
+            document.getElementById('productModal').style.display = 'none';
+        };
+
+        // Load Social Links
+        async function loadSocialLinks() {
+            const settingsRef = doc(db, 'settings', 'socialLinks');
+            const settingsDoc = await getDoc(settingsRef);
+            
+            if (settingsDoc.exists()) {
+                const links = settingsDoc.data();
+                const container = document.getElementById('socialLinks');
+                
+                container.innerHTML = `
+                    <a href="${links.telegram}" target="_blank" class="main-social-icon" style="background: #0088cc;">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="${links.whatsapp}" target="_blank" class="main-social-icon" style="background: #25D366;">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="${links.messenger}" target="_blank" class="main-social-icon" style="background: #0078FF;">
+                        <i class="fab fa-facebook-messenger"></i>
+                    </a>
+                `;
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Initialize
+        loadBanners();
+        loadProducts();
+        loadSocialLinks();
+    </script>
+</body>
+</html>
