@@ -379,215 +379,142 @@
             <button class="admin-cancel-btn" onclick="closeBannerModal()">Cancel</button>
         </div>
     </div>
-
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Config (Same as main page)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCQW9wJme2hCnGqaSocSyMZriz0AtWEKsU",
-            authDomain: "premium-store-17a23.firebaseapp.com",
-            projectId: "premium-store-17a23",
-            storageBucket: "premium-store-17a23.firebasestorage.app",
-            messagingSenderId: "1068634444182",
-            appId: "1:1068634444182:web:55bc823641dede5e948db7"
-        };
+const firebaseConfig = {
+    apiKey: "AIzaSy...",
+    authDomain: "premium-store-17a23.firebaseapp.com",
+    projectId: "premium-store-17a23",
+};
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-        // Tab Switching
-        document.querySelectorAll('.admin-nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                const tab = btn.dataset.tab;
-                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-                document.getElementById(`${tab}Tab`).classList.add('active');
-                
-                if (tab === 'products') loadProducts();
-                if (tab === 'banners') loadBanners();
-            });
+// ✅ EDIT MODE TRACK
+let editingProductId = null;
+
+// Load Products
+async function loadProducts() {
+    const snapshot = await getDocs(collection(db, 'products'));
+    const container = document.getElementById('productsList');
+    container.innerHTML = '';
+
+    snapshot.forEach(docSnap => {
+        const product = docSnap.data();
+
+        container.innerHTML += `
+        <div class="admin-card">
+            <img src="${product.imageUrl}">
+            <div class="admin-card-content">
+                <h3>${product.name}</h3>
+                <p>$${product.price}</p>
+            </div>
+
+            <!-- EDIT -->
+            <button onclick='editProduct("${docSnap.id}", ${JSON.stringify(product)})'
+            style="position:absolute; top:10px; left:10px; background:#10b981; color:white; border:none; width:32px; height:32px; border-radius:50%;">
+            <i class="fas fa-edit"></i>
+            </button>
+
+            <!-- DELETE -->
+            <button class="admin-delete-btn" onclick="deleteProduct('${docSnap.id}')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>`;
+    });
+}
+
+// ✅ EDIT FUNCTION
+window.editProduct = function(id, product) {
+    editingProductId = id;
+
+    document.getElementById('productName').value = product.name;
+    document.getElementById('productPrice').value = product.price;
+    document.getElementById('productImage').value = product.imageUrl;
+    document.getElementById('productFeatures').value = product.features?.join('\n') || '';
+    document.getElementById('purchaseLink').value = product.purchaseLink || '';
+    document.getElementById('whatsappLinks').value = product.whatsappLinks?.join('\n') || '';
+
+    document.getElementById('productModal').style.display = 'flex';
+};
+
+// SAVE / UPDATE
+window.saveProduct = async function() {
+    const name = document.getElementById('productName').value;
+    const price = document.getElementById('productPrice').value;
+    const imageUrl = document.getElementById('productImage').value;
+    const features = document.getElementById('productFeatures').value.split('\n').filter(f => f.trim());
+    const purchaseLink = document.getElementById('purchaseLink').value;
+    const whatsappLinks = document.getElementById('whatsappLinks').value.split('\n').filter(l => l.trim());
+
+    if (!name || !price || !imageUrl) {
+        alert('Fill required fields');
+        return;
+    }
+
+    // 🟢 UPDATE MODE
+    if (editingProductId) {
+        await setDoc(doc(db, 'products', editingProductId), {
+            name,
+            price: parseFloat(price),
+            imageUrl,
+            features,
+            purchaseLink,
+            whatsappLinks,
+            updatedAt: new Date()
         });
 
-        // Load Products
-        async function loadProducts() {
-            const productsRef = collection(db, 'products');
-            const snapshot = await getDocs(productsRef);
-            const container = document.getElementById('productsList');
-            
-            container.innerHTML = '';
-            snapshot.forEach(doc => {
-                const product = doc.data();
-                container.innerHTML += `
-                    <div class="admin-card">
-                        <img src="${product.imageUrl}" alt="${product.name}">
-                        <div class="admin-card-content">
-                            <h3>${product.name}</h3>
-                            <p>$${product.price}</p>
-                            <small>Features: ${product.features?.length || 0} items</small>
-                        </div>
-                        <button class="admin-delete-btn" onclick="deleteProduct('${doc.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-            });
-        }
+        alert('Product updated!');
+    } else {
+        // 🟢 NEW PRODUCT
+        await addDoc(collection(db, 'products'), {
+            name,
+            price: parseFloat(price),
+            imageUrl,
+            features,
+            purchaseLink,
+            whatsappLinks,
+            createdAt: new Date()
+        });
 
-        // Load Banners
-        async function loadBanners() {
-            const bannersRef = collection(db, 'banners');
-            const snapshot = await getDocs(bannersRef);
-            const container = document.getElementById('bannersList');
-            
-            container.innerHTML = '';
-            snapshot.forEach(doc => {
-                const banner = doc.data();
-                container.innerHTML += `
-                    <div class="admin-card">
-                        <img src="${banner.imageUrl}" alt="Banner">
-                        <button class="admin-delete-btn" onclick="deleteBanner('${doc.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-            });
-        }
+        alert('Product added!');
+    }
 
-        // Save Product
-        window.saveProduct = async function() {
-            const name = document.getElementById('productName').value;
-            const price = document.getElementById('productPrice').value;
-            const imageUrl = document.getElementById('productImage').value;
-            const features = document.getElementById('productFeatures').value.split('\n').filter(f => f.trim());
-            const purchaseLink = document.getElementById('purchaseLink').value;
-            const whatsappLinks = document.getElementById('whatsappLinks').value.split('\n').filter(l => l.trim());
-            
-            if (!name || !price || !imageUrl) {
-                alert('Please fill all required fields!');
-                return;
-            }
-            
-            await addDoc(collection(db, 'products'), {
-                name,
-                price: parseFloat(price),
-                imageUrl,
-                features,
-                purchaseLink,
-                whatsappLinks,
-                createdAt: new Date()
-            });
-            
-            closeProductModal();
-            loadProducts();
-            alert('Product added successfully!');
-        };
+    closeProductModal();
+    loadProducts();
+};
 
-        // Save Banner
-        window.saveBanner = async function() {
-            const imageUrl = document.getElementById('bannerImage').value;
-            
-            if (!imageUrl) {
-                alert('Please enter banner image URL!');
-                return;
-            }
-            
-            await addDoc(collection(db, 'banners'), {
-                imageUrl,
-                createdAt: new Date()
-            });
-            
-            closeBannerModal();
-            loadBanners();
-            alert('Banner added successfully!');
-        };
-
-        // Delete Product
-        window.deleteProduct = async function(id) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                await deleteDoc(doc(db, 'products', id));
-                loadProducts();
-                alert('Product deleted!');
-            }
-        };
-
-        // Delete Banner
-        window.deleteBanner = async function(id) {
-            if (confirm('Are you sure you want to delete this banner?')) {
-                await deleteDoc(doc(db, 'banners', id));
-                loadBanners();
-                alert('Banner deleted!');
-            }
-        };
-
-        // Save Social Links
-        window.saveSocialLinks = async function() {
-            const telegram = document.getElementById('telegramLink').value;
-            const whatsapp = document.getElementById('whatsappLink').value;
-            const messenger = document.getElementById('messengerLink').value;
-            
-            await setDoc(doc(db, 'settings', 'socialLinks'), {
-                telegram,
-                whatsapp,
-                messenger,
-                updatedAt: new Date()
-            });
-            
-            alert('Social links saved successfully!');
-        };
-
-        // Load Social Links for editing
-        async function loadSocialLinksForEdit() {
-            const settingsRef = doc(db, 'settings', 'socialLinks');
-            const settingsDoc = await getDoc(settingsRef);
-            
-            if (settingsDoc.exists()) {
-                const links = settingsDoc.data();
-                document.getElementById('telegramLink').value = links.telegram || '';
-                document.getElementById('whatsappLink').value = links.whatsapp || '';
-                document.getElementById('messengerLink').value = links.messenger || '';
-            }
-        }
-
-        // Modal Functions
-        window.showProductModal = function() {
-            document.getElementById('productModal').style.display = 'flex';
-        };
-
-        window.closeProductModal = function() {
-            document.getElementById('productModal').style.display = 'none';
-            document.getElementById('productName').value = '';
-            document.getElementById('productPrice').value = '';
-            document.getElementById('productImage').value = '';
-            document.getElementById('productFeatures').value = '';
-            document.getElementById('purchaseLink').value = '';
-            document.getElementById('whatsappLinks').value = '';
-        };
-
-        window.showBannerModal = function() {
-            document.getElementById('bannerModal').style.display = 'flex';
-        };
-
-        window.closeBannerModal = function() {
-            document.getElementById('bannerModal').style.display = 'none';
-            document.getElementById('bannerImage').value = '';
-        };
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            const productModal = document.getElementById('productModal');
-            const bannerModal = document.getElementById('bannerModal');
-            if (event.target === productModal) closeProductModal();
-            if (event.target === bannerModal) closeBannerModal();
-        };
-
-        // Initialize
+// DELETE
+window.deleteProduct = async function(id) {
+    if (confirm('Delete?')) {
+        await deleteDoc(doc(db, 'products', id));
         loadProducts();
-        loadBanners();
-        loadSocialLinksForEdit();
-    </script>
+    }
+};
+
+// MODAL
+window.showProductModal = function() {
+    editingProductId = null;
+    document.getElementById('productModal').style.display = 'flex';
+};
+
+window.closeProductModal = function() {
+    editingProductId = null;
+    document.getElementById('productModal').style.display = 'none';
+
+    document.getElementById('productName').value = '';
+    document.getElementById('productPrice').value = '';
+    document.getElementById('productImage').value = '';
+    document.getElementById('productFeatures').value = '';
+    document.getElementById('purchaseLink').value = '';
+    document.getElementById('whatsappLinks').value = '';
+};
+
+// INIT
+loadProducts();
+
+</script>
 </body>
 </html>
