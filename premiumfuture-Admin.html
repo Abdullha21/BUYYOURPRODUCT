@@ -3,518 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - PremiumStore</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Admin Panel | Manage Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
-        /* ========== ADMIN PANEL CSS ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-        }
-
-        /* Admin Container */
-        .admin-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        .admin-sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: white;
-            padding: 2rem;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .admin-sidebar h2 {
-            margin-bottom: 2rem;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .admin-sidebar h2 i {
-            color: #fbbf24;
-        }
-
-        .admin-nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            text-align: left;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
-        }
-
-        .admin-nav-btn i {
-            width: 24px;
-        }
-
-        .admin-nav-btn:hover, .admin-nav-btn.active {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            transform: translateX(5px);
-        }
-
-        /* Main Content */
-        .admin-main {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
-        }
-
-        /* Tabs */
-        .admin-tab {
-            display: none;
-            animation: adminFadeIn 0.3s;
-        }
-
-        .admin-tab.active {
-            display: block;
-        }
-
-        @keyframes adminFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .admin-tab h2 {
-            color: #1e293b;
-            margin-bottom: 1rem;
-        }
-
-        /* Add Button */
-        .admin-add-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            cursor: pointer;
-            margin: 1rem 0;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
-        }
-
-        .admin-add-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(59,130,246,0.3);
-        }
-
-        /* Grid */
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .admin-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: relative;
-            transition: 0.3s;
-        }
-
-        .admin-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .admin-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-
-        .admin-card-content {
-            padding: 1rem;
-        }
-
-        .admin-card h3 {
-            margin-bottom: 0.5rem;
-            color: #1e293b;
-        }
-
-        .admin-card p {
-            color: #3b82f6;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .admin-delete-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .admin-delete-btn:hover {
-            background: #dc2626;
-            transform: scale(1.05);
-        }
-
-        /* Modal */
-        .admin-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .admin-modal-content {
-            background: white;
-            width: 90%;
-            max-width: 550px;
-            padding: 2rem;
-            border-radius: 20px;
-            animation: adminSlideUp 0.3s;
-        }
-
-        @keyframes adminSlideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .admin-modal-content h3 {
-            margin-bottom: 1.5rem;
-            color: #1e293b;
-        }
-
-        .admin-modal-content input,
-        .admin-modal-content textarea {
-            width: 100%;
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
-        }
-
-        .admin-modal-content textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .admin-modal-content button {
-            margin: 0.5rem 0.5rem 0 0;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .admin-save-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            color: white;
-        }
-
-        .admin-cancel-btn {
-            background: #e2e8f0;
-            color: #1e293b;
-        }
-
-        /* Settings Form */
-        .admin-settings-form {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            max-width: 500px;
-        }
-
-        .admin-settings-form h3 {
-            margin-bottom: 1rem;
-            color: #1e293b;
-        }
-
-        .admin-settings-form input {
-            width: 100%;
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-        }
-
-        .admin-settings-form button {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 1rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .admin-sidebar {
-                width: 80px;
-                padding: 1rem;
-            }
-            .admin-sidebar h2 span,
-            .admin-nav-btn span:not(i) {
-                display: none;
-            }
-            .admin-main {
-                margin-left: 80px;
-            }
-            .admin-nav-btn {
-                justify-content: center;
-            }
-            .admin-nav-btn i {
-                margin: 0;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #0a0a1a; padding: 20px; }
+        .container { max-width: 1300px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 30px; font-size: 1.8rem; }
+        .card { background: #1a1a2e; border-radius: 24px; padding: 25px; margin-bottom: 25px; border: 1px solid #2a2a4a; transition: 0.3s; }
+        .card:hover { border-color: #ff6b35; }
+        .card h2 { color: #ff6b35; margin-bottom: 20px; border-left: 4px solid #ff6b35; padding-left: 15px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; color: #ccc; margin-bottom: 8px; font-weight: 500; }
+        input, select { width: 100%; padding: 12px 16px; background: #0f0f1f; border: 1px solid #2a2a4a; border-radius: 14px; color: white; font-size: 0.95rem; }
+        button { background: #ff6b35; border: none; padding: 12px 28px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; margin-right: 12px; margin-top: 8px; }
+        button:hover { background: #e55a2b; transform: scale(0.98); }
+        .delete-btn { background: #dc2626; }
+        .edit-btn { background: #f59e0b; }
+        .row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .stats-row { display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
+        .stat-card { background: #0f0f1f; border-radius: 20px; padding: 20px; flex: 1; text-align: center; border: 1px solid #2a2a4a; }
+        .stat-card i { font-size: 2rem; color: #ff6b35; }
+        .stat-number { font-size: 2rem; font-weight: 800; color: #ff6b35; }
+        .item-list { background: #0f0f1f; border-radius: 16px; padding: 12px; margin-top: 16px; max-height: 350px; overflow-y: auto; }
+        .item { background: #1a1a2e; padding: 12px 15px; border-radius: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .success-msg { color: #4ade80; margin-top: 10px; font-size: 0.9rem; }
+        @media (max-width: 700px) { .row-2col { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <h2><i class="fas fa-crown"></i> <span>Admin Panel</span></h2>
-            <nav>
-                <button class="admin-nav-btn active" data-tab="products">
-                    <i class="fas fa-box"></i> <span>Products</span>
-                </button>
-                <button class="admin-nav-btn" data-tab="banners">
-                    <i class="fas fa-images"></i> <span>Banners</span>
-                </button>
-                <button class="admin-nav-btn" data-tab="settings">
-                    <i class="fas fa-cog"></i> <span>Settings</span>
-                </button>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="admin-main">
-            <!-- Products Tab -->
-            <div id="productsTab" class="admin-tab active">
-                <h2><i class="fas fa-box"></i> Manage Products</h2>
-                <button class="admin-add-btn" onclick="showProductModal()">
-                    <i class="fas fa-plus"></i> Add New Product
-                </button>
-                <div id="productsList" class="admin-grid"></div>
-            </div>
-
-            <!-- Banners Tab -->
-            <div id="bannersTab" class="admin-tab">
-                <h2><i class="fas fa-images"></i> Manage Banners</h2>
-                <button class="admin-add-btn" onclick="showBannerModal()">
-                    <i class="fas fa-plus"></i> Add New Banner
-                </button>
-                <div id="bannersList" class="admin-grid"></div>
-            </div>
-
-            <!-- Settings Tab -->
-            <div id="settingsTab" class="admin-tab">
-                <h2><i class="fas fa-cog"></i> Settings</h2>
-                <div class="admin-settings-form">
-                    <h3><i class="fab fa-telegram"></i> Social Links</h3>
-                    <input type="url" id="telegramLink" placeholder="Telegram Link (https://t.me/...)">
-                    <input type="url" id="whatsappLink" placeholder="WhatsApp Link (https://wa.me/...)">
-                    <input type="url" id="messengerLink" placeholder="Messenger Link (https://m.me/...)">
-                    <button onclick="saveSocialLinks()">Save Changes</button>
-                </div>
-            </div>
-        </main>
+<div class="container">
+    <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+    
+    <!-- Stats: Total Orders Counter -->
+    <div class="stats-row">
+        <div class="stat-card"><i class="fas fa-chart-line"></i><div class="stat-number" id="totalOrdersCount">0</div><div>Total Orders Completed</div></div>
+        <div class="stat-card"><i class="fas fa-dollar-sign"></i><div class="stat-number" id="totalRevenue">$0</div><div>Total Revenue</div></div>
+        <div class="stat-card"><i class="fas fa-calendar-day"></i><div class="stat-number" id="todayOrders">0</div><div>Today's Orders</div></div>
     </div>
-
-    <!-- Product Modal -->
-    <div id="productModal" class="admin-modal">
-        <div class="admin-modal-content">
-            <h3><i class="fas fa-plus"></i> Add Product</h3>
-            <input type="text" id="productName" placeholder="Product Name">
-            <input type="number" id="productPrice" placeholder="Price (USD)">
-            <input type="url" id="productImage" placeholder="Image URL">
-            <textarea id="productFeatures" placeholder="Features (one per line)&#10;Example:&#10;High Quality&#10;Lifetime Access&#10;24/7 Support"></textarea>
-            <input type="url" id="purchaseLink" placeholder="Purchase / Order Link">
-            <textarea id="whatsappLinks" placeholder="WhatsApp Links (one per line)&#10;Example:&#10;https://wa.me/1234567890&#10;https://wa.me/0987654321"></textarea>
-            <button class="admin-save-btn" onclick="saveProduct()">Save Product</button>
-            <button class="admin-cancel-btn" onclick="closeProductModal()">Cancel</button>
+    
+    <!-- Add Order -->
+    <div class="card">
+        <h2><i class="fas fa-plus-circle"></i> Add New Order</h2>
+        <div class="row-2col">
+            <div>
+                <div class="form-group"><label>Product Name</label><input type="text" id="productName" placeholder="X Premium Plus"></div>
+                <div class="form-group"><label>Twitter ID</label><input type="text" id="twitterId" placeholder="@username"></div>
+                <div class="form-group"><label>Premium Type</label><select id="premiumType"><option>Premium</option><option>Premium Plus</option></select></div>
+            </div>
+            <div>
+                <div class="form-group"><label>Months</label><select id="months"><option>1</option><option>3</option><option>6</option><option>12</option></select></div>
+                <div class="form-group"><label>Amount (USD)</label><input type="number" id="amount" placeholder="49"></div>
+                <div class="form-group"><label>Twitter Link</label><input type="text" id="twitterLink" placeholder="https://twitter.com/username"></div>
+            </div>
         </div>
+        <button id="addOrderBtn"><i class="fas fa-save"></i> Save Order</button>
+        <div id="orderMsg" class="success-msg"></div>
     </div>
-
-    <!-- Banner Modal -->
-    <div id="bannerModal" class="admin-modal">
-        <div class="admin-modal-content">
-            <h3><i class="fas fa-plus"></i> Add Banner</h3>
-            <input type="url" id="bannerImage" placeholder="Banner Image URL">
-            <button class="admin-save-btn" onclick="saveBanner()">Save Banner</button>
-            <button class="admin-cancel-btn" onclick="closeBannerModal()">Cancel</button>
+    
+    <!-- Manage Orders (Edit/Delete) -->
+    <div class="card">
+        <h2><i class="fas fa-list"></i> Manage Orders (Edit/Delete)</h2>
+        <div id="ordersList" class="item-list">Loading...</div>
+    </div>
+    
+    <!-- Banner Manager -->
+    <div class="card">
+        <h2><i class="fas fa-images"></i> Banner Images (Slider)</h2>
+        <div class="form-group"><label>Banner Image URL</label><input type="text" id="bannerUrl" placeholder="https://example.com/banner.jpg"></div>
+        <button id="addBannerBtn"><i class="fas fa-plus"></i> Add Banner</button>
+        <div id="bannersList" class="item-list">Loading...</div>
+    </div>
+    
+    <!-- Contact Info (WhatsApp + Twitter + Telegram) - No Email -->
+    <div class="card">
+        <h2><i class="fas fa-link"></i> Contact Links</h2>
+        <div class="form-group"><label><i class="fab fa-whatsapp"></i> WhatsApp Number (with country code)</label><input type="text" id="contactWhatsapp" placeholder="+8801xxxxxxxxx"></div>
+        <div class="form-group"><label><i class="fab fa-twitter"></i> Twitter URL</label><input type="text" id="contactTwitter" placeholder="https://twitter.com/store"></div>
+        <div class="form-group"><label><i class="fab fa-telegram"></i> Telegram URL</label><input type="text" id="contactTelegram" placeholder="https://t.me/store"></div>
+        <button id="saveContactBtn"><i class="fas fa-save"></i> Save Contact</button>
+        <div id="contactMsg" class="success-msg"></div>
+    </div>
+    
+    <!-- Products Manager (Add + Edit + Delete) -->
+    <div class="card">
+        <h2><i class="fas fa-box"></i> Products (Click to WhatsApp Order)</h2>
+        <div class="row-2col">
+            <input type="text" id="productNameInput" placeholder="Product Name">
+            <input type="text" id="productPriceInput" placeholder="Price USD">
         </div>
+        <input type="text" id="productIconInput" placeholder="Icon (fab fa-twitter)" style="width:100%; margin-top:10px;">
+        <button id="addProductBtn"><i class="fas fa-plus"></i> Add Product</button>
+        <div id="productsList" class="item-list">Loading...</div>
     </div>
-    <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+</div>
 
-const firebaseConfig = {
-    apiKey: "AIzaSy...",
-    authDomain: "premium-store-17a23.firebaseapp.com",
-    projectId: "premium-store-17a23",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// ✅ EDIT MODE TRACK
-let editingProductId = null;
-
-// Load Products
-async function loadProducts() {
-    const snapshot = await getDocs(collection(db, 'products'));
-    const container = document.getElementById('productsList');
-    container.innerHTML = '';
-
-    snapshot.forEach(docSnap => {
-        const product = docSnap.data();
-
-        container.innerHTML += `
-        <div class="admin-card">
-            <img src="${product.imageUrl}">
-            <div class="admin-card-content">
-                <h3>${product.name}</h3>
-                <p>$${product.price}</p>
-            </div>
-
-            <!-- EDIT -->
-            <button onclick='editProduct("${docSnap.id}", ${JSON.stringify(product)})'
-            style="position:absolute; top:10px; left:10px; background:#10b981; color:white; border:none; width:32px; height:32px; border-radius:50%;">
-            <i class="fas fa-edit"></i>
-            </button>
-
-            <!-- DELETE -->
-            <button class="admin-delete-btn" onclick="deleteProduct('${docSnap.id}')">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>`;
-    });
-}
-
-// ✅ EDIT FUNCTION
-window.editProduct = function(id, product) {
-    editingProductId = id;
-
-    document.getElementById('productName').value = product.name;
-    document.getElementById('productPrice').value = product.price;
-    document.getElementById('productImage').value = product.imageUrl;
-    document.getElementById('productFeatures').value = product.features?.join('\n') || '';
-    document.getElementById('purchaseLink').value = product.purchaseLink || '';
-    document.getElementById('whatsappLinks').value = product.whatsappLinks?.join('\n') || '';
-
-    document.getElementById('productModal').style.display = 'flex';
-};
-
-// SAVE / UPDATE
-window.saveProduct = async function() {
-    const name = document.getElementById('productName').value;
-    const price = document.getElementById('productPrice').value;
-    const imageUrl = document.getElementById('productImage').value;
-    const features = document.getElementById('productFeatures').value.split('\n').filter(f => f.trim());
-    const purchaseLink = document.getElementById('purchaseLink').value;
-    const whatsappLinks = document.getElementById('whatsappLinks').value.split('\n').filter(l => l.trim());
-
-    if (!name || !price || !imageUrl) {
-        alert('Fill required fields');
-        return;
-    }
-
-    // 🟢 UPDATE MODE
-    if (editingProductId) {
-        await setDoc(doc(db, 'products', editingProductId), {
-            name,
-            price: parseFloat(price),
-            imageUrl,
-            features,
-            purchaseLink,
-            whatsappLinks,
-            updatedAt: new Date()
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCQW9wJme2hCnGqaSocSyMZriz0AtWEKsU",
+        authDomain: "premium-store-17a23.firebaseapp.com",
+        projectId: "premium-store-17a23",
+        storageBucket: "premium-store-17a23.firebasestorage.app",
+        messagingSenderId: "1068634444182",
+        appId: "1:1068634444182:web:55bc823641dede5e948db7"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    
+    // Get next order ID
+    async function getNextOrderId() {
+        const snapshot = await db.ref('orders').once('value');
+        let maxId = 0;
+        snapshot.forEach(child => {
+            const order = child.val();
+            if (order.orderId && order.orderId > maxId) maxId = order.orderId;
         });
-
-        alert('Product updated!');
-    } else {
-        // 🟢 NEW PRODUCT
-        await addDoc(collection(db, 'products'), {
-            name,
-            price: parseFloat(price),
-            imageUrl,
-            features,
-            purchaseLink,
-            whatsappLinks,
-            createdAt: new Date()
-        });
-
-        alert('Product added!');
+        return maxId + 1;
     }
-
-    closeProductModal();
+    
+    // Add Order
+    document.getElementById('addOrderBtn').onclick = async () => {
+        const productName = document.getElementById('productName').value;
+        const twitterId = document.getElementById('twitterId').value;
+        const premiumType = document.getElementById('premiumType').value;
+        const months = parseInt(document.getElementById('months').value);
+        const amount = parseFloat(document.getElementById('amount').value);
+        const twitterLink = document.getElementById('twitterLink').value;
+        
+        if (!productName || !amount) { alert('Fill Product Name and Amount'); return; }
+        
+        const orderId = await getNextOrderId();
+        const newOrder = {
+            orderId: orderId,
+            productName: productName,
+            twitterId: twitterId || 'N/A',
+            premiumType: premiumType,
+            months: months,
+            amount: amount,
+            twitterLink: twitterLink || `https://twitter.com/${twitterId.replace('@', '')}`,
+            timestamp: Date.now()
+        };
+        
+        db.ref('orders').push(newOrder).then(() => {
+            document.getElementById('orderMsg').innerHTML = '✅ Order added!';
+            document.getElementById('productName').value = '';
+            document.getElementById('twitterId').value = '';
+            document.getElementById('amount').value = '';
+            loadOrders();
+            updateStats();
+            setTimeout(() => document.getElementById('orderMsg').innerHTML = '', 3000);
+        });
+    };
+    
+    // Load Orders with Edit/Delete
+    function loadOrders() {
+        db.ref('orders').orderByChild('timestamp').once('value', (snapshot) => {
+            let orders = [];
+            snapshot.forEach(child => {
+                orders.push({ key: child.key, ...child.val() });
+            });
+            orders.sort((a, b) => b.timestamp - a.timestamp);
+            
+            const container = document.getElementById('ordersList');
+            if (orders.length === 0) {
+                container.innerHTML = '<div style="color:#aaa; text-align:center;">No orders yet</div>';
+                return;
+            }
+            
+            let html = '';
+            orders.forEach(order => {
+                html += `<div class="item">
+                            <div><strong>#${order.orderId}</strong> ${order.productName} - $${order.amount}<br><small>${new Date(order.timestamp).toLocaleString()}</small></div>
+                            <div>
+                                <button class="edit-btn" onclick="editOrder('${order.key}', '${order.productName}', ${order.amount})" style="padding:6px 14px;"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="delete-btn" onclick="deleteOrder('${order.key}')" style="padding:6px 14px;"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                          </div>`;
+            });
+            container.innerHTML = html;
+        });
+    }
+    
+    window.editOrder = (key, name, amount) => {
+        const newName = prompt('Edit Product Name', name);
+        const newAmount = prompt('Edit Amount USD', amount);
+        if (newName && newAmount) {
+            db.ref('orders/' + key).update({ productName: newName, amount: parseFloat(newAmount) })
+                .then(() => { loadOrders(); updateStats(); });
+        }
+    };
+    
+    window.deleteOrder = (key) => {
+        if (confirm('Delete this order?')) {
+            db.ref('orders/' + key).remove().then(() => { loadOrders(); updateStats(); });
+        }
+    };
+    
+    // Update Stats (Total Orders, Revenue, Today's Orders)
+    function updateStats() {
+        db.ref('orders').once('value', (snapshot) => {
+            let total = 0;
+            let todayTotal = 0;
+            let orderCount = 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            snapshot.forEach(child => {
+                const order = child.val();
+                const amount = order.amount || 0;
+                total += amount;
+                orderCount++;
+                if (order.timestamp >= today.getTime()) todayTotal++;
+            });
+            
+            document.getElementById('totalOrdersCount').innerText = orderCount;
+            document.getElementById('totalRevenue').innerText = `$${total}`;
+            document.getElementById('todayOrders').innerText = todayTotal;
+        });
+    }
+    
+    // Banners
+    function loadBanners() {
+        db.ref('banners').on('value', (snapshot) => {
+            const banners = snapshot.val();
+            const container = document.getElementById('bannersList');
+            if (!banners) {
+                container.innerHTML = '<div style="color:#aaa; text-align:center;">No banners</div>';
+                return;
+            }
+            let html = '';
+            for (let key in banners) {
+                html += `<div class="item"><span style="word-break:break-all;">${banners[key].url}</span><button onclick="deleteBanner('${key}')" class="delete-btn" style="padding:6px 12px;">Delete</button></div>`;
+            }
+            container.innerHTML = html;
+        });
+    }
+    
+    window.deleteBanner = (key) => { db.ref('banners/' + key).remove(); };
+    
+    document.getElementById('addBannerBtn').onclick = () => {
+        const url = document.getElementById('bannerUrl').value;
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+            db.ref('banners').push({ url: url, timestamp: Date.now() }).then(() => document.getElementById('bannerUrl').value = '');
+        } else { alert('Enter valid image URL'); }
+    };
+    
+    // Products with Edit
+    function loadProducts() {
+        db.ref('products').on('value', (snapshot) => {
+            const products = snapshot.val();
+            const container = document.getElementById('productsList');
+            if (!products) {
+                container.innerHTML = '<div style="color:#aaa; text-align:center;">No products</div>';
+                return;
+            }
+            let html = '';
+            for (let key in products) {
+                html += `<div class="item">
+                            <div><i class="${products[key].icon || 'fab fa-twitter'}"></i> <strong>${products[key].name}</strong> - $${products[key].price}</div>
+                            <div>
+                                <button class="edit-btn" onclick="editProduct('${key}', '${products[key].name}', ${products[key].price}, '${products[key].icon || ''}')" style="padding:6px 14px;"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="delete-btn" onclick="deleteProduct('${key}')" style="padding:6px 14px;"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                          </div>`;
+            }
+            container.innerHTML = html;
+        });
+    }
+    
+    window.editProduct = (key, name, price, icon) => {
+        const newName = prompt('Edit Product Name', name);
+        const newPrice = prompt('Edit Price USD', price);
+        const newIcon = prompt('Edit Icon (fab fa-twitter)', icon);
+        if (newName && newPrice) {
+            db.ref('products/' + key).update({ 
+                name: newName, 
+                price: parseFloat(newPrice),
+                icon: newIcon || 'fab fa-twitter'
+            }).then(() => loadProducts());
+        }
+    };
+    
+    window.deleteProduct = (key) => {
+        if (confirm('Delete product?')) db.ref('products/' + key).remove();
+    };
+    
+    document.getElementById('addProductBtn').onclick = () => {
+        const name = document.getElementById('productNameInput').value;
+        const price = document.getElementById('productPriceInput').value;
+        const icon = document.getElementById('productIconInput').value || 'fab fa-twitter';
+        if (name && price) {
+            db.ref('products').push({ name, price: parseFloat(price), icon, description: 'Premium service' }).then(() => {
+                document.getElementById('productNameInput').value = '';
+                document.getElementById('productPriceInput').value = '';
+                document.getElementById('productIconInput').value = '';
+            });
+        } else { alert('Enter name and price'); }
+    };
+    
+    // Contact (WhatsApp, Twitter, Telegram)
+    function loadContact() {
+        db.ref('contact').on('value', (snapshot) => {
+            const c = snapshot.val();
+            if (c) {
+                document.getElementById('contactWhatsapp').value = c.whatsapp || '';
+                document.getElementById('contactTwitter').value = c.twitterLink || '';
+                document.getElementById('contactTelegram').value = c.telegramLink || '';
+            }
+        });
+    }
+    
+    document.getElementById('saveContactBtn').onclick = () => {
+        const whatsapp = document.getElementById('contactWhatsapp').value;
+        const twitterLink = document.getElementById('contactTwitter').value;
+        const telegramLink = document.getElementById('contactTelegram').value;
+        db.ref('contact').set({ whatsapp, twitterLink, telegramLink }).then(() => {
+            document.getElementById('contactMsg').innerHTML = '✅ Contact saved!';
+            setTimeout(() => document.getElementById('contactMsg').innerHTML = '', 3000);
+        });
+    };
+    
+    loadOrders();
+    updateStats();
+    loadBanners();
     loadProducts();
-};
-
-// DELETE
-window.deleteProduct = async function(id) {
-    if (confirm('Delete?')) {
-        await deleteDoc(doc(db, 'products', id));
-        loadProducts();
-    }
-};
-
-// MODAL
-window.showProductModal = function() {
-    editingProductId = null;
-    document.getElementById('productModal').style.display = 'flex';
-};
-
-window.closeProductModal = function() {
-    editingProductId = null;
-    document.getElementById('productModal').style.display = 'none';
-
-    document.getElementById('productName').value = '';
-    document.getElementById('productPrice').value = '';
-    document.getElementById('productImage').value = '';
-    document.getElementById('productFeatures').value = '';
-    document.getElementById('purchaseLink').value = '';
-    document.getElementById('whatsappLinks').value = '';
-};
-
-// INIT
-loadProducts();
-
+    loadContact();
 </script>
 </body>
 </html>
