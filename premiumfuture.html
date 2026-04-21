@@ -90,6 +90,60 @@
             gap: 10px;
         }
 
+        /* Today Stats Box */
+        .stats-box {
+            background: linear-gradient(135deg, #1e1e2f, #0a0a12);
+            border-radius: 24px;
+            padding: 20px 25px;
+            margin: 20px 0 30px;
+            border: 1px solid rgba(255,107,53,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .stats-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(0,0,0,0.5);
+            padding: 12px 24px;
+            border-radius: 60px;
+            flex: 1;
+            min-width: 180px;
+            justify-content: center;
+        }
+
+        .stats-icon {
+            font-size: 2rem;
+            color: #feca57;
+        }
+
+        .stats-info h3 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #aaa;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ff6b35;
+            line-height: 1;
+        }
+
+        .stats-label {
+            font-size: 0.7rem;
+            color: #feca57;
+            margin-left: 5px;
+            font-weight: 500;
+        }
+
         /* Products Grid - 2 per row EXACTLY */
         .products-grid {
             display: grid;
@@ -223,6 +277,13 @@
                 max-width: none;
                 flex: auto;
             }
+            .stats-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .stats-item {
+                justify-content: flex-start;
+            }
         }
 
         /* Order History */
@@ -255,6 +316,8 @@
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 10px;
         }
 
@@ -265,6 +328,19 @@
             background: rgba(255,107,53,0.15);
             padding: 3px 10px;
             border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .complete-badge {
+            background: #00b894;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-left: 8px;
         }
 
         .order-product {
@@ -290,6 +366,11 @@
         .twitter-link {
             color: #1da1f2;
             text-decoration: none;
+            word-break: break-all;
+        }
+        
+        .twitter-link:hover {
+            text-decoration: underline;
         }
 
         .empty-msg {
@@ -333,6 +414,24 @@
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
             <div class="swiper-pagination"></div>
+        </div>
+    </div>
+
+    <!-- TODAY STATS BOX: Total Completed Orders (Count & Total Pieces/Months) -->
+    <div class="stats-box" id="todayStatsBox">
+        <div class="stats-item">
+            <div class="stats-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stats-info">
+                <h3>Today Completed Orders</h3>
+                <div><span class="stats-number" id="todayOrdersCount">0</span><span class="stats-label">orders</span></div>
+            </div>
+        </div>
+        <div class="stats-item">
+            <div class="stats-icon"><i class="fas fa-boxes"></i></div>
+            <div class="stats-info">
+                <h3>Total Pieces (Months)</h3>
+                <div><span class="stats-number" id="todayTotalPieces">0</span><span class="stats-label">months</span></div>
+            </div>
         </div>
     </div>
 
@@ -423,7 +522,7 @@
         });
     }
 
-    // Load Products - 2 per row (Premium and Premium Plus shown separately)
+    // Load Products
     function loadProducts() {
         db.ref('products').on('value', (snapshot) => {
             const products = snapshot.val();
@@ -442,7 +541,7 @@
                 const badgeText = isPremiumPlus ? 'PREMIUM PLUS' : 'PREMIUM';
                 
                 html += `
-                    <div class="product-card" data-name="${p.name || 'Product'}" data-price="${p.price || 0}">
+                    <div class="product-card" data-name="${(p.name || 'Product').replace(/"/g, '&quot;')}" data-price="${p.price || 0}">
                         <div class="premium-badge ${badgeClass}">${badgeText}</div>
                         <div class="product-icon"><i class="${p.icon || 'fab fa-twitter'}"></i></div>
                         <h3>${p.name || 'Product'}</h3>
@@ -453,7 +552,6 @@
             }
             grid.innerHTML = html;
             
-            // Product click -> WhatsApp
             document.querySelectorAll('.product-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const name = card.dataset.name;
@@ -472,13 +570,12 @@
         });
     }
 
-    // Load Contact Buttons - 3 buttons in 1 line
+    // Load Contact Buttons (Twitter link now shows only the link, no extra @ or username)
     function loadContactButtons() {
         db.ref('contact').on('value', (snapshot) => {
             const c = snapshot.val();
             const container = document.getElementById('contactButtons');
             
-            // Default 3 buttons always show
             let html = '';
             
             // WhatsApp button
@@ -492,7 +589,7 @@
                 html += `<a href="#" class="contact-btn whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>`;
             }
             
-            // Twitter button
+            // Twitter button - ONLY the link from admin panel, no extra text like @username
             if (c && c.twitterLink && c.twitterLink !== '') {
                 html += `<a href="${c.twitterLink}" target="_blank" class="contact-btn twitter-btn"><i class="fab fa-twitter"></i> Twitter</a>`;
             } else {
@@ -510,30 +607,61 @@
         });
     }
 
-    // Load Order History
+    // Helper: Get today's start timestamp (00:00:00)
+    function getTodayStart() {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        return now.getTime();
+    }
+
+    // Update today stats: total orders completed today & total pieces (sum of months)
+    function updateTodayStats(ordersArray) {
+        const todayStart = getTodayStart();
+        const todayOrders = ordersArray.filter(order => (order.timestamp || 0) >= todayStart);
+        const totalOrdersCount = todayOrders.length;
+        
+        let totalPieces = 0;
+        todayOrders.forEach(order => {
+            let months = parseInt(order.months);
+            if (isNaN(months)) months = 1;
+            totalPieces += months;
+        });
+        
+        document.getElementById('todayOrdersCount').innerText = totalOrdersCount;
+        document.getElementById('todayTotalPieces').innerText = totalPieces;
+    }
+
+    // Load Order History with COMPLETE badge next to Order ID
+    // Twitter field: now only shows the raw link from database (no extra @ or username formatting)
     function loadOrderHistory() {
         db.ref('orders').orderByChild('timestamp').once('value', (snapshot) => {
             let orders = [];
             snapshot.forEach((child) => {
+                const val = child.val();
                 orders.push({ 
                     id: child.key, 
-                    orderId: child.val().orderId,
-                    productName: child.val().productName,
-                    premiumType: child.val().premiumType,
-                    twitterId: child.val().twitterId,
-                    months: child.val().months,
-                    amount: child.val().amount,
-                    timestamp: child.val().timestamp
+                    orderId: val.orderId || 'N/A',
+                    productName: val.productName || 'Unknown',
+                    premiumType: val.premiumType || 'Premium',
+                    twitterId: val.twitterId || '',
+                    months: val.months || 1,
+                    amount: val.amount || 0,
+                    timestamp: val.timestamp || Date.now()
                 });
             });
             
+            // Sort descending
             orders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            const displayOrders = orders.slice(0, 15);
             
+            // Update Today Stats using full orders list (for accurate counting)
+            updateTodayStats(orders);
+            
+            // Keep only last 15 for display, but auto-delete older ones if >15
+            const displayOrders = orders.slice(0, 15);
             if (orders.length > 15) {
                 const toDelete = orders.slice(15);
                 toDelete.forEach(order => {
-                    if (order.id) db.ref('orders/' + order.id).remove();
+                    if (order.id) db.ref('orders/' + order.id).remove().catch(e => console.warn(e));
                 });
             }
             
@@ -550,42 +678,76 @@
                     day: '2-digit', month: 'short', year: 'numeric', 
                     hour: '2-digit', minute: '2-digit' 
                 });
-                const orderNumber = order.orderId || 'N/A';
-                const twitterDisplay = order.twitterId && order.twitterId !== 'N/A' ? 
-                    `<a href="https://twitter.com/${order.twitterId.replace('@', '')}" target="_blank" class="twitter-link">@${order.twitterId.replace('@', '')}</a>` : 'N/A';
+                const orderNumber = order.orderId !== 'N/A' ? order.orderId : order.id?.slice(-6) || 'ORD';
                 
+                // Twitter link handling: ONLY show the raw link from admin panel without any @username text
+                // If twitterId field exists and is a valid URL, display clickable link with just the URL text.
+                // If not a URL or empty, show 'N/A' and no extra formatting.
+                let twitterDisplay = 'N/A';
+                let twitterLinkRaw = order.twitterId ? order.twitterId.trim() : '';
+                if (twitterLinkRaw !== '' && twitterLinkRaw !== 'N/A') {
+                    // Display the exact link as text, but make it clickable
+                    twitterDisplay = `<a href="${twitterLinkRaw}" target="_blank" class="twitter-link" rel="noopener noreferrer">${twitterLinkRaw}</a>`;
+                } else {
+                    twitterDisplay = 'N/A';
+                }
+                
+                // "COMPLETE" badge next to Order ID
                 html += `
                     <div class="order-item">
                         <div class="order-header">
-                            <span class="order-id"><i class="fas fa-hashtag"></i> Order ${orderNumber}</span>
-                            <span class="order-product"><i class="fas fa-tag"></i> ${order.productName || 'Product'} — ${order.premiumType || 'Premium'}</span>
+                            <span class="order-id">
+                                <i class="fas fa-hashtag"></i> Order ${orderNumber}
+                                <span class="complete-badge"><i class="fas fa-check-circle"></i> COMPLETE</span>
+                            </span>
+                            <span class="order-product"><i class="fas fa-tag"></i> ${escapeHtml(order.productName)} — ${escapeHtml(order.premiumType)}</span>
                             <span class="order-date"><i class="far fa-calendar-alt"></i> ${formattedDate}</span>
                         </div>
                         <div class="order-details">
                             <span><i class="fab fa-twitter"></i> Twitter: ${twitterDisplay}</span>
-                            <span><i class="fas fa-calendar-week"></i> ${order.months || 1} month(s)</span>
-                            <span><i class="fas fa-dollar-sign"></i> $${order.amount || 0}</span>
+                            <span><i class="fas fa-calendar-week"></i> ${order.months} month(s)</span>
+                            <span><i class="fas fa-dollar-sign"></i> $${order.amount}</span>
                         </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
+        }).catch(err => {
+            console.error("Order load error:", err);
+            document.getElementById('orderHistoryList').innerHTML = '<div class="empty-msg"><i class="fas fa-exclamation-triangle"></i> Error loading orders</div>';
+        });
+    }
+    
+    // Simple escape for XSS safety
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
         });
     }
 
-    // Auto refresh orders every 10 seconds
-    setInterval(() => { loadOrderHistory(); }, 10000);
+    // Real-time listeners: whenever orders change, refresh history and stats
+    function refreshOrdersAndStats() {
+        loadOrderHistory(); // this will also update today stats
+    }
     
-    // Real-time listeners
-    db.ref('orders').on('child_added', () => { loadOrderHistory(); });
-    db.ref('orders').on('child_removed', () => { loadOrderHistory(); });
-    db.ref('orders').on('child_changed', () => { loadOrderHistory(); });
-
-    // Initialize
+    db.ref('orders').on('child_added', () => { refreshOrdersAndStats(); });
+    db.ref('orders').on('child_removed', () => { refreshOrdersAndStats(); });
+    db.ref('orders').on('child_changed', () => { refreshOrdersAndStats(); });
+    
+    // Auto refresh every 8 seconds for realtime sync (fallback)
+    setInterval(() => { refreshOrdersAndStats(); }, 8000);
+    
+    // Initialize all modules
     loadBanners();
     loadProducts();
     loadContactButtons();
-    loadOrderHistory();
+    loadOrderHistory();      // initial load + stats calculation
 </script>
 </body>
 </html>
