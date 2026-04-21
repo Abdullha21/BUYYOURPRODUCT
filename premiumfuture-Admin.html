@@ -433,7 +433,7 @@
         } else {
             if (!twitterInput.startsWith('@')) twitterId = '@' + twitterInput;
             else twitterId = twitterInput;
-            twitterLink = `https://twitter.com/${twitterId.replace('@', '')}`;
+            twitterLink = `${twitterId.replace('@', '')}`;
         }
         
         const productName = productType;
