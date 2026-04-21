@@ -3,101 +3,366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | Manage Store</title>
+    <title>Admin Panel | Premium Store Manager</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #0a0a1a; padding: 20px; }
-        .container { max-width: 1300px; margin: 0 auto; }
-        h1 { color: white; margin-bottom: 30px; font-size: 1.8rem; }
-        .card { background: #1a1a2e; border-radius: 24px; padding: 25px; margin-bottom: 25px; border: 1px solid #2a2a4a; transition: 0.3s; }
-        .card:hover { border-color: #ff6b35; }
-        .card h2 { color: #ff6b35; margin-bottom: 20px; border-left: 4px solid #ff6b35; padding-left: 15px; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; color: #ccc; margin-bottom: 8px; font-weight: 500; }
-        input, select { width: 100%; padding: 12px 16px; background: #0f0f1f; border: 1px solid #2a2a4a; border-radius: 14px; color: white; font-size: 0.95rem; }
-        button { background: #ff6b35; border: none; padding: 12px 28px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; margin-right: 12px; margin-top: 8px; }
-        button:hover { background: #e55a2b; transform: scale(0.98); }
-        .delete-btn { background: #dc2626; }
-        .edit-btn { background: #f59e0b; }
-        .row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .stats-row { display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
-        .stat-card { background: #0f0f1f; border-radius: 20px; padding: 20px; flex: 1; text-align: center; border: 1px solid #2a2a4a; }
-        .stat-card i { font-size: 2rem; color: #ff6b35; }
-        .stat-number { font-size: 2rem; font-weight: 800; color: #ff6b35; }
-        .item-list { background: #0f0f1f; border-radius: 16px; padding: 12px; margin-top: 16px; max-height: 350px; overflow-y: auto; }
-        .item { background: #1a1a2e; padding: 12px 15px; border-radius: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .success-msg { color: #4ade80; margin-top: 10px; font-size: 0.9rem; }
-        @media (max-width: 700px) { .row-2col { grid-template-columns: 1fr; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #000000;
+            padding: 25px 20px;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ff6b35, #feca57);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header p {
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 20px;
+            flex: 1;
+            text-align: center;
+            border: 1px solid rgba(255,107,53,0.3);
+        }
+
+        .stat-card i {
+            font-size: 1.8rem;
+            color: #ff6b35;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #feca57;
+            margin-top: 5px;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .card {
+            background: #1a1a2e;
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .card h2 {
+            color: #ff6b35;
+            margin-bottom: 25px;
+            border-left: 4px solid #ff6b35;
+            padding-left: 15px;
+            font-size: 1.3rem;
+        }
+
+        .order-form-row {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .order-left {
+            flex: 2;
+        }
+
+        .order-right {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #ccc;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            background: #0f0f1a;
+            border: 1px solid #2a2a4a;
+            border-radius: 14px;
+            color: white;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .price-display {
+            background: #0f0f1a;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid #2a2a4a;
+            color: #feca57;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .save-order-btn {
+            background: linear-gradient(135deg, #ff6b35, #feca57);
+            border: none;
+            padding: 14px 40px;
+            border-radius: 50px;
+            color: #000;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .save-order-btn:hover {
+            transform: scale(1.02);
+            filter: brightness(1.05);
+        }
+
+        .complete-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+
+        .orders-list, .banner-list, .product-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .order-item, .banner-item, .product-item {
+            background: #0f0f1a;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-left: 3px solid #ff6b35;
+        }
+
+        .order-info, .banner-info, .product-info {
+            flex: 1;
+        }
+
+        .order-id {
+            color: #ff6b35;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .order-detail {
+            color: white;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .order-date {
+            color: #888;
+            font-size: 0.7rem;
+        }
+
+        .order-actions, .banner-actions, .product-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-btn, .delete-btn, .edit-product-btn, .edit-banner-btn {
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .edit-btn, .edit-product-btn, .edit-banner-btn {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .banner-url, .product-name {
+            color: #ccc;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+
+        .row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .success-msg {
+            color: #4ade80;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 800px) {
+            .order-form-row {
+                flex-direction: column;
+            }
+            .order-right {
+                justify-content: flex-start;
+            }
+            .row-2col {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
-    
-    <!-- Stats: Total Orders Counter -->
-    <div class="stats-row">
-        <div class="stat-card"><i class="fas fa-chart-line"></i><div class="stat-number" id="totalOrdersCount">0</div><div>Total Orders Completed</div></div>
-        <div class="stat-card"><i class="fas fa-dollar-sign"></i><div class="stat-number" id="totalRevenue">$0</div><div>Total Revenue</div></div>
-        <div class="stat-card"><i class="fas fa-calendar-day"></i><div class="stat-number" id="todayOrders">0</div><div>Today's Orders</div></div>
+<div class="admin-container">
+    <div class="header">
+        <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+        <p>Manage Orders, Products, Banners & Settings</p>
     </div>
-    
-    <!-- Add Order -->
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card"><i class="fas fa-chart-line"></i><div class="stat-number" id="totalOrders">0</div><div class="stat-label">Total Orders</div></div>
+        <div class="stat-card"><i class="fas fa-dollar-sign"></i><div class="stat-number" id="totalRevenue">$0</div><div class="stat-label">Total Revenue</div></div>
+        <div class="stat-card"><i class="fas fa-calendar-day"></i><div class="stat-number" id="todayOrders">0</div><div class="stat-label">Today's Orders</div></div>
+    </div>
+
+    <!-- ADD NEW ORDER - COMPLETE LABEL -->
     <div class="card">
-        <h2><i class="fas fa-plus-circle"></i> Add New Order</h2>
-        <div class="row-2col">
-            <div>
-                <div class="form-group"><label>Product Name</label><input type="text" id="productName" placeholder="X Premium Plus"></div>
-                <div class="form-group"><label>Twitter ID</label><input type="text" id="twitterId" placeholder="@username"></div>
-                <div class="form-group"><label>Premium Type</label><select id="premiumType"><option>Premium</option><option>Premium Plus</option></select></div>
+        <h2><i class="fas fa-plus-circle"></i> Add New Order <span class="complete-badge">COMPLETED</span></h2>
+        <div class="order-form-row">
+            <div class="order-left">
+                <div class="form-group">
+                    <label><i class="fab fa-twitter"></i> Twitter Link / Username</label>
+                    <input type="text" id="twitterLink" placeholder="https://twitter.com/username or @username">
+                </div>
+                <div class="row-2col">
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Select Product Type</label>
+                        <select id="productType">
+                            <option value="Premium">🔥 Premium</option>
+                            <option value="Premium Plus">💎 Premium Plus</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-week"></i> Select Months</label>
+                        <select id="monthsSelect">
+                            <option value="3">3 months</option>
+                            <option value="6">6 months</option>
+                            <option value="12">12 months</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-dollar-sign"></i> Price (Auto Calculated)</label>
+                    <div class="price-display" id="priceDisplay">$0</div>
+                </div>
             </div>
-            <div>
-                <div class="form-group"><label>Months</label><select id="months"><option>1</option><option>3</option><option>6</option><option>12</option></select></div>
-                <div class="form-group"><label>Amount (USD)</label><input type="number" id="amount" placeholder="49"></div>
-                <div class="form-group"><label>Twitter Link</label><input type="text" id="twitterLink" placeholder="https://twitter.com/username"></div>
+            <div class="order-right">
+                <button class="save-order-btn" id="saveOrderBtn"><i class="fas fa-save"></i> Save Order →</button>
             </div>
         </div>
-        <button id="addOrderBtn"><i class="fas fa-save"></i> Save Order</button>
         <div id="orderMsg" class="success-msg"></div>
     </div>
-    
-    <!-- Manage Orders (Edit/Delete) -->
+
+    <!-- MANAGE ORDERS - Full Edit (Price + Twitter Link) -->
     <div class="card">
-        <h2><i class="fas fa-list"></i> Manage Orders (Edit/Delete)</h2>
-        <div id="ordersList" class="item-list">Loading...</div>
+        <h2><i class="fas fa-list"></i> Manage Orders (Edit Price & Twitter Link)</h2>
+        <div class="orders-list" id="ordersList">Loading orders...</div>
     </div>
-    
-    <!-- Banner Manager -->
+
+    <!-- BANNER MANAGER WITH EDIT -->
     <div class="card">
-        <h2><i class="fas fa-images"></i> Banner Images (Slider)</h2>
-        <div class="form-group"><label>Banner Image URL</label><input type="text" id="bannerUrl" placeholder="https://example.com/banner.jpg"></div>
-        <button id="addBannerBtn"><i class="fas fa-plus"></i> Add Banner</button>
-        <div id="bannersList" class="item-list">Loading...</div>
-    </div>
-    
-    <!-- Contact Info (WhatsApp + Twitter + Telegram) - No Email -->
-    <div class="card">
-        <h2><i class="fas fa-link"></i> Contact Links</h2>
-        <div class="form-group"><label><i class="fab fa-whatsapp"></i> WhatsApp Number (with country code)</label><input type="text" id="contactWhatsapp" placeholder="+8801xxxxxxxxx"></div>
-        <div class="form-group"><label><i class="fab fa-twitter"></i> Twitter URL</label><input type="text" id="contactTwitter" placeholder="https://twitter.com/store"></div>
-        <div class="form-group"><label><i class="fab fa-telegram"></i> Telegram URL</label><input type="text" id="contactTelegram" placeholder="https://t.me/store"></div>
-        <button id="saveContactBtn"><i class="fas fa-save"></i> Save Contact</button>
-        <div id="contactMsg" class="success-msg"></div>
-    </div>
-    
-    <!-- Products Manager (Add + Edit + Delete) -->
-    <div class="card">
-        <h2><i class="fas fa-box"></i> Products (Click to WhatsApp Order)</h2>
+        <h2><i class="fas fa-images"></i> Banner Images (Slider) - Add/Edit/Delete</h2>
         <div class="row-2col">
-            <input type="text" id="productNameInput" placeholder="Product Name">
-            <input type="text" id="productPriceInput" placeholder="Price USD">
+            <input type="text" id="bannerUrl" placeholder="https://example.com/banner.jpg">
+            <button id="addBannerBtn" style="background:#ff6b35; padding:12px;">+ Add Banner</button>
         </div>
-        <input type="text" id="productIconInput" placeholder="Icon (fab fa-twitter)" style="width:100%; margin-top:10px;">
-        <button id="addProductBtn"><i class="fas fa-plus"></i> Add Product</button>
-        <div id="productsList" class="item-list">Loading...</div>
+        <div class="banner-list" id="bannersList">Loading...</div>
+    </div>
+
+    <!-- PRODUCTS MANAGER WITH EDIT -->
+    <div class="card">
+        <h2><i class="fas fa-box"></i> Manage Products - Add/Edit/Delete</h2>
+        <div class="row-2col">
+            <input type="text" id="productName" placeholder="Product Name (e.g., X Premium)">
+            <input type="text" id="productPrice" placeholder="Price USD">
+        </div>
+        <input type="text" id="productIcon" placeholder="Icon (fab fa-twitter)" style="margin-top:10px;">
+        <button id="addProductBtn" style="margin-top:15px; background:#ff6b35;">+ Add Product</button>
+        <div class="product-list" id="productsList" style="margin-top:20px;">Loading...</div>
+    </div>
+
+    <!-- CONTACT SETTINGS -->
+    <div class="card">
+        <h2><i class="fas fa-link"></i> Contact Settings (WhatsApp, Twitter, Telegram)</h2>
+        <div class="row-2col">
+            <input type="text" id="contactWhatsapp" placeholder="WhatsApp Number (e.g., 8801xxxxxxxxx)">
+            <input type="text" id="contactTwitter" placeholder="Twitter URL">
+            <input type="text" id="contactTelegram" placeholder="Telegram URL">
+        </div>
+        <button id="saveContactBtn" style="margin-top:15px;">Save Contact</button>
+        <div id="contactMsg" class="success-msg"></div>
     </div>
 </div>
 
@@ -110,11 +375,33 @@
         messagingSenderId: "1068634444182",
         appId: "1:1068634444182:web:55bc823641dede5e948db7"
     };
-    
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    
-    // Get next order ID
+
+    // Price mapping
+    const prices = {
+        'Premium': { 3: 6, 6: 9 },
+        'Premium Plus': { 3: 12, 6: 16, 12: 20 }
+    };
+
+    function updatePrice() {
+        const productType = document.getElementById('productType').value;
+        const months = parseInt(document.getElementById('monthsSelect').value);
+        let price = 0;
+        if (productType === 'Premium') {
+            price = prices.Premium[months] || 0;
+        } else {
+            price = prices['Premium Plus'][months] || 0;
+        }
+        document.getElementById('priceDisplay').innerHTML = `$${price}`;
+        return price;
+    }
+
+    document.getElementById('productType').addEventListener('change', updatePrice);
+    document.getElementById('monthsSelect').addEventListener('change', updatePrice);
+    updatePrice();
+
     async function getNextOrderId() {
         const snapshot = await db.ref('orders').once('value');
         let maxId = 0;
@@ -124,42 +411,55 @@
         });
         return maxId + 1;
     }
-    
-    // Add Order
-    document.getElementById('addOrderBtn').onclick = async () => {
-        const productName = document.getElementById('productName').value;
-        const twitterId = document.getElementById('twitterId').value;
-        const premiumType = document.getElementById('premiumType').value;
-        const months = parseInt(document.getElementById('months').value);
-        const amount = parseFloat(document.getElementById('amount').value);
-        const twitterLink = document.getElementById('twitterLink').value;
+
+    // Save Order
+    document.getElementById('saveOrderBtn').onclick = async () => {
+        const twitterInput = document.getElementById('twitterLink').value.trim();
+        const productType = document.getElementById('productType').value;
+        const months = parseInt(document.getElementById('monthsSelect').value);
+        const amount = updatePrice();
         
-        if (!productName || !amount) { alert('Fill Product Name and Amount'); return; }
+        if (!twitterInput) {
+            alert('Please enter Twitter link or username');
+            return;
+        }
         
+        let twitterId = twitterInput;
+        let twitterLink = twitterInput;
+        if (twitterInput.includes('twitter.com')) {
+            const match = twitterInput.match(/twitter\.com\/([^\/?]+)/);
+            if (match) twitterId = '@' + match[1];
+            twitterLink = twitterInput;
+        } else {
+            if (!twitterInput.startsWith('@')) twitterId = '@' + twitterInput;
+            else twitterId = twitterInput;
+            twitterLink = `https://twitter.com/${twitterId.replace('@', '')}`;
+        }
+        
+        const productName = productType;
         const orderId = await getNextOrderId();
+        
         const newOrder = {
             orderId: orderId,
             productName: productName,
-            twitterId: twitterId || 'N/A',
-            premiumType: premiumType,
+            premiumType: productType,
+            twitterId: twitterId,
+            twitterLink: twitterLink,
             months: months,
             amount: amount,
-            twitterLink: twitterLink || `https://twitter.com/${twitterId.replace('@', '')}`,
             timestamp: Date.now()
         };
         
         db.ref('orders').push(newOrder).then(() => {
-            document.getElementById('orderMsg').innerHTML = '✅ Order added!';
-            document.getElementById('productName').value = '';
-            document.getElementById('twitterId').value = '';
-            document.getElementById('amount').value = '';
+            document.getElementById('orderMsg').innerHTML = '✅ Order added successfully! (Completed)';
+            document.getElementById('twitterLink').value = '';
             loadOrders();
             updateStats();
             setTimeout(() => document.getElementById('orderMsg').innerHTML = '', 3000);
         });
     };
-    
-    // Load Orders with Edit/Delete
+
+    // Load Orders with Full Edit (Price + Twitter Link)
     function loadOrders() {
         db.ref('orders').orderByChild('timestamp').once('value', (snapshot) => {
             let orders = [];
@@ -170,142 +470,169 @@
             
             const container = document.getElementById('ordersList');
             if (orders.length === 0) {
-                container.innerHTML = '<div style="color:#aaa; text-align:center;">No orders yet</div>';
+                container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">No orders yet</div>';
                 return;
             }
             
             let html = '';
             orders.forEach(order => {
-                html += `<div class="item">
-                            <div><strong>#${order.orderId}</strong> ${order.productName} - $${order.amount}<br><small>${new Date(order.timestamp).toLocaleString()}</small></div>
-                            <div>
-                                <button class="edit-btn" onclick="editOrder('${order.key}', '${order.productName}', ${order.amount})" style="padding:6px 14px;"><i class="fas fa-edit"></i> Edit</button>
-                                <button class="delete-btn" onclick="deleteOrder('${order.key}')" style="padding:6px 14px;"><i class="fas fa-trash"></i> Delete</button>
-                            </div>
-                          </div>`;
+                html += `
+                    <div class="order-item">
+                        <div class="order-info">
+                            <div class="order-id">#${order.orderId} | ${order.productName} <span class="complete-badge">COMPLETED</span></div>
+                            <div class="order-detail"><i class="fab fa-twitter"></i> ${order.twitterId} | ${order.months} months | $${order.amount}</div>
+                            <div class="order-date">${new Date(order.timestamp).toLocaleString()}</div>
+                        </div>
+                        <div class="order-actions">
+                            <button class="edit-btn" onclick="editOrderFull('${order.key}', '${order.twitterLink}', ${order.amount})"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="delete-btn" onclick="deleteOrder('${order.key}')"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>
+                `;
             });
             container.innerHTML = html;
         });
     }
-    
-    window.editOrder = (key, name, amount) => {
-        const newName = prompt('Edit Product Name', name);
-        const newAmount = prompt('Edit Amount USD', amount);
-        if (newName && newAmount) {
-            db.ref('orders/' + key).update({ productName: newName, amount: parseFloat(newAmount) })
-                .then(() => { loadOrders(); updateStats(); });
+
+    // Full Edit: Twitter Link + Price
+    window.editOrderFull = (key, currentTwitterLink, currentAmount) => {
+        const newTwitterLink = prompt('Edit Twitter Link:', currentTwitterLink);
+        const newAmount = prompt('Edit Amount USD:', currentAmount);
+        const updates = {};
+        if (newTwitterLink && newTwitterLink !== currentTwitterLink) {
+            let twitterId = newTwitterLink;
+            if (newTwitterLink.includes('twitter.com')) {
+                const match = newTwitterLink.match(/twitter\.com\/([^\/?]+)/);
+                if (match) twitterId = '@' + match[1];
+            } else {
+                if (!newTwitterLink.startsWith('@')) twitterId = '@' + newTwitterLink;
+                else twitterId = newTwitterLink;
+            }
+            updates.twitterLink = newTwitterLink;
+            updates.twitterId = twitterId;
+        }
+        if (newAmount && parseFloat(newAmount) !== currentAmount) {
+            updates.amount = parseFloat(newAmount);
+        }
+        if (Object.keys(updates).length > 0) {
+            db.ref('orders/' + key).update(updates).then(() => { loadOrders(); updateStats(); });
+        } else {
+            alert('No changes made');
         }
     };
-    
+
     window.deleteOrder = (key) => {
         if (confirm('Delete this order?')) {
             db.ref('orders/' + key).remove().then(() => { loadOrders(); updateStats(); });
         }
     };
-    
-    // Update Stats (Total Orders, Revenue, Today's Orders)
+
+    // Update Stats
     function updateStats() {
         db.ref('orders').once('value', (snapshot) => {
-            let total = 0;
-            let todayTotal = 0;
-            let orderCount = 0;
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
+            let total = 0, orderCount = 0, todayTotal = 0;
+            const today = new Date(); today.setHours(0,0,0,0);
             snapshot.forEach(child => {
                 const order = child.val();
-                const amount = order.amount || 0;
-                total += amount;
                 orderCount++;
+                total += order.amount || 0;
                 if (order.timestamp >= today.getTime()) todayTotal++;
             });
-            
-            document.getElementById('totalOrdersCount').innerText = orderCount;
+            document.getElementById('totalOrders').innerText = orderCount;
             document.getElementById('totalRevenue').innerText = `$${total}`;
             document.getElementById('todayOrders').innerText = todayTotal;
         });
     }
-    
-    // Banners
+
+    // Banners with Edit
     function loadBanners() {
         db.ref('banners').on('value', (snapshot) => {
             const banners = snapshot.val();
             const container = document.getElementById('bannersList');
-            if (!banners) {
-                container.innerHTML = '<div style="color:#aaa; text-align:center;">No banners</div>';
-                return;
-            }
+            if (!banners) { container.innerHTML = '<div style="color:#888;">No banners</div>'; return; }
             let html = '';
             for (let key in banners) {
-                html += `<div class="item"><span style="word-break:break-all;">${banners[key].url}</span><button onclick="deleteBanner('${key}')" class="delete-btn" style="padding:6px 12px;">Delete</button></div>`;
+                html += `
+                    <div class="banner-item">
+                        <span class="banner-url">${banners[key].url}</span>
+                        <div class="banner-actions">
+                            <button class="edit-banner-btn" onclick="editBanner('${key}', '${banners[key].url}')"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="delete-btn" onclick="deleteBanner('${key}')"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>
+                `;
             }
             container.innerHTML = html;
         });
     }
     
-    window.deleteBanner = (key) => { db.ref('banners/' + key).remove(); };
+    window.editBanner = (key, currentUrl) => {
+        const newUrl = prompt('Edit Banner Image URL:', currentUrl);
+        if (newUrl && newUrl !== currentUrl) {
+            db.ref('banners/' + key).update({ url: newUrl, timestamp: Date.now() });
+        }
+    };
+    
+    window.deleteBanner = (key) => db.ref('banners/' + key).remove();
     
     document.getElementById('addBannerBtn').onclick = () => {
         const url = document.getElementById('bannerUrl').value;
-        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-            db.ref('banners').push({ url: url, timestamp: Date.now() }).then(() => document.getElementById('bannerUrl').value = '');
-        } else { alert('Enter valid image URL'); }
+        if (url && (url.startsWith('http'))) {
+            db.ref('banners').push({ url: url, timestamp: Date.now() });
+            document.getElementById('bannerUrl').value = '';
+        } else alert('Enter valid image URL');
     };
-    
+
     // Products with Edit
     function loadProducts() {
         db.ref('products').on('value', (snapshot) => {
             const products = snapshot.val();
             const container = document.getElementById('productsList');
-            if (!products) {
-                container.innerHTML = '<div style="color:#aaa; text-align:center;">No products</div>';
-                return;
-            }
+            if (!products) { container.innerHTML = '<div style="color:#888;">No products</div>'; return; }
             let html = '';
             for (let key in products) {
-                html += `<div class="item">
-                            <div><i class="${products[key].icon || 'fab fa-twitter'}"></i> <strong>${products[key].name}</strong> - $${products[key].price}</div>
-                            <div>
-                                <button class="edit-btn" onclick="editProduct('${key}', '${products[key].name}', ${products[key].price}, '${products[key].icon || ''}')" style="padding:6px 14px;"><i class="fas fa-edit"></i> Edit</button>
-                                <button class="delete-btn" onclick="deleteProduct('${key}')" style="padding:6px 14px;"><i class="fas fa-trash"></i> Delete</button>
-                            </div>
-                          </div>`;
+                html += `
+                    <div class="product-item">
+                        <span class="product-name"><i class="${products[key].icon || 'fab fa-twitter'}"></i> ${products[key].name} - $${products[key].price}</span>
+                        <div class="product-actions">
+                            <button class="edit-product-btn" onclick="editProduct('${key}', '${products[key].name}', ${products[key].price}, '${products[key].icon || ''}')"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="delete-btn" onclick="deleteProduct('${key}')"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>
+                `;
             }
             container.innerHTML = html;
         });
     }
     
     window.editProduct = (key, name, price, icon) => {
-        const newName = prompt('Edit Product Name', name);
-        const newPrice = prompt('Edit Price USD', price);
-        const newIcon = prompt('Edit Icon (fab fa-twitter)', icon);
-        if (newName && newPrice) {
-            db.ref('products/' + key).update({ 
-                name: newName, 
-                price: parseFloat(newPrice),
-                icon: newIcon || 'fab fa-twitter'
-            }).then(() => loadProducts());
+        const newName = prompt('Edit Product Name:', name);
+        const newPrice = prompt('Edit Price USD:', price);
+        const newIcon = prompt('Edit Icon (fab fa-twitter):', icon);
+        const updates = {};
+        if (newName && newName !== name) updates.name = newName;
+        if (newPrice && parseFloat(newPrice) !== price) updates.price = parseFloat(newPrice);
+        if (newIcon && newIcon !== icon) updates.icon = newIcon;
+        if (Object.keys(updates).length > 0) {
+            db.ref('products/' + key).update(updates);
         }
     };
     
-    window.deleteProduct = (key) => {
-        if (confirm('Delete product?')) db.ref('products/' + key).remove();
-    };
+    window.deleteProduct = (key) => db.ref('products/' + key).remove();
     
     document.getElementById('addProductBtn').onclick = () => {
-        const name = document.getElementById('productNameInput').value;
-        const price = document.getElementById('productPriceInput').value;
-        const icon = document.getElementById('productIconInput').value || 'fab fa-twitter';
+        const name = document.getElementById('productName').value;
+        const price = document.getElementById('productPrice').value;
+        const icon = document.getElementById('productIcon').value || 'fab fa-twitter';
         if (name && price) {
-            db.ref('products').push({ name, price: parseFloat(price), icon, description: 'Premium service' }).then(() => {
-                document.getElementById('productNameInput').value = '';
-                document.getElementById('productPriceInput').value = '';
-                document.getElementById('productIconInput').value = '';
-            });
-        } else { alert('Enter name and price'); }
+            db.ref('products').push({ name, price: parseFloat(price), icon, description: 'Premium Service' });
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productIcon').value = '';
+        } else alert('Enter name and price');
     };
-    
-    // Contact (WhatsApp, Twitter, Telegram)
+
+    // Contact
     function loadContact() {
         db.ref('contact').on('value', (snapshot) => {
             const c = snapshot.val();
@@ -318,15 +645,17 @@
     }
     
     document.getElementById('saveContactBtn').onclick = () => {
-        const whatsapp = document.getElementById('contactWhatsapp').value;
-        const twitterLink = document.getElementById('contactTwitter').value;
-        const telegramLink = document.getElementById('contactTelegram').value;
-        db.ref('contact').set({ whatsapp, twitterLink, telegramLink }).then(() => {
+        db.ref('contact').set({
+            whatsapp: document.getElementById('contactWhatsapp').value,
+            twitterLink: document.getElementById('contactTwitter').value,
+            telegramLink: document.getElementById('contactTelegram').value
+        }).then(() => {
             document.getElementById('contactMsg').innerHTML = '✅ Contact saved!';
-            setTimeout(() => document.getElementById('contactMsg').innerHTML = '', 3000);
+            setTimeout(() => document.getElementById('contactMsg').innerHTML = '', 2000);
         });
     };
-    
+
+    // Initialize
     loadOrders();
     updateStats();
     loadBanners();
