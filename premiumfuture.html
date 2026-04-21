@@ -29,7 +29,6 @@
             padding: 20px;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -48,7 +47,6 @@
             margin-top: 5px;
         }
 
-        /* Banner Slider */
         .banner-wrapper {
             margin-bottom: 40px;
             border-radius: 20px;
@@ -79,7 +77,6 @@
             background: #ff6b35;
         }
 
-        /* Section Title */
         .section-title {
             font-size: 1.4rem;
             font-weight: 700;
@@ -144,7 +141,6 @@
             font-weight: 500;
         }
 
-        /* Products Grid - 2 per row EXACTLY */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -152,7 +148,6 @@
             margin-bottom: 40px;
         }
 
-        /* Product Cards */
         .product-card {
             background: linear-gradient(135deg, #1a1a2e, #0f0f1a);
             border-radius: 20px;
@@ -194,7 +189,6 @@
             color: #feca57;
         }
 
-        /* Premium Badge */
         .premium-badge {
             display: inline-block;
             background: #ff6b35;
@@ -210,7 +204,6 @@
             color: #000;
         }
 
-        /* Contact Buttons - 3 buttons in 1 line */
         .contact-section {
             background: rgba(255,255,255,0.05);
             border-radius: 25px;
@@ -286,7 +279,6 @@
             }
         }
 
-        /* Order History */
         .history-card {
             background: rgba(255,255,255,0.05);
             border-radius: 25px;
@@ -407,7 +399,6 @@
         <p>Live Order History | Instant Updates</p>
     </div>
 
-    <!-- Banner Slider -->
     <div class="banner-wrapper">
         <div class="swiper bannerSwiper">
             <div class="swiper-wrapper" id="bannerSlider"></div>
@@ -417,7 +408,7 @@
         </div>
     </div>
 
-    <!-- TODAY STATS BOX: Total Completed Orders (Count & Total Pieces/Months) -->
+    <!-- Today Stats Box -->
     <div class="stats-box" id="todayStatsBox">
         <div class="stats-item">
             <div class="stats-icon"><i class="fas fa-check-circle"></i></div>
@@ -435,7 +426,6 @@
         </div>
     </div>
 
-    <!-- Premium Products Section -->
     <div class="section-title">
         <i class="fas fa-gem"></i> Premium Products (Click to Order via WhatsApp)
     </div>
@@ -443,7 +433,6 @@
         <div class="empty-msg" style="grid-column:1/-1;">Loading products...</div>
     </div>
 
-    <!-- Contact Buttons - 3 buttons 1 line -->
     <div class="contact-section">
         <div class="contact-title">
             <i class="fas fa-headset"></i> 24/7 Support
@@ -453,7 +442,6 @@
         </div>
     </div>
 
-    <!-- Live Order History -->
     <div class="section-title">
         <i class="fas fa-history"></i> Live Order History (Last 15 Orders)
     </div>
@@ -483,7 +471,6 @@
     let swiper = null;
     let whatsappNumber = '';
 
-    // Load Banners
     function loadBanners() {
         db.ref('banners').on('value', (snapshot) => {
             const banners = snapshot.val();
@@ -522,7 +509,6 @@
         });
     }
 
-    // Load Products
     function loadProducts() {
         db.ref('products').on('value', (snapshot) => {
             const products = snapshot.val();
@@ -570,7 +556,6 @@
         });
     }
 
-    // Load Contact Buttons (Twitter link now shows only the link, no extra @ or username)
     function loadContactButtons() {
         db.ref('contact').on('value', (snapshot) => {
             const c = snapshot.val();
@@ -578,7 +563,6 @@
             
             let html = '';
             
-            // WhatsApp button
             if (c && c.whatsapp) {
                 whatsappNumber = c.whatsapp;
                 let cleanNum = c.whatsapp.replace(/[^0-9]/g, '');
@@ -589,14 +573,12 @@
                 html += `<a href="#" class="contact-btn whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>`;
             }
             
-            // Twitter button - ONLY the link from admin panel, no extra text like @username
             if (c && c.twitterLink && c.twitterLink !== '') {
                 html += `<a href="${c.twitterLink}" target="_blank" class="contact-btn twitter-btn"><i class="fab fa-twitter"></i> Twitter</a>`;
             } else {
                 html += `<a href="#" class="contact-btn twitter-btn"><i class="fab fa-twitter"></i> Twitter</a>`;
             }
             
-            // Telegram button
             if (c && c.telegramLink && c.telegramLink !== '') {
                 html += `<a href="${c.telegramLink}" target="_blank" class="contact-btn telegram-btn"><i class="fab fa-telegram"></i> Telegram</a>`;
             } else {
@@ -607,14 +589,12 @@
         });
     }
 
-    // Helper: Get today's start timestamp (00:00:00)
     function getTodayStart() {
         const now = new Date();
         now.setHours(0, 0, 0, 0);
         return now.getTime();
     }
 
-    // Update today stats: total orders completed today & total pieces (sum of months)
     function updateTodayStats(ordersArray) {
         const todayStart = getTodayStart();
         const todayOrders = ordersArray.filter(order => (order.timestamp || 0) >= todayStart);
@@ -631,8 +611,7 @@
         document.getElementById('todayTotalPieces').innerText = totalPieces;
     }
 
-    // Load Order History with COMPLETE badge next to Order ID
-    // Twitter field: now only shows the raw link from database (no extra @ or username formatting)
+    // Load Order History - শুধু লিংক দেখাবে, কোন @username থাকবে না
     function loadOrderHistory() {
         db.ref('orders').orderByChild('timestamp').once('value', (snapshot) => {
             let orders = [];
@@ -643,20 +622,16 @@
                     orderId: val.orderId || 'N/A',
                     productName: val.productName || 'Unknown',
                     premiumType: val.premiumType || 'Premium',
-                    twitterId: val.twitterId || '',
+                    twitterLink: val.twitterLink || '',
                     months: val.months || 1,
                     amount: val.amount || 0,
                     timestamp: val.timestamp || Date.now()
                 });
             });
             
-            // Sort descending
             orders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            
-            // Update Today Stats using full orders list (for accurate counting)
             updateTodayStats(orders);
             
-            // Keep only last 15 for display, but auto-delete older ones if >15
             const displayOrders = orders.slice(0, 15);
             if (orders.length > 15) {
                 const toDelete = orders.slice(15);
@@ -680,19 +655,15 @@
                 });
                 const orderNumber = order.orderId !== 'N/A' ? order.orderId : order.id?.slice(-6) || 'ORD';
                 
-                // Twitter link handling: ONLY show the raw link from admin panel without any @username text
-                // If twitterId field exists and is a valid URL, display clickable link with just the URL text.
-                // If not a URL or empty, show 'N/A' and no extra formatting.
+                // শুধু লিংক দেখাবে - এডমিন প্যানেল থেকে যা সেভ করবেন তাই দেখাবে
                 let twitterDisplay = 'N/A';
-                let twitterLinkRaw = order.twitterId ? order.twitterId.trim() : '';
+                let twitterLinkRaw = order.twitterLink ? order.twitterLink.trim() : '';
                 if (twitterLinkRaw !== '' && twitterLinkRaw !== 'N/A') {
-                    // Display the exact link as text, but make it clickable
                     twitterDisplay = `<a href="${twitterLinkRaw}" target="_blank" class="twitter-link" rel="noopener noreferrer">${twitterLinkRaw}</a>`;
                 } else {
                     twitterDisplay = 'N/A';
                 }
                 
-                // "COMPLETE" badge next to Order ID
                 html += `
                     <div class="order-item">
                         <div class="order-header">
@@ -718,7 +689,6 @@
         });
     }
     
-    // Simple escape for XSS safety
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -726,28 +696,23 @@
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
         });
     }
 
-    // Real-time listeners: whenever orders change, refresh history and stats
     function refreshOrdersAndStats() {
-        loadOrderHistory(); // this will also update today stats
+        loadOrderHistory();
     }
     
     db.ref('orders').on('child_added', () => { refreshOrdersAndStats(); });
     db.ref('orders').on('child_removed', () => { refreshOrdersAndStats(); });
     db.ref('orders').on('child_changed', () => { refreshOrdersAndStats(); });
     
-    // Auto refresh every 8 seconds for realtime sync (fallback)
     setInterval(() => { refreshOrdersAndStats(); }, 8000);
     
-    // Initialize all modules
     loadBanners();
     loadProducts();
     loadContactButtons();
-    loadOrderHistory();      // initial load + stats calculation
+    loadOrderHistory();
 </script>
 </body>
 </html>
