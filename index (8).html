@@ -1,241 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Stylish Giveaway</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      padding: 30px;
-      border-radius: 15px;
-      max-width: 600px;
-      width: 100%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    }
-
-    h1 {
-      text-align: center;
-      color: #ffd700;
-      margin-bottom: 25px;
-    }
-
-    .task-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
-    }
-
-    .task-btn {
-      background: #00ffcc;
-      color: #1e3c72;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      min-width: 150px;
-    }
-
-    .task-btn:hover {
-      background: #00ccaa;
-      transform: scale(1.05);
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      background: rgba(255,255,255,0.2);
-      color: white;
-    }
-
-    input[type="text"]::placeholder {
-      color: #ccc;
-    }
-
-    .photo-upload {
-      border: 2px dashed #00ffcc;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    #photo-preview {
-      max-width: 100%;
-      max-height: 200px;
-      margin-top: 10px;
-      border-radius: 10px;
-      display: none;
-    }
-
-    .error {
-      color: #ff5555;
-      font-size: 0.9em;
-      display: none;
-      margin-top: 5px;
-    }
-
-    #submit-btn {
-      width: 100%;
-      padding: 14px;
-      background: #ffd700;
-      color: #1e3c72;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    #submit-btn:hover {
-      background: #ffcc00;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Order History - Premium Stores</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #0a0a0a; 
+            color: #fff; 
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #000; 
+            padding: 15px 20px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            border-bottom: 2px solid #00bfff;
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .logo {
+            font-size: 22px; 
+            font-weight: bold; 
+            color: #00bfff; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            text-decoration: none;
+        }
+        .logo i { font-size: 26px; color: #00ff9d; }
+        
+        .back-btn {
+            background: #1f1f1f;
+            padding: 10px 20px;
+            border-radius: 40px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .back-btn:hover {
+            background: #00bfff;
+            color: black;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #222;
+        }
+        
+        .history-header h1 {
+            color: #00bfff;
+            font-size: 28px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: #111;
+            padding: 10px 20px;
+            border-radius: 40px;
+            border: 1px solid #333;
+        }
+        
+        .stat-card span {
+            color: #00ff9d;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .refresh-btn {
+            background: #00bfff;
+            color: black;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: #1f1f1f;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #aaa;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: #00bfff;
+            color: black;
+        }
+        
+        .filter-btn:hover {
+            background: #333;
+        }
+        
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .order-card {
+            background: #111;
+            border-radius: 16px;
+            padding: 18px;
+            transition: 0.2s;
+            border-left: 4px solid #00bfff;
+        }
+        
+        .order-card:hover {
+            background: #161616;
+            transform: translateX(5px);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .order-id {
+            font-weight: bold;
+            color: #00bfff;
+            font-size: 14px;
+        }
+        
+        .order-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-Pending { background: #ffaa0033; color: #ffaa00; border: 1px solid #ffaa00; }
+        .status-Completed { background: #00ff9d33; color: #00ff9d; border: 1px solid #00ff9d; }
+        .status-Cancelled { background: #ff444433; color: #ff8888; border: 1px solid #ff4444; }
+        
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #222;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #bbb;
+        }
+        
+        .detail-item i {
+            width: 20px;
+            color: #00bfff;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+        
+        .loading i {
+            font-size: 40px;
+            color: #00bfff;
+        }
+        
+        .no-orders {
+            text-align: center;
+            padding: 50px;
+            background: #111;
+            border-radius: 20px;
+        }
+        
+        .no-orders i {
+            font-size: 60px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        .error-box {
+            text-align: center;
+            padding: 40px;
+            background: #1a0000;
+            border-radius: 20px;
+            border: 1px solid #ff4444;
+        }
+        
+        .footer-credit {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #555;
+            border-top: 1px solid #222;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .order-details { grid-template-columns: 1fr; }
+            .history-header { flex-direction: column; align-items: stretch; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Giveaway Entry</h1>
 
-    <div class="task-buttons">
-      <button class="task-btn" onclick="window.open('https://t.me/yourchannel', '_blank')">Join Telegram</button>
-      <button class="task-btn" onclick="window.open('https://twitter.com/yourprofile', '_blank')">Follow Twitter</button>
-      <button class="task-btn" onclick="window.open('https://discord.gg/yourdiscord', '_blank')">Join Discord</button>
+    <div class="header">
+        <a href="#" class="logo">
+            <i class="fas fa-crown"></i>
+            Premium Stores
+        </a>
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Shop
+        </a>
     </div>
 
-    <form id="giveaway-form">
-      <div class="form-group">
-        <label for="username">Telegram Username</label>
-        <input type="text" id="username" placeholder="@yourusername" required>
-        <div id="username-error" class="error">Username is required</div>
-      </div>
-
-      <div class="form-group">
-        <label for="bsc-address">BSC Address / UID</label>
-        <input type="text" id="bsc-address" placeholder="Enter BSC address or UID" required>
-        <div id="bsc-error" class="error">BSC Address / UID is required</div>
-      </div>
-
-      <div class="form-group">
-        <label>Upload Screenshot</label>
-        <div class="photo-upload" id="photo-upload">
-          Click to upload or drag & drop image here
-          <input type="file" id="photo" accept="image/*" hidden required>
-          <img id="photo-preview" src="" alt="Preview">
+    <div class="container">
+        <div class="history-header">
+            <h1><i class="fas fa-history"></i> Order History</h1>
+            <div class="stats">
+                <div class="stat-card">
+                    <i class="fas fa-shopping-bag"></i> Total: <span id="totalCount">0</span>
+                </div>
+                <button class="refresh-btn" onclick="loadAllOrders()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
         </div>
-        <div id="photo-error" class="error">Screenshot is required</div>
-      </div>
 
-      <button type="submit" id="submit-btn">Submit Entry</button>
-    </form>
-  </div>
-  <script>
-    const form = document.getElementById("giveaway-form");
-    const usernameInput = document.getElementById("username");
-    const bscInput = document.getElementById("bsc-address");
-    const photoInput = document.getElementById("photo");
-    const photoPreview = document.getElementById("photo-preview");
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all" onclick="filterOrders('all')">All Orders</button>
+            <button class="filter-btn" data-filter="Pending" onclick="filterOrders('Pending')">Pending</button>
+            <button class="filter-btn" data-filter="Completed" onclick="filterOrders('Completed')">Completed</button>
+            <button class="filter-btn" data-filter="Cancelled" onclick="filterOrders('Cancelled')">Cancelled</button>
+        </div>
 
-    const usernameError = document.getElementById("username-error");
-    const bscError = document.getElementById("bsc-error");
-    const photoError = document.getElementById("photo-error");
-    const photoUpload = document.getElementById("photo-upload");
+        <div class="orders-list" id="ordersList">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading orders from database...</p>
+            </div>
+        </div>
+    </div>
 
-    photoUpload.addEventListener("click", () => photoInput.click());
+    <div class="footer-credit">
+        Developed by MD Abdullah Khan
+    </div>
 
-    photoInput.addEventListener("change", () => {
-      const file = photoInput.files[0];
-      if (file && file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          photoPreview.src = reader.result;
-          photoPreview.style.display = "block";
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmg5AagXdej2DgvdQ-q5Dqddbgc3Fu2oA",
+            authDomain: "premium-store-v1.firebaseapp.com",
+            projectId: "premium-store-v1",
+            storageBucket: "premium-store-v1.firebasestorage.app",
+            messagingSenderId: "838970946697",
+            appId: "1:838970946697:web:fcaecf864d91c16967c258"
         };
-        reader.readAsDataURL(file);
-      }
-    });
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-      // Reset errors
-      usernameError.style.display = "none";
-      bscError.style.display = "none";
-      photoError.style.display = "none";
+        let allOrders = [];
+        let currentFilter = 'all';
 
-      let isValid = true;
-
-      if (!usernameInput.value.trim()) {
-        usernameError.style.display = "block";
-        isValid = false;
-      }
-      if (!bscInput.value.trim()) {
-        bscError.style.display = "block";
-        isValid = false;
-      }
-      if (!photoInput.files[0]) {
-        photoError.style.display = "block";
-        isValid = false;
-      }
-
-      if (!isValid) return;
-
-      const formData = new FormData();
-      formData.append("username", usernameInput.value.trim());
-      formData.append("bscAddress", bscInput.value.trim());
-      formData.append("photo", photoInput.files[0]);
-
-      try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec", {
-          method: "POST",
-          body: formData
-        });
-
-        const result = await response.json();
-        if (result.status === "success") {
-          alert("Submitted successfully!");
-          form.reset();
-          photoPreview.style.display = "none";
-        } else {
-          alert("Submission failed: " + result.message);
+        async function loadAllOrders() {
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Loading orders...</p></div>';
+            
+            try {
+                const snapshot = await db.collection('orders')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                
+                allOrders = [];
+                snapshot.forEach(doc => {
+                    allOrders.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                document.getElementById('totalCount').innerText = allOrders.length;
+                displayOrders();
+                
+            } catch (error) {
+                console.error("Error:", error);
+                ordersList.innerHTML = `
+                    <div class="error-box">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Failed to load orders</h3>
+                        <p>Error: ${error.message}</p>
+                        <button onclick="loadAllOrders()" style="margin-top: 15px; padding: 10px 25px; background: #00bfff; border: none; border-radius: 30px; cursor: pointer;">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
         }
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
-    });
-  </script>
+        
+        function displayOrders() {
+            const ordersList = document.getElementById('ordersList');
+            let filteredOrders = allOrders;
+            
+            if (currentFilter !== 'all') {
+                filteredOrders = allOrders.filter(order => order.status === currentFilter);
+            }
+            
+            if (filteredOrders.length === 0) {
+                ordersList.innerHTML = `
+                    <div class="no-orders">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No Orders Found</h3>
+                        <p>${currentFilter === 'all' ? 'No orders have been added yet.' : `No ${currentFilter} orders found.`}</p>
+                        <a href="index.html" style="display: inline-block; margin-top: 15px; padding: 10px 25px; background: #00bfff; color: black; text-decoration: none; border-radius: 30px;">
+                            <i class="fas fa-shopping-cart"></i> Start Shopping
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            ordersList.innerHTML = '';
+            
+            filteredOrders.forEach((order, index) => {
+                const date = order.timestamp ? order.timestamp.toDate().toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : 'Date not recorded';
+                
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+                orderCard.innerHTML = `
+                    <div class="order-header">
+                        <span class="order-id"><i class="fas fa-hashtag"></i> Order ${allOrders.length - index}</span>
+                        <span class="order-status status-${order.status || 'Pending'}">${order.status || 'Pending'}</span>
+                    </div>
+                    <div class="order-details">
+                        <div class="detail-item">
+                            <i class="fas fa-box"></i>
+                            <span><strong>Product:</strong> ${escapeHtml(order.productName || 'N/A')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-calendar-week"></i>
+                            <span><strong>Plan:</strong> ${escapeHtml(order.months || 'Standard')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-user"></i>
+                            <span><strong>Customer:</strong> ${escapeHtml(order.customer || 'Guest')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span><strong>Date:</strong> ${escapeHtml(date)}</span>
+                        </div>
+                    </div>
+                `;
+                ordersList.appendChild(orderCard);
+            });
+        }
+        
+        function filterOrders(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            displayOrders();
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        let refreshInterval;
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                loadAllOrders();
+            }, 20000);
+        }
+        
+        window.onload = () => {
+            loadAllOrders();
+            startAutoRefresh();
+        };
+    </script>
 </body>
 </html>
