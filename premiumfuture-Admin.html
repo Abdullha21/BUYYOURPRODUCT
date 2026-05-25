@@ -36,11 +36,82 @@
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none; border-color: #00bfff; box-shadow: 0 0 5px rgba(0,191,255,0.3);
         }
+        
+        /* Months Input Section */
+        .months-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .month-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .month-row input {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+        }
+        .month-row select {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+        }
+        .remove-month {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .add-month-btn {
+            background: #00bfff;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .quick-plans {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .quick-plan {
+            background: #2a2a2a;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .quick-plan:hover {
+            background: #00bfff;
+            color: black;
+        }
+        
         button { background: #00ff9d; color: #000; border: none; padding: 12px 28px; border-radius: 40px; font-weight: bold; cursor: pointer; margin: 5px 5px 0 0; font-size: 14px; transition: 0.2s; }
         button:hover { transform: translateY(-2px); filter: brightness(1.05); }
         .delete-btn { background: #ff4444; color: white; }
         .edit-btn { background: #ffaa00; color: #1e1e1e; }
-        .btn-secondary { background: #3a6ea5; color: white; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #0a0a0a; border-radius: 16px; overflow: hidden; }
         th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid #222; }
@@ -87,21 +158,39 @@
         <button class="tab-btn" onclick="showTab(6)"><i class="fas fa-history"></i> Orders History</button>
     </div>
 
-    <!-- Tab 0: Add Product -->
+    <!-- Tab 0: Add Product with Easy Months Selection -->
     <div id="tab0" class="tab">
         <h2><i class="fas fa-box-open"></i> Add New Product</h2>
-        <div class="form-group"><label>Product Name *</label><input type="text" id="prodName" placeholder="e.g., Premium Subscription"></div>
+        <div class="form-group"><label>Product Name *</label><input type="text" id="prodName" placeholder="e.g., Netflix Premium, Spotify Premium"></div>
         <div class="form-group"><label>Category *</label><select id="prodCategory"><option value="">Select Category</option></select></div>
-        <div class="form-group"><label>Months & Prices (JSON format) [{"month":1,"price":99},{"month":3,"price":249}]</label><textarea id="prodMonths" rows="3" placeholder='[{"month":1,"price":99},{"month":6,"price":499}]'></textarea></div>
+        
+        <!-- Months/Pricing Section -->
+        <div class="form-group">
+            <label>Pricing Plans (Days/Months/Years)</label>
+            <div class="quick-plans">
+                <span class="quick-plan" onclick="addQuickPlan('7 Days', 7)">➕ 7 Days</span>
+                <span class="quick-plan" onclick="addQuickPlan('14 Days', 14)">➕ 14 Days</span>
+                <span class="quick-plan" onclick="addQuickPlan('1 Month', 30)">➕ 1 Month</span>
+                <span class="quick-plan" onclick="addQuickPlan('3 Months', 90)">➕ 3 Months</span>
+                <span class="quick-plan" onclick="addQuickPlan('6 Months', 180)">➕ 6 Months</span>
+                <span class="quick-plan" onclick="addQuickPlan('12 Months', 365)">➕ 12 Months</span>
+                <span class="quick-plan" onclick="addQuickPlan('1 Year', 365)">➕ 1 Year</span>
+            </div>
+            <div class="months-container" id="monthsContainer">
+                <div id="monthsList"></div>
+                <button type="button" class="add-month-btn" onclick="addCustomPlan()"><i class="fas fa-plus"></i> Add Custom Plan</button>
+            </div>
+        </div>
+        
         <div class="form-group"><label>Image URL (Optional)</label><input type="text" id="prodImage" placeholder="https://..."></div>
-        <div class="form-group"><label>Description</label><textarea id="prodDesc" rows="2"></textarea></div>
+        <div class="form-group"><label>Description</label><textarea id="prodDesc" rows="2" placeholder="Product description..."></textarea></div>
         <button onclick="addProduct()"><i class="fas fa-save"></i> Save Product</button>
     </div>
 
     <!-- Tab 1: Categories Management -->
     <div id="tab1" class="tab" style="display:none;">
         <h2><i class="fas fa-folder-tree"></i> Manage Categories</h2>
-        <div class="form-group"><label>New Category Name</label><input type="text" id="newCategoryName" placeholder="e.g., Streaming, Gaming"></div>
+        <div class="form-group"><label>New Category Name</label><input type="text" id="newCategoryName" placeholder="e.g., Streaming, Gaming, VPN"></div>
         <button onclick="addCategory()"><i class="fas fa-plus"></i> Add Category</button>
         <h3 style="margin-top:30px;">Existing Categories</h3>
         <table id="categoriesTable"><thead><tr><th>#</th><th>Category Name</th><th>Action</th></tr></thead><tbody></tbody>}</table>
@@ -121,28 +210,28 @@
         <h2><i class="fas fa-truck"></i> Create New Order</h2>
         <div class="form-group"><label>Select Category</label><select id="oCategory" onchange="loadProductsByCategoryForOrder()"></select></div>
         <div class="form-group"><label>Select Product</label><select id="oProduct" onchange="loadMonthsForProductOrder()"></select></div>
-        <div class="form-group"><label>Select Months / Plan</label><select id="oMonths"></select></div>
+        <div class="form-group"><label>Select Plan</label><select id="oMonths"></select></div>
         <div class="form-group"><label>Customer Info (WhatsApp/Name)</label><input type="text" id="oCustomer" placeholder="+8801xxxx or name"></div>
         <div class="form-group"><label>Status</label><select id="oStatus"><option value="Pending">Pending</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select></div>
         <button onclick="addOrder()"><i class="fas fa-check-circle"></i> Save Order</button>
     </div>
 
-    <!-- Tab 4: Products List with Edit & Delete -->
+    <!-- Tab 4: Products List -->
     <div id="tab4" class="tab" style="display:none;">
         <h2><i class="fas fa-list-ul"></i> Products List (Edit / Delete)</h2>
-        <table id="productsTable"><thead><tr><th>Name</th><th>Category</th><th>Months/Prices</th><th>Image</th><th>Actions</th></tr></thead><tbody></tbody>}</table>
+        <table id="productsTable"><thead><tr><th>Name</th><th>Category</th><th>Plans</th><th>Image</th><th>Actions</th></tr></thead><tbody></tbody>}</table>
     </div>
 
-    <!-- Tab 5: Banners List with Edit & Delete -->
+    <!-- Tab 5: Banners List -->
     <div id="tab5" class="tab" style="display:none;">
         <h2><i class="fas fa-images"></i> Banners List (Edit / Delete)</h2>
-        <table id="bannersTable"><thead><tr><th>Preview</th><th>Link</th><th>Order</th><th>Actions</th></tr></thead><tbody></tbody>}</table>
+        <table id="bannersTable"><thead><tr><th>Preview</th><th>Link</th><th>Order</th><th>Actions</th></tr></thead><tbody></tbody>}</tr>
     </div>
 
-    <!-- Tab 6: Orders History with Edit & Delete -->
+    <!-- Tab 6: Orders History -->
     <div id="tab6" class="tab" style="display:none;">
         <h2><i class="fas fa-clipboard-list"></i> All Orders (Edit / Delete)</h2>
-        <table id="ordersTable"><thead><tr><th>Order ID</th><th>Date</th><th>Product</th><th>Months</th><th>Customer</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody>}</table>
+        <table id="ordersTable"><thead><tr><th>Order ID</th><th>Date</th><th>Product</th><th>Plan</th><th>Customer</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody>}</table>
     </div>
 </div>
 
@@ -151,7 +240,6 @@
 <div class="footer-credit">
     Developed by MD Abdullah Khan
 </div>
-
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyAmg5AagXdej2DgvdQ-q5Dqddbgc3Fu2oA",
@@ -164,6 +252,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     let currentProductsGlobal = [];
+    let productMonthsList = [];
 
     function showMessage(msg, isError = false) {
         const toast = document.getElementById('messageToast');
@@ -174,22 +263,82 @@
         setTimeout(() => toast.classList.remove('show'), 2800);
     }
 
-    function showTab(n) {
-        document.querySelectorAll('.tab').forEach(tab => tab.style.display = 'none');
-        document.getElementById(`tab${n}`).style.display = 'block';
-        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-            if (idx === n) btn.classList.add('active');
-            else btn.classList.remove('active');
+    // ======================= MONTHS/PLANS MANAGEMENT =======================
+    function addQuickPlan(displayName, days) {
+        const plan = {
+            display: displayName,
+            days: days,
+            price: 0
+        };
+        addPlanRow(plan);
+    }
+    
+    function addCustomPlan() {
+        const plan = {
+            display: '',
+            days: 0,
+            price: 0
+        };
+        addPlanRow(plan, true);
+    }
+    
+    function addPlanRow(plan, isCustom = false) {
+        const monthsList = document.getElementById('monthsList');
+        const rowId = 'plan_' + Date.now() + '_' + Math.random();
+        
+        const row = document.createElement('div');
+        row.className = 'month-row';
+        row.id = rowId;
+        row.innerHTML = `
+            <input type="text" placeholder="Plan Name (e.g., 7 Days, 1 Month)" value="${escapeHtml(plan.display || '')}" class="plan-display">
+            <input type="number" placeholder="Days (7,14,30,90,180,365)" value="${plan.days || ''}" class="plan-days">
+            <input type="number" placeholder="Price USD (\$)" value="${plan.price || ''}" class="plan-price" step="0.01">
+            <button type="button" class="remove-month" onclick="removePlanRow('${rowId}')"><i class="fas fa-trash"></i> Remove</button>
+        `;
+        monthsList.appendChild(row);
+        
+        if (isCustom) {
+            row.querySelector('.plan-display').focus();
+        }
+        
+        updateMonthsList();
+    }
+    
+    function removePlanRow(rowId) {
+        const row = document.getElementById(rowId);
+        if (row) row.remove();
+        updateMonthsList();
+    }
+    
+    function updateMonthsList() {
+        const rows = document.querySelectorAll('#monthsList .month-row');
+        productMonthsList = [];
+        rows.forEach(row => {
+            const display = row.querySelector('.plan-display').value.trim();
+            const days = parseInt(row.querySelector('.plan-days').value);
+            const price = parseFloat(row.querySelector('.plan-price').value);
+            if (display && days > 0 && price > 0) {
+                productMonthsList.push({
+                    name: display,
+                    days: days,
+                    price: price,
+                    month: days === 30 ? 1 : days === 90 ? 3 : days === 180 ? 6 : days === 365 ? 12 : Math.round(days/30)
+                });
+            }
         });
-        if (n === 1) loadCategoriesList();
-        if (n === 3) { loadCategoriesForOrderSelect(); }
-        if (n === 4) loadAllProductsForAdmin();
-        if (n === 5) loadAllBanners();
-        if (n === 6) loadOrders();
-        if (n === 0) loadCategoryDropdownForProduct();
+    }
+    
+    function getProductMonths() {
+        updateMonthsList();
+        return productMonthsList.map(p => ({
+            month: p.month || 1,
+            days: p.days,
+            price: p.price,
+            displayName: p.name
+        }));
     }
 
-    // ======================= CATEGORIES ===================
+    // ======================= CATEGORIES =======================
     async function loadCategoriesList() {
         const tbody = document.querySelector('#categoriesTable tbody');
         tbody.innerHTML = '';
@@ -217,6 +366,7 @@
             document.getElementById('newCategoryName').value = '';
             loadCategoriesList();
             loadCategoryDropdownForProduct();
+            loadCategoriesForOrderSelect();
         } catch(e) { showMessage("Error: "+e.message, true); }
     }
 
@@ -226,6 +376,7 @@
         showMessage("Category deleted");
         loadCategoriesList();
         loadCategoryDropdownForProduct();
+        loadCategoriesForOrderSelect();
     }
 
     async function loadCategoryDropdownForProduct() {
@@ -244,22 +395,45 @@
     async function addProduct() {
         const name = document.getElementById('prodName').value.trim();
         const category = document.getElementById('prodCategory').value;
-        const monthsRaw = document.getElementById('prodMonths').value;
         const image = document.getElementById('prodImage').value;
         const desc = document.getElementById('prodDesc').value;
+        
         if(!name || !category) return showMessage("Product name and category are required", true);
-        let months = [];
+        
+        updateMonthsList();
+        if (productMonthsList.length === 0) {
+            return showMessage("Please add at least one pricing plan (e.g., 7 Days, 1 Month)", true);
+        }
+        
+        const months = productMonthsList.map(p => ({
+            month: p.month || (p.days === 7 ? 0.25 : p.days === 14 ? 0.5 : p.days === 30 ? 1 : p.days === 90 ? 3 : p.days === 180 ? 6 : p.days === 365 ? 12 : Math.round(p.days/30)),
+            days: p.days,
+            price: p.price,
+            displayName: p.name
+        }));
+        
         try {
-            months = JSON.parse(monthsRaw);
-            if(!Array.isArray(months)) throw new Error();
-        } catch(e) { return showMessage("Invalid JSON format. Example: [{\"month\":1,\"price\":99}]", true); }
-        await db.collection('products').add({ name, category, months, image, description: desc });
-        showMessage("Product added successfully!");
-        document.getElementById('prodName').value = '';
-        document.getElementById('prodMonths').value = '';
-        document.getElementById('prodImage').value = '';
-        document.getElementById('prodDesc').value = '';
-        loadAllProductsForAdmin();
+            await db.collection('products').add({ 
+                name, 
+                category, 
+                months, 
+                image, 
+                description: desc,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showMessage("Product added successfully!");
+            
+            // Clear form
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodImage').value = '';
+            document.getElementById('prodDesc').value = '';
+            document.getElementById('monthsList').innerHTML = '';
+            productMonthsList = [];
+            
+            loadAllProductsForAdmin();
+        } catch(e) {
+            showMessage("Error: " + e.message, true);
+        }
     }
 
     async function loadAllProductsForAdmin() {
@@ -268,12 +442,12 @@
         const snap = await db.collection('products').orderBy('name').get();
         for(const doc of snap.docs){
             const p = doc.data();
-            const monthsStr = p.months ? p.months.map(m => `${m.month}mo $${m.price}`).join(', ') : '-';
+            const plansStr = p.months ? p.months.map(m => m.displayName || `${m.month}mo`).join(', ') : '-';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${escapeHtml(p.name)}</td>
                 <td>${escapeHtml(p.category)}</td>
-                <td>${escapeHtml(monthsStr)}</td>
+                <td>${escapeHtml(plansStr)}</td>
                 <td>${p.image ? '<i class="fas fa-image"></i>' : '-'}</td>
                 <td class="action-buttons">
                     <button class="edit-btn small-btn" onclick="editProduct('${doc.id}')"><i class="fas fa-edit"></i> Edit</button>
@@ -289,14 +463,9 @@
         if(!docSnap.exists) return;
         const p = docSnap.data();
         const newName = prompt("Edit Product Name:", p.name);
-        if(newName && newName.trim()) p.name = newName.trim();
+        if(newName && newName.trim()) await db.collection('products').doc(id).update({ name: newName.trim() });
         const newCategory = prompt("Edit Category:", p.category);
-        if(newCategory && newCategory.trim()) p.category = newCategory;
-        const monthsJson = prompt("Edit Months & Prices (JSON):", JSON.stringify(p.months));
-        if(monthsJson) {
-            try { p.months = JSON.parse(monthsJson); } catch(e){ showMessage("Invalid JSON", true); }
-        }
-        await db.collection('products').doc(id).update({ name: p.name, category: p.category, months: p.months });
+        if(newCategory && newCategory.trim()) await db.collection('products').doc(id).update({ category: newCategory });
         showMessage("Product updated");
         loadAllProductsForAdmin();
     }
@@ -405,8 +574,9 @@
         if(!product || !product.months) return;
         product.months.forEach(m => {
             const opt = document.createElement('option');
-            opt.value = `${m.month} Months - $${m.price}`;
-            opt.textContent = `${m.month} Months - $${m.price}`;
+            const displayName = m.displayName || `${m.month} Month${m.month > 1 ? 's' : ''}`;
+            opt.value = `${displayName} - $${m.price}`;
+            opt.textContent = `${displayName} - $${m.price}`;
             monthsSelect.appendChild(opt);
         });
     }
@@ -474,6 +644,21 @@
             showMessage("Order deleted");
             loadOrders();
         }
+    }
+
+    function showTab(n) {
+        document.querySelectorAll('.tab').forEach(tab => tab.style.display = 'none');
+        document.getElementById(`tab${n}`).style.display = 'block';
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+            if (idx === n) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        if (n === 1) loadCategoriesList();
+        if (n === 3) { loadCategoriesForOrderSelect(); }
+        if (n === 4) loadAllProductsForAdmin();
+        if (n === 5) loadAllBanners();
+        if (n === 6) loadOrders();
+        if (n === 0) loadCategoryDropdownForProduct();
     }
 
     function escapeHtml(str) { 
