@@ -3,694 +3,497 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | Premium Store Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <title>Premium Stores - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: #fff; }
+        
+        .admin-header { background: #000; padding: 20px; text-align: center; border-bottom: 3px solid #00bfff; }
+        .admin-header h1 { color: #00bfff; font-size: 28px; }
+        .admin-header h1 i { margin-right: 10px; }
 
-        body {
-            background: #000000;
-            padding: 25px 20px;
-        }
+        .container { padding: 20px; max-width: 1400px; margin: 0 auto; }
+        
+        .tab-buttons { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; background: #111; padding: 15px; border-radius: 16px; }
+        .tab-btn { padding: 12px 24px; background: #1f1f1f; border: none; color: #ddd; border-radius: 40px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 14px; }
+        .tab-btn i { margin-right: 8px; }
+        .tab-btn.active { background: #00bfff; color: black; box-shadow: 0 0 10px rgba(0,191,255,0.3); }
+        .tab-btn:hover:not(.active) { background: #2c2c2c; color: white; }
 
-        .admin-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 35px;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #ff6b35, #feca57);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .header p {
-            color: #888;
-            margin-top: 5px;
-        }
-
-        /* 4 Stats Boxes in one line */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: #1a1a2e;
-            border-radius: 18px;
-            padding: 14px 10px;
-            text-align: center;
-            border: 1px solid rgba(255,107,53,0.3);
+        .tab { background: #0f0f0f; padding: 25px; border-radius: 20px; margin-top: 5px; border: 1px solid #222; }
+        h2 { margin-bottom: 20px; color: #00bfff; font-size: 24px; border-left: 4px solid #00bfff; padding-left: 15px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #bbb; font-weight: 500; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 12px 15px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 12px; color: white; font-size: 14px;
             transition: 0.2s;
         }
-
-        .stat-card i {
-            font-size: 1.4rem;
-            color: #ff6b35;
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none; border-color: #00bfff; box-shadow: 0 0 5px rgba(0,191,255,0.3);
         }
+        button { background: #00ff9d; color: #000; border: none; padding: 12px 28px; border-radius: 40px; font-weight: bold; cursor: pointer; margin: 5px 5px 0 0; font-size: 14px; transition: 0.2s; }
+        button:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .delete-btn { background: #ff4444; color: white; }
+        .edit-btn { background: #ffaa00; color: #1e1e1e; }
+        .btn-secondary { background: #3a6ea5; color: white; }
 
-        .stat-number {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #feca57;
-            margin-top: 5px;
-            line-height: 1.2;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #0a0a0a; border-radius: 16px; overflow: hidden; }
+        th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid #222; }
+        th { background: #161616; color: #00bfff; font-weight: 600; }
+        tr:hover td { background: #121212; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .small-btn { padding: 6px 14px; font-size: 12px; margin: 0; }
 
-        .stat-label {
-            color: #aaa;
-            font-size: 0.7rem;
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
-        @media (max-width: 700px) {
-            .stats-row {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-        }
-
-        .card {
-            background: #1a1a2e;
-            border-radius: 24px;
-            padding: 28px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .card h2 {
-            color: #ff6b35;
-            margin-bottom: 25px;
-            border-left: 4px solid #ff6b35;
-            padding-left: 15px;
-            font-size: 1.3rem;
-        }
-
-        .order-form-row {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .order-left {
-            flex: 2;
-        }
-
-        .order-right {
-            flex: 1;
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-end;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            color: #ccc;
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 14px 16px;
-            background: #0f0f1a;
-            border: 1px solid #2a2a4a;
-            border-radius: 14px;
-            color: white;
-            font-size: 0.95rem;
-            transition: 0.2s;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #ff6b35;
-        }
-
-        .price-display {
-            background: #0f0f1a;
-            padding: 14px 16px;
-            border-radius: 14px;
-            border: 1px solid #2a2a4a;
-            color: #feca57;
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .save-order-btn {
-            background: linear-gradient(135deg, #ff6b35, #feca57);
-            border: none;
-            padding: 14px 40px;
-            border-radius: 50px;
-            color: #000;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            white-space: nowrap;
-        }
-
-        .save-order-btn:hover {
-            transform: scale(1.02);
-            filter: brightness(1.05);
-        }
-
-        .complete-badge {
-            display: inline-block;
-            background: #10b981;
-            color: white;
-            font-size: 0.7rem;
-            padding: 3px 10px;
-            border-radius: 20px;
-            margin-left: 10px;
-        }
-
-        .orders-list, .banner-list, .product-list {
-            max-height: 450px;
-            overflow-y: auto;
-        }
-
-        .order-item, .banner-item, .product-item {
-            background: #0f0f1a;
-            border-radius: 16px;
+        .status-badge { padding: 4px 12px; border-radius: 40px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .status-Pending { background: #ffaa0033; color: #ffaa00; border: 1px solid #ffaa00; }
+        .status-Completed { background: #00ff9d33; color: #00ff9d; border: 1px solid #00ff9d; }
+        .status-Cancelled { background: #ff444433; color: #ff8888; border: 1px solid #ff4444; }
+        
+        .message-bar { position: fixed; bottom: 20px; right: 20px; background: #1f1f1f; border-left: 4px solid #00ff9d; padding: 12px 20px; border-radius: 12px; z-index: 999; display: none; align-items: center; gap: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .message-bar.show { display: flex; animation: fadein 0.3s; }
+        @keyframes fadein { from { opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+        
+        .footer-credit {
+            text-align: center;
             padding: 15px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            border-left: 3px solid #ff6b35;
+            font-size: 12px;
+            color: #555;
+            border-top: 1px solid #222;
+            margin-top: 30px;
         }
-
-        .order-info, .banner-info, .product-info {
-            flex: 1;
-        }
-
-        .order-id {
-            color: #ff6b35;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
-
-        .order-detail {
-            color: white;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            word-break: break-all;
-        }
-
-        .order-date {
-            color: #888;
-            font-size: 0.7rem;
-        }
-
-        .order-actions, .banner-actions, .product-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .edit-btn, .delete-btn, .edit-product-btn, .edit-banner-btn {
-            padding: 8px 16px;
-            border-radius: 30px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
-        }
-
-        .edit-btn, .edit-product-btn, .edit-banner-btn {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .delete-btn {
-            background: #dc2626;
-            color: white;
-        }
-
-        .banner-url, .product-name {
-            color: #ccc;
-            font-size: 0.85rem;
-            word-break: break-all;
-        }
-
-        .row-2col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .success-msg {
-            color: #4ade80;
-            margin-top: 10px;
-            font-size: 0.85rem;
-        }
-
-        @media (max-width: 800px) {
-            .order-form-row {
-                flex-direction: column;
-            }
-            .order-right {
-                justify-content: flex-start;
-            }
-            .row-2col {
-                grid-template-columns: 1fr;
-            }
-        }
+        
+        @media (max-width: 700px) { th, td { padding: 8px; font-size: 12px; } .tab-btn { padding: 8px 16px; font-size: 12px; } }
     </style>
 </head>
 <body>
-<div class="admin-container">
-    <div class="header">
-        <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
-        <p>Manage Orders, Products, Banners & Settings</p>
+
+<div class="admin-header">
+    <h1><i class="fas fa-crown"></i> Premium Stores - Admin Panel</h1>
+</div>
+
+<div class="container">
+    <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab(0)"><i class="fas fa-plus-circle"></i> Add Product</button>
+        <button class="tab-btn" onclick="showTab(1)"><i class="fas fa-tags"></i> Categories</button>
+        <button class="tab-btn" onclick="showTab(2)"><i class="fas fa-image"></i> Add Banner</button>
+        <button class="tab-btn" onclick="showTab(3)"><i class="fas fa-shopping-cart"></i> Add Order</button>
+        <button class="tab-btn" onclick="showTab(4)"><i class="fas fa-boxes"></i> Products List</button>
+        <button class="tab-btn" onclick="showTab(5)"><i class="fas fa-photo-video"></i> Banners List</button>
+        <button class="tab-btn" onclick="showTab(6)"><i class="fas fa-history"></i> Orders History</button>
     </div>
 
-    <!-- 4 Stats Boxes -->
-    <div class="stats-row">
-        <div class="stat-card"><i class="fas fa-chart-line"></i><div class="stat-number" id="totalOrders">0</div><div class="stat-label">Total Orders</div></div>
-        <div class="stat-card"><i class="fas fa-dollar-sign"></i><div class="stat-number" id="totalRevenue">$0</div><div class="stat-label">Total Revenue</div></div>
-        <div class="stat-card"><i class="fas fa-calendar-day"></i><div class="stat-number" id="todayOrders">0</div><div class="stat-label">Today Orders</div></div>
-        <div class="stat-card"><i class="fas fa-coins"></i><div class="stat-number" id="todayRevenue">$0</div><div class="stat-label">Today Revenue</div></div>
+    <!-- Tab 0: Add Product -->
+    <div id="tab0" class="tab">
+        <h2><i class="fas fa-box-open"></i> Add New Product</h2>
+        <div class="form-group"><label>Product Name *</label><input type="text" id="prodName" placeholder="e.g., Premium Subscription"></div>
+        <div class="form-group"><label>Category *</label><select id="prodCategory"><option value="">Select Category</option></select></div>
+        <div class="form-group"><label>Months & Prices (JSON format) [{"month":1,"price":99},{"month":3,"price":249}]</label><textarea id="prodMonths" rows="3" placeholder='[{"month":1,"price":99},{"month":6,"price":499}]'></textarea></div>
+        <div class="form-group"><label>Image URL (Optional)</label><input type="text" id="prodImage" placeholder="https://..."></div>
+        <div class="form-group"><label>Description</label><textarea id="prodDesc" rows="2"></textarea></div>
+        <button onclick="addProduct()"><i class="fas fa-save"></i> Save Product</button>
     </div>
 
-    <!-- ADD NEW ORDER -->
-    <div class="card">
-        <h2><i class="fas fa-plus-circle"></i> Add New Order <span class="complete-badge">COMPLETED</span></h2>
-        <div class="order-form-row">
-            <div class="order-left">
-                <div class="form-group">
-                    <label><i class="fab fa-twitter"></i> Twitter Link (পূর্ণ লিংক দিন)</label>
-                    <input type="text" id="twitterLink" placeholder="https://twitter.com/username বা যেকোনো লিংক">
-                </div>
-                <div class="row-2col">
-                    <div class="form-group">
-                        <label><i class="fas fa-tag"></i> Select Product Type</label>
-                        <select id="productType">
-                            <option value="Premium">🔥 Premium</option>
-                            <option value="Premium Plus">💎 Premium Plus</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-calendar-week"></i> Select Months</label>
-                        <select id="monthsSelect">
-                            <option value="3">3 months</option>
-                            <option value="6">6 months</option>
-                            <option value="12">12 months</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-dollar-sign"></i> Price (Auto Calculated)</label>
-                    <div class="price-display" id="priceDisplay">$0</div>
-                </div>
-            </div>
-            <div class="order-right">
-                <button class="save-order-btn" id="saveOrderBtn"><i class="fas fa-save"></i> Save Order →</button>
-            </div>
-        </div>
-        <div id="orderMsg" class="success-msg"></div>
+    <!-- Tab 1: Categories Management -->
+    <div id="tab1" class="tab" style="display:none;">
+        <h2><i class="fas fa-folder-tree"></i> Manage Categories</h2>
+        <div class="form-group"><label>New Category Name</label><input type="text" id="newCategoryName" placeholder="e.g., Streaming, Gaming"></div>
+        <button onclick="addCategory()"><i class="fas fa-plus"></i> Add Category</button>
+        <h3 style="margin-top:30px;">Existing Categories</h3>
+        <table id="categoriesTable"><thead><tr><th>#</th><th>Category Name</th><th>Action</th></tr></thead><tbody></tbody>}</table>
     </div>
 
-    <!-- MANAGE ORDERS -->
-    <div class="card">
-        <h2><i class="fas fa-list"></i> Manage Orders (Edit Price & Twitter Link)</h2>
-        <div class="orders-list" id="ordersList">Loading orders...</div>
+    <!-- Tab 2: Add Banner -->
+    <div id="tab2" class="tab" style="display:none;">
+        <h2><i class="fas fa-bullhorn"></i> Add New Banner</h2>
+        <div class="form-group"><label>Banner Image URL</label><input type="text" id="bannerImage" placeholder="https://..."></div>
+        <div class="form-group"><label>Link (Optional)</label><input type="text" id="bannerLink" placeholder="/product/id"></div>
+        <div class="form-group"><label>Display Order</label><input type="number" id="bannerOrder" value="0"></div>
+        <button onclick="addBanner()">Add Banner</button>
     </div>
 
-    <!-- BANNER MANAGER -->
-    <div class="card">
-        <h2><i class="fas fa-images"></i> Banner Images (Slider) - Add/Edit/Delete</h2>
-        <div class="row-2col">
-            <input type="text" id="bannerUrl" placeholder="https://example.com/banner.jpg">
-            <button id="addBannerBtn" style="background:#ff6b35; padding:12px;">+ Add Banner</button>
-        </div>
-        <div class="banner-list" id="bannersList">Loading...</div>
+    <!-- Tab 3: Add Order -->
+    <div id="tab3" class="tab" style="display:none;">
+        <h2><i class="fas fa-truck"></i> Create New Order</h2>
+        <div class="form-group"><label>Select Category</label><select id="oCategory" onchange="loadProductsByCategoryForOrder()"></select></div>
+        <div class="form-group"><label>Select Product</label><select id="oProduct" onchange="loadMonthsForProductOrder()"></select></div>
+        <div class="form-group"><label>Select Months / Plan</label><select id="oMonths"></select></div>
+        <div class="form-group"><label>Customer Info (WhatsApp/Name)</label><input type="text" id="oCustomer" placeholder="+8801xxxx or name"></div>
+        <div class="form-group"><label>Status</label><select id="oStatus"><option value="Pending">Pending</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select></div>
+        <button onclick="addOrder()"><i class="fas fa-check-circle"></i> Save Order</button>
     </div>
 
-    <!-- PRODUCTS MANAGER -->
-    <div class="card">
-        <h2><i class="fas fa-box"></i> Manage Products - Add/Edit/Delete</h2>
-        <div class="row-2col">
-            <input type="text" id="productName" placeholder="Product Name (e.g., X Premium)">
-            <input type="text" id="productPrice" placeholder="Price USD">
-        </div>
-        <input type="text" id="productIcon" placeholder="Icon (fab fa-twitter)" style="margin-top:10px;">
-        <button id="addProductBtn" style="margin-top:15px; background:#ff6b35;">+ Add Product</button>
-        <div class="product-list" id="productsList" style="margin-top:20px;">Loading...</div>
+    <!-- Tab 4: Products List with Edit & Delete -->
+    <div id="tab4" class="tab" style="display:none;">
+        <h2><i class="fas fa-list-ul"></i> Products List (Edit / Delete)</h2>
+        <table id="productsTable"><thead><tr><th>Name</th><th>Category</th><th>Months/Prices</th><th>Image</th><th>Actions</th></tr></thead><tbody></tbody>}</table>
     </div>
 
-    <!-- CONTACT SETTINGS -->
-    <div class="card">
-        <h2><i class="fas fa-link"></i> Contact Settings (WhatsApp, Twitter, Telegram)</h2>
-        <div class="row-2col">
-            <input type="text" id="contactWhatsapp" placeholder="WhatsApp Number (e.g., 8801xxxxxxxxx)">
-            <input type="text" id="contactTwitter" placeholder="Twitter URL">
-            <input type="text" id="contactTelegram" placeholder="Telegram URL">
-        </div>
-        <button id="saveContactBtn" style="margin-top:15px;">Save Contact</button>
-        <div id="contactMsg" class="success-msg"></div>
+    <!-- Tab 5: Banners List with Edit & Delete -->
+    <div id="tab5" class="tab" style="display:none;">
+        <h2><i class="fas fa-images"></i> Banners List (Edit / Delete)</h2>
+        <table id="bannersTable"><thead><tr><th>Preview</th><th>Link</th><th>Order</th><th>Actions</th></tr></thead><tbody></tbody>}</table>
     </div>
+
+    <!-- Tab 6: Orders History with Edit & Delete -->
+    <div id="tab6" class="tab" style="display:none;">
+        <h2><i class="fas fa-clipboard-list"></i> All Orders (Edit / Delete)</h2>
+        <table id="ordersTable"><thead><tr><th>Order ID</th><th>Date</th><th>Product</th><th>Months</th><th>Customer</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody>}</table>
+    </div>
+</div>
+
+<div id="messageToast" class="message-bar"><i class="fas fa-bell"></i> <span id="toastMsg"></span></div>
+
+<div class="footer-credit">
+    Developed by MD Abdullah Khan
 </div>
 
 <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyCQW9wJme2hCnGqaSocSyMZriz0AtWEKsU",
-        authDomain: "premium-store-17a23.firebaseapp.com",
-        projectId: "premium-store-17a23",
-        storageBucket: "premium-store-17a23.firebasestorage.app",
-        messagingSenderId: "1068634444182",
-        appId: "1:1068634444182:web:55bc823641dede5e948db7"
+        apiKey: "AIzaSyAmg5AagXdej2DgvdQ-q5Dqddbgc3Fu2oA",
+        authDomain: "premium-store-v1.firebaseapp.com",
+        projectId: "premium-store-v1",
+        storageBucket: "premium-store-v1.firebasestorage.app",
+        messagingSenderId: "838970946697",
+        appId: "1:838970946697:web:fcaecf864d91c16967c258"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const db = firebase.firestore();
+    let currentProductsGlobal = [];
 
-    // Price mapping
-    const prices = {
-        'Premium': { 3: 6, 6: 9, 12: 12 },
-        'Premium Plus': { 3: 12, 6: 16, 12: 20 }
-    };
-
-    function updatePrice() {
-        const productType = document.getElementById('productType').value;
-        const months = parseInt(document.getElementById('monthsSelect').value);
-        let price = 0;
-        if (productType === 'Premium') {
-            price = prices.Premium[months] || 6;
-        } else {
-            price = prices['Premium Plus'][months] || 12;
-        }
-        document.getElementById('priceDisplay').innerHTML = `$${price}`;
-        return price;
+    function showMessage(msg, isError = false) {
+        const toast = document.getElementById('messageToast');
+        const span = document.getElementById('toastMsg');
+        span.innerText = msg;
+        toast.style.borderLeftColor = isError ? '#ff4444' : '#00ff9d';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2800);
     }
 
-    document.getElementById('productType').addEventListener('change', updatePrice);
-    document.getElementById('monthsSelect').addEventListener('change', updatePrice);
-    updatePrice();
-
-    async function getNextOrderId() {
-        const snapshot = await db.ref('orders').once('value');
-        let maxId = 0;
-        snapshot.forEach(child => {
-            const order = child.val();
-            if (order.orderId && order.orderId > maxId) maxId = order.orderId;
+    function showTab(n) {
+        document.querySelectorAll('.tab').forEach(tab => tab.style.display = 'none');
+        document.getElementById(`tab${n}`).style.display = 'block';
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+            if (idx === n) btn.classList.add('active');
+            else btn.classList.remove('active');
         });
-        return maxId + 1;
+        if (n === 1) loadCategoriesList();
+        if (n === 3) { loadCategoriesForOrderSelect(); }
+        if (n === 4) loadAllProductsForAdmin();
+        if (n === 5) loadAllBanners();
+        if (n === 6) loadOrders();
+        if (n === 0) loadCategoryDropdownForProduct();
     }
 
-    // Save Order - লিংক exactly as is সেভ করবে
-    document.getElementById('saveOrderBtn').onclick = async () => {
-        const twitterInput = document.getElementById('twitterLink').value.trim();
-        const productType = document.getElementById('productType').value;
-        const months = parseInt(document.getElementById('monthsSelect').value);
-        const amount = updatePrice();
-        
-        if (!twitterInput) {
-            alert('Please enter Twitter link or username');
-            return;
+    // ======================= CATEGORIES ===================
+    async function loadCategoriesList() {
+        const tbody = document.querySelector('#categoriesTable tbody');
+        tbody.innerHTML = '';
+        const snap = await db.collection('categories').orderBy('name').get();
+        let idx = 1;
+        for(const doc of snap.docs){
+            const cat = doc.data();
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx++}</td>
+                <td>${escapeHtml(cat.name)}</td>
+                <td><button class="delete-btn small-btn" onclick="deleteCategory('${doc.id}')"><i class="fas fa-trash"></i> Delete</button></td>
+            `;
+            tbody.appendChild(tr);
         }
-        
-        // ইউজার যা লিখেছে সেটাই সেভ হবে, কোন কনভার্টেশন নেই
-        const storedTwitterLink = twitterInput;
-        
-        const productName = productType;
-        const orderId = await getNextOrderId();
-        
-        const newOrder = {
-            orderId: orderId,
-            productName: productName,
-            premiumType: productType,
-            twitterLink: storedTwitterLink,
-            months: months,
-            amount: amount,
-            timestamp: Date.now()
-        };
-        
-        db.ref('orders').push(newOrder).then(() => {
-            document.getElementById('orderMsg').innerHTML = '✅ Order added successfully! (Completed)';
-            document.getElementById('twitterLink').value = '';
+        if(snap.empty) tbody.innerHTML = '<tr><td colspan="3">No categories found. Add one!</td></tr>';
+    }
+
+    async function addCategory() {
+        const name = document.getElementById('newCategoryName').value.trim();
+        if(!name) return showMessage("Please enter category name", true);
+        try {
+            await db.collection('categories').add({ name });
+            showMessage("Category added successfully");
+            document.getElementById('newCategoryName').value = '';
+            loadCategoriesList();
+            loadCategoryDropdownForProduct();
+        } catch(e) { showMessage("Error: "+e.message, true); }
+    }
+
+    async function deleteCategory(id) {
+        if(!confirm("Delete this category?")) return;
+        await db.collection('categories').doc(id).delete();
+        showMessage("Category deleted");
+        loadCategoriesList();
+        loadCategoryDropdownForProduct();
+    }
+
+    async function loadCategoryDropdownForProduct() {
+        const select = document.getElementById('prodCategory');
+        select.innerHTML = '<option value="">Select Category</option>';
+        const snap = await db.collection('categories').orderBy('name').get();
+        snap.forEach(doc => {
+            const opt = document.createElement('option');
+            opt.value = doc.data().name;
+            opt.textContent = doc.data().name;
+            select.appendChild(opt);
+        });
+    }
+
+    // ======================= PRODUCTS ==================
+    async function addProduct() {
+        const name = document.getElementById('prodName').value.trim();
+        const category = document.getElementById('prodCategory').value;
+        const monthsRaw = document.getElementById('prodMonths').value;
+        const image = document.getElementById('prodImage').value;
+        const desc = document.getElementById('prodDesc').value;
+        if(!name || !category) return showMessage("Product name and category are required", true);
+        let months = [];
+        try {
+            months = JSON.parse(monthsRaw);
+            if(!Array.isArray(months)) throw new Error();
+        } catch(e) { return showMessage("Invalid JSON format. Example: [{\"month\":1,\"price\":99}]", true); }
+        await db.collection('products').add({ name, category, months, image, description: desc });
+        showMessage("Product added successfully!");
+        document.getElementById('prodName').value = '';
+        document.getElementById('prodMonths').value = '';
+        document.getElementById('prodImage').value = '';
+        document.getElementById('prodDesc').value = '';
+        loadAllProductsForAdmin();
+    }
+
+    async function loadAllProductsForAdmin() {
+        const tbody = document.querySelector('#productsTable tbody');
+        tbody.innerHTML = '';
+        const snap = await db.collection('products').orderBy('name').get();
+        for(const doc of snap.docs){
+            const p = doc.data();
+            const monthsStr = p.months ? p.months.map(m => `${m.month}mo $${m.price}`).join(', ') : '-';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${escapeHtml(p.name)}</td>
+                <td>${escapeHtml(p.category)}</td>
+                <td>${escapeHtml(monthsStr)}</td>
+                <td>${p.image ? '<i class="fas fa-image"></i>' : '-'}</td>
+                <td class="action-buttons">
+                    <button class="edit-btn small-btn" onclick="editProduct('${doc.id}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="delete-btn small-btn" onclick="deleteProduct('${doc.id}')"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+    }
+
+    async function editProduct(id) {
+        const docSnap = await db.collection('products').doc(id).get();
+        if(!docSnap.exists) return;
+        const p = docSnap.data();
+        const newName = prompt("Edit Product Name:", p.name);
+        if(newName && newName.trim()) p.name = newName.trim();
+        const newCategory = prompt("Edit Category:", p.category);
+        if(newCategory && newCategory.trim()) p.category = newCategory;
+        const monthsJson = prompt("Edit Months & Prices (JSON):", JSON.stringify(p.months));
+        if(monthsJson) {
+            try { p.months = JSON.parse(monthsJson); } catch(e){ showMessage("Invalid JSON", true); }
+        }
+        await db.collection('products').doc(id).update({ name: p.name, category: p.category, months: p.months });
+        showMessage("Product updated");
+        loadAllProductsForAdmin();
+    }
+
+    async function deleteProduct(id) {
+        if(confirm("Permanently delete this product?")){
+            await db.collection('products').doc(id).delete();
+            showMessage("Product deleted");
+            loadAllProductsForAdmin();
+        }
+    }
+
+    // ======================= BANNERS ==================
+    async function addBanner() {
+        const image = document.getElementById('bannerImage').value.trim();
+        const link = document.getElementById('bannerLink').value.trim();
+        const order = parseInt(document.getElementById('bannerOrder').value) || 0;
+        if(!image) return showMessage("Banner image URL is required", true);
+        await db.collection('banners').add({ imageUrl: image, link: link, order: order });
+        showMessage("Banner added successfully");
+        document.getElementById('bannerImage').value = '';
+        document.getElementById('bannerLink').value = '';
+        document.getElementById('bannerOrder').value = 0;
+        loadAllBanners();
+    }
+
+    async function loadAllBanners() {
+        const tbody = document.querySelector('#bannersTable tbody');
+        tbody.innerHTML = '';
+        const snap = await db.collection('banners').orderBy('order').get();
+        for(const doc of snap.docs){
+            const b = doc.data();
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><img src="${escapeHtml(b.imageUrl)}" width="50" height="40" style="object-fit:cover; border-radius:8px;" onerror="this.src='https://via.placeholder.com/50'"></td>
+                <td>${b.link ? escapeHtml(b.link) : '-'}</td>
+                <td>${b.order}</td>
+                <td class="action-buttons">
+                    <button class="edit-btn small-btn" onclick="editBanner('${doc.id}')"><i class="fas fa-pen"></i> Edit</button>
+                    <button class="delete-btn small-btn" onclick="deleteBanner('${doc.id}')"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+    }
+
+    async function editBanner(id) {
+        const docSnap = await db.collection('banners').doc(id).get();
+        const b = docSnap.data();
+        const newImg = prompt("Edit Image URL:", b.imageUrl);
+        const newLink = prompt("Edit Link:", b.link || "");
+        const newOrder = prompt("Edit Order:", b.order);
+        await db.collection('banners').doc(id).update({
+            imageUrl: newImg || b.imageUrl,
+            link: newLink,
+            order: parseInt(newOrder) || 0
+        });
+        showMessage("Banner updated");
+        loadAllBanners();
+    }
+
+    async function deleteBanner(id) {
+        if(confirm("Delete this banner?")){ 
+            await db.collection('banners').doc(id).delete(); 
+            showMessage("Banner deleted"); 
+            loadAllBanners(); 
+        }
+    }
+
+    // ======================= ORDERS ==================
+    async function loadCategoriesForOrderSelect() {
+        const select = document.getElementById('oCategory');
+        select.innerHTML = '<option value="">Select Category</option>';
+        const snap = await db.collection('categories').orderBy('name').get();
+        snap.forEach(doc => {
+            const opt = document.createElement('option');
+            opt.value = doc.data().name;
+            opt.textContent = doc.data().name;
+            select.appendChild(opt);
+        });
+    }
+
+    async function loadProductsByCategoryForOrder() {
+        const category = document.getElementById('oCategory').value;
+        const productSelect = document.getElementById('oProduct');
+        productSelect.innerHTML = '<option value="">Select Product</option>';
+        document.getElementById('oMonths').innerHTML = '';
+        if(!category) return;
+        const snapshot = await db.collection('products').where('category', '==', category).get();
+        currentProductsGlobal = [];
+        snapshot.forEach(doc => {
+            const p = { id:doc.id, ...doc.data() };
+            currentProductsGlobal.push(p);
+            const opt = document.createElement('option');
+            opt.value = p.name;
+            opt.textContent = p.name;
+            productSelect.appendChild(opt);
+        });
+    }
+
+    function loadMonthsForProductOrder() {
+        const productName = document.getElementById('oProduct').value;
+        const monthsSelect = document.getElementById('oMonths');
+        monthsSelect.innerHTML = '<option value="">Select Plan</option>';
+        const product = currentProductsGlobal.find(p => p.name === productName);
+        if(!product || !product.months) return;
+        product.months.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = `${m.month} Months - $${m.price}`;
+            opt.textContent = `${m.month} Months - $${m.price}`;
+            monthsSelect.appendChild(opt);
+        });
+    }
+
+    async function addOrder() {
+        const category = document.getElementById('oCategory').value;
+        const productName = document.getElementById('oProduct').value;
+        const months = document.getElementById('oMonths').value;
+        const customer = document.getElementById('oCustomer').value.trim();
+        const status = document.getElementById('oStatus').value;
+        if(!category || !productName || !months) return showMessage("Please fill all fields", true);
+        await db.collection('orders').add({
+            category, productName, months, customer, status,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showMessage("Order added successfully!");
+        document.getElementById('oCustomer').value = '';
+        loadOrders();
+    }
+
+    async function loadOrders() {
+        const tbody = document.querySelector('#ordersTable tbody');
+        tbody.innerHTML = '';
+        const snapshot = await db.collection('orders').orderBy('timestamp', 'desc').get();
+        let count = 1;
+        for(const doc of snapshot.docs){
+            const o = doc.data();
+            const date = o.timestamp ? o.timestamp.toDate().toLocaleString() : 'No Date';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#${count++}</td>
+                <td>${escapeHtml(date)}</td>
+                <td>${escapeHtml(o.productName)}</td>
+                <td>${escapeHtml(o.months)}</td>
+                <td>${escapeHtml(o.customer || 'N/A')}</td>
+                <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                <td class="action-buttons">
+                    <button class="edit-btn small-btn" onclick="editOrder('${doc.id}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="delete-btn small-btn" onclick="deleteOrder('${doc.id}')"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+    }
+
+    async function editOrder(orderId) {
+        const docRef = db.collection('orders').doc(orderId);
+        const docSnap = await docRef.get();
+        if(!docSnap.exists) return;
+        const data = docSnap.data();
+        const newStatus = prompt("Change Status (Pending/Completed/Cancelled):", data.status);
+        if(newStatus && ["Pending","Completed","Cancelled"].includes(newStatus)) {
+            await docRef.update({ status: newStatus });
+            showMessage("Status updated");
+        }
+        const newCustomer = prompt("Edit Customer Info:", data.customer);
+        if(newCustomer !== null) await docRef.update({ customer: newCustomer });
+        showMessage("Order updated");
+        loadOrders();
+    }
+
+    async function deleteOrder(orderId) {
+        if(confirm("Permanently delete this order?")){
+            await db.collection('orders').doc(orderId).delete();
+            showMessage("Order deleted");
             loadOrders();
-            updateStats();
-            setTimeout(() => document.getElementById('orderMsg').innerHTML = '', 3000);
-        }).catch(err => alert('Error: '+err));
-    };
-
-    // Load Orders - লিংক দেখাবে যেমন আছে
-    function loadOrders() {
-        db.ref('orders').orderByChild('timestamp').once('value', (snapshot) => {
-            let orders = [];
-            snapshot.forEach(child => {
-                orders.push({ key: child.key, ...child.val() });
-            });
-            orders.sort((a, b) => b.timestamp - a.timestamp);
-            
-            const container = document.getElementById('ordersList');
-            if (orders.length === 0) {
-                container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">No orders yet</div>';
-                return;
-            }
-            
-            let html = '';
-            orders.forEach(order => {
-                const twitterDisplay = order.twitterLink ? order.twitterLink : 'N/A';
-                html += `
-                    <div class="order-item">
-                        <div class="order-info">
-                            <div class="order-id">#${order.orderId} | ${order.productName} <span class="complete-badge">COMPLETED</span></div>
-                            <div class="order-detail"><i class="fab fa-twitter"></i> ${escapeHtml(twitterDisplay)} | ${order.months} months | $${order.amount}</div>
-                            <div class="order-date">${new Date(order.timestamp).toLocaleString()}</div>
-                        </div>
-                        <div class="order-actions">
-                            <button class="edit-btn" onclick="editOrderFull('${order.key}', '${escapeHtml(String(order.twitterLink || '')).replace(/'/g, "\\'")}', ${order.amount})"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="delete-btn" onclick="deleteOrder('${order.key}')"><i class="fas fa-trash"></i> Delete</button>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        });
+        }
     }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
+    function escapeHtml(str) { 
+        if(!str) return ''; 
+        return String(str).replace(/[&<>]/g, function(m){
+            if(m==='&') return '&amp;';
+            if(m==='<') return '&lt;';
+            if(m==='>') return '&gt;';
             return m;
-        });
+        }); 
     }
 
-    // Edit Order - শুধু লিংক এবং প্রাইস এডিট, কোন কনভার্টেশন নেই
-    window.editOrderFull = (key, currentTwitterLink, currentAmount) => {
-        let newTwitterLink = prompt('Edit Twitter Link (যেভাবে দিবেন সেভাবেই সেভ হবে):', currentTwitterLink);
-        const newAmount = prompt('Edit Amount USD:', currentAmount);
-        const updates = {};
-        
-        if (newTwitterLink !== null && newTwitterLink !== undefined && newTwitterLink !== currentTwitterLink) {
-            updates.twitterLink = newTwitterLink;
-        }
-        if (newAmount !== null && newAmount !== undefined && parseFloat(newAmount) !== currentAmount && !isNaN(parseFloat(newAmount))) {
-            updates.amount = parseFloat(newAmount);
-        }
-        if (Object.keys(updates).length > 0) {
-            db.ref('orders/' + key).update(updates).then(() => { loadOrders(); updateStats(); });
-        } else {
-            alert('No changes made or invalid input');
-        }
+    window.onload = () => {
+        showTab(0);
+        loadCategoryDropdownForProduct();
+        loadCategoriesList();
+        loadAllBanners();
+        loadAllProductsForAdmin();
+        loadOrders();
     };
-
-    window.deleteOrder = (key) => {
-        if (confirm('Delete this order?')) {
-            db.ref('orders/' + key).remove().then(() => { loadOrders(); updateStats(); });
-        }
-    };
-
-    // Update Stats: Total Orders, Total Revenue, Today Orders, Today Revenue
-    function updateStats() {
-        db.ref('orders').once('value', (snapshot) => {
-            let totalOrdersCount = 0;
-            let totalRevenueSum = 0;
-            let todayOrdersCount = 0;
-            let todayRevenueSum = 0;
-            
-            const todayStart = new Date();
-            todayStart.setHours(0, 0, 0, 0);
-            const todayTimestamp = todayStart.getTime();
-            
-            snapshot.forEach(child => {
-                const order = child.val();
-                totalOrdersCount++;
-                const amount = order.amount || 0;
-                totalRevenueSum += amount;
-                
-                if (order.timestamp && order.timestamp >= todayTimestamp) {
-                    todayOrdersCount++;
-                    todayRevenueSum += amount;
-                }
-            });
-            
-            document.getElementById('totalOrders').innerText = totalOrdersCount;
-            document.getElementById('totalRevenue').innerText = `$${totalRevenueSum}`;
-            document.getElementById('todayOrders').innerText = todayOrdersCount;
-            document.getElementById('todayRevenue').innerText = `$${todayRevenueSum}`;
-        });
-    }
-
-    // Banners
-    function loadBanners() {
-        db.ref('banners').on('value', (snapshot) => {
-            const banners = snapshot.val();
-            const container = document.getElementById('bannersList');
-            if (!banners) { container.innerHTML = '<div style="color:#888;">No banners</div>'; return; }
-            let html = '';
-            for (let key in banners) {
-                html += `
-                    <div class="banner-item">
-                        <span class="banner-url">${escapeHtml(banners[key].url)}</span>
-                        <div class="banner-actions">
-                            <button class="edit-banner-btn" onclick="editBanner('${key}', '${escapeHtml(banners[key].url).replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="delete-btn" onclick="deleteBanner('${key}')"><i class="fas fa-trash"></i> Delete</button>
-                        </div>
-                    </div>
-                `;
-            }
-            container.innerHTML = html;
-        });
-    }
-    
-    window.editBanner = (key, currentUrl) => {
-        const newUrl = prompt('Edit Banner Image URL:', currentUrl);
-        if (newUrl && newUrl !== currentUrl) {
-            db.ref('banners/' + key).update({ url: newUrl, timestamp: Date.now() });
-        }
-    };
-    
-    window.deleteBanner = (key) => db.ref('banners/' + key).remove();
-    
-    document.getElementById('addBannerBtn').onclick = () => {
-        const url = document.getElementById('bannerUrl').value;
-        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-            db.ref('banners').push({ url: url, timestamp: Date.now() });
-            document.getElementById('bannerUrl').value = '';
-        } else alert('Enter valid image URL (http/https)');
-    };
-
-    // Products
-    function loadProducts() {
-        db.ref('products').on('value', (snapshot) => {
-            const products = snapshot.val();
-            const container = document.getElementById('productsList');
-            if (!products) { container.innerHTML = '<div style="color:#888;">No products</div>'; return; }
-            let html = '';
-            for (let key in products) {
-                html += `
-                    <div class="product-item">
-                        <span class="product-name"><i class="${products[key].icon || 'fab fa-twitter'}"></i> ${escapeHtml(products[key].name)} - $${products[key].price}</span>
-                        <div class="product-actions">
-                            <button class="edit-product-btn" onclick="editProduct('${key}', '${escapeHtml(products[key].name).replace(/'/g, "\\'")}', ${products[key].price}, '${escapeHtml(products[key].icon || '').replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="delete-btn" onclick="deleteProduct('${key}')"><i class="fas fa-trash"></i> Delete</button>
-                        </div>
-                    </div>
-                `;
-            }
-            container.innerHTML = html;
-        });
-    }
-    
-    window.editProduct = (key, name, price, icon) => {
-        const newName = prompt('Edit Product Name:', name);
-        const newPrice = prompt('Edit Price USD:', price);
-        const newIcon = prompt('Edit Icon (fab fa-twitter, fas fa-star, etc):', icon);
-        const updates = {};
-        if (newName && newName !== name) updates.name = newName;
-        if (newPrice && parseFloat(newPrice) !== price && !isNaN(parseFloat(newPrice))) updates.price = parseFloat(newPrice);
-        if (newIcon && newIcon !== icon) updates.icon = newIcon;
-        if (Object.keys(updates).length > 0) {
-            db.ref('products/' + key).update(updates);
-        } else alert('No changes');
-    };
-    
-    window.deleteProduct = (key) => {
-        if (confirm('Delete product?')) db.ref('products/' + key).remove();
-    };
-    
-    document.getElementById('addProductBtn').onclick = () => {
-        const name = document.getElementById('productName').value.trim();
-        const price = document.getElementById('productPrice').value.trim();
-        const icon = document.getElementById('productIcon').value.trim() || 'fab fa-twitter';
-        if (name && price && !isNaN(parseFloat(price))) {
-            db.ref('products').push({ name: name, price: parseFloat(price), icon: icon, description: 'Premium Service' });
-            document.getElementById('productName').value = '';
-            document.getElementById('productPrice').value = '';
-            document.getElementById('productIcon').value = '';
-        } else alert('Enter valid name and numeric price');
-    };
-
-    // Contact
-    function loadContact() {
-        db.ref('contact').on('value', (snapshot) => {
-            const c = snapshot.val();
-            if (c) {
-                document.getElementById('contactWhatsapp').value = c.whatsapp || '';
-                document.getElementById('contactTwitter').value = c.twitterLink || '';
-                document.getElementById('contactTelegram').value = c.telegramLink || '';
-            }
-        });
-    }
-    
-    document.getElementById('saveContactBtn').onclick = () => {
-        const whats = document.getElementById('contactWhatsapp').value;
-        const twitterLinkVal = document.getElementById('contactTwitter').value;
-        const telegramLinkVal = document.getElementById('contactTelegram').value;
-        db.ref('contact').set({
-            whatsapp: whats,
-            twitterLink: twitterLinkVal,
-            telegramLink: telegramLinkVal
-        }).then(() => {
-            document.getElementById('contactMsg').innerHTML = '✅ Contact saved!';
-            setTimeout(() => document.getElementById('contactMsg').innerHTML = '', 2000);
-        }).catch(err => alert('Error saving contact'));
-    };
-
-    // Real-time updates
-    db.ref('orders').on('child_added', () => { loadOrders(); updateStats(); });
-    db.ref('orders').on('child_removed', () => { loadOrders(); updateStats(); });
-    db.ref('orders').on('child_changed', () => { loadOrders(); updateStats(); });
-    
-    // Initialization
-    loadOrders();
-    updateStats();
-    loadBanners();
-    loadProducts();
-    loadContact();
 </script>
 </body>
 </html>
