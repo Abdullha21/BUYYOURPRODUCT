@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>X Premium Order Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: #000; 
+            color: #fff; 
+        }
+        
+        .header {
+            background: #000;
+            padding: 12px 16px;
+            border-bottom: 2px solid #1DA1F2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { 
+            color: #1DA1F2; 
+            font-size: 18px; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header h1 i { font-size: 20px; }
+        .twitter-badge {
+            background: #1DA1F2;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+        
+        .container {
+            padding: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Today Order Count Card */
+        .today-card {
+            background: linear-gradient(135deg, #1a2a3a, #0f1a2a);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #1DA1F2;
+        }
+        .today-card .label {
+            font-size: 13px;
+            color: #aaa;
+            letter-spacing: 1px;
+        }
+        .today-card .count {
+            font-size: 48px;
+            font-weight: bold;
+            color: #00ff9d;
+            line-height: 1.2;
+        }
+        .today-card .sub {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Package Cards - Mobile Optimized */
+        .package-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .package-card {
+            flex: 1;
+            background: #111;
+            border-radius: 16px;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            border: 1.5px solid #222;
+            transition: 0.2s;
+        }
+        .package-card.selected {
+            border-color: #1DA1F2;
+            background: #1a2a3a;
+            box-shadow: 0 0 8px rgba(29,161,242,0.3);
+        }
+        .package-card h3 { 
+            font-size: 15px; 
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .package-card .price-range { 
+            font-size: 13px; 
+            font-weight: bold; 
+            color: #00ff9d; 
+        }
+        .package-card .badge { 
+            font-size: 10px; 
+            color: #666; 
+            margin-top: 4px;
+        }
+        
+        /* Plan Cards - Mobile Optimized */
+        .plan-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .plan-card {
+            flex: 0 0 auto;
+            min-width: 90px;
+            background: #111;
+            border-radius: 14px;
+            padding: 12px 10px;
+            text-align: center;
+            cursor: pointer;
+            border: 1.5px solid #222;
+            transition: 0.2s;
+        }
+        .plan-card.selected {
+            border-color: #00ff9d;
+            background: #1a2a1a;
+        }
+        .plan-card .duration { 
+            font-size: 14px; 
+            font-weight: 600; 
+        }
+        .plan-card .price { 
+            font-size: 16px; 
+            color: #00ff9d; 
+            font-weight: bold;
+            margin-top: 6px;
+        }
+        
+        /* Selected Info Box */
+        .selected-info {
+            background: #1a2a3a;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #1DA1F2;
+            font-size: 14px;
+        }
+        .selected-info span { 
+            color: #00ff9d; 
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #aaa;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 14px;
+            color: white;
+            font-size: 15px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #1DA1F2;
+        }
+        
+        .quick-customer {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .quick-customer-btn {
+            background: #1a1a1a;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .quick-customer-btn:hover {
+            background: #1DA1F2;
+            color: black;
+        }
+        
+        .submit-btn {
+            background: #00ff9d;
+            color: black;
+            border: none;
+            padding: 16px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: 0.2s;
+            margin-top: 5px;
+        }
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .info-note {
+            font-size: 10px;
+            color: #555;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        /* Orders Section */
+        .orders-section {
+            margin-top: 20px;
+            background: #0a0a0a;
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid #222;
+        }
+        .orders-section h2 {
+            color: #1DA1F2;
+            font-size: 17px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .total-badge {
+            background: #1a1a1a;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+        }
+        .total-badge span {
+            color: #00ff9d;
+            font-weight: bold;
+        }
+        .refresh-btn {
+            background: #1DA1F2;
+            color: black;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: #1a1a1a;
+            border: none;
+            padding: 5px 14px;
+            border-radius: 30px;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .filter-btn.active {
+            background: #1DA1F2;
+            color: black;
+        }
+        
+        /* Orders List - Mobile Friendly */
+        .orders-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .order-item {
+            background: #111;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #1DA1F2;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .order-product {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .order-status {
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .status-Completed { background: #00ff9d33; color: #00ff9d; }
+        .status-Pending { background: #ffaa0033; color: #ffaa00; }
+        
+        .order-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        .order-customer {
+            color: #1DA1F2;
+        }
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 10px;
+            color: #444;
+            border-top: 1px solid #222;
+            margin-top: 20px;
+        }
+        
+        .message-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #1f1f1f;
+            border-left: 4px solid #00ff9d;
+            padding: 12px 16px;
+            border-radius: 12px;
+            z-index: 999;
+            display: none;
+            text-align: center;
+            font-size: 13px;
+        }
+        .message-bar.show { display: block; animation: fadein 0.3s; }
+        @keyframes fadein {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1><i class="fab fa-twitter"></i> X Order Manager</h1>
+    <div class="twitter-badge">Fast Order</div>
+</div>
+
+<div class="container">
+    
+    <!-- Today Order Count Card -->
+    <div class="today-card">
+        <div class="label"><i class="fas fa-calendar-day"></i> TODAY'S ORDERS</div>
+        <div class="count" id="todayCount">0</div>
+        <div class="sub">orders added today</div>
+    </div>
+    
+    <!-- Package Selection -->
+    <div class="package-selector" id="packageSelector">
+        <div class="package-card" data-package="normal" onclick="selectPackage('normal')">
+            <h3>X PREMIUM NORMAL</h3>
+            <div class="price-range">$6 - $9</div>
+            <div class="badge">Twitter X</div>
+        </div>
+        <div class="package-card" data-package="plus" onclick="selectPackage('plus')">
+            <h3>X PREMIUM PLUS</h3>
+            <div class="price-range">$12 - $20</div>
+            <div class="badge">Twitter X</div>
+        </div>
+    </div>
+    
+    <!-- Plan Selection -->
+    <div class="plan-selector" id="planSelector">
+        <div style="width:100%; text-align:center; color:#666; font-size:12px; padding:15px;">Select package first</div>
+    </div>
+    
+    <!-- Selected Info -->
+    <div class="selected-info" id="selectedInfo">
+        📦 <span id="selectedDisplay">None</span>
+    </div>
+    
+    <!-- Customer Input -->
+    <div class="form-group">
+        <label><i class="fab fa-twitter"></i> Twitter/X Username *</label>
+        <input type="text" id="customerName" placeholder="@username" autocomplete="off">
+        <div class="quick-customer">
+            <span class="quick-customer-btn" onclick="setCustomer('@user1')">@user1</span>
+            <span class="quick-customer-btn" onclick="setCustomer('@user2')">@user2</span>
+            <span class="quick-customer-btn" onclick="setCustomer('@client')">@client</span>
+            <span class="quick-customer-btn" onclick="setCustomer('+8801xxxx')">+8801xxxx</span>
+        </div>
+    </div>
+    
+    <button class="submit-btn" onclick="quickAddOrder()">
+        <i class="fab fa-twitter"></i> Add X Order
+    </button>
+    <div class="info-note">
+        <i class="fas fa-check-circle"></i> Orders auto-marked as Completed
+    </div>
+    
+    <!-- Orders List -->
+    <div class="orders-section">
+        <h2><i class="fas fa-list-ul"></i> X Orders</h2>
+        
+        <div class="orders-header">
+            <div class="total-badge">
+                <i class="fab fa-twitter"></i> Total: <span id="totalOrders">0</span>
+            </div>
+            <button class="refresh-btn" onclick="loadOrders()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+        
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all" onclick="filterOrders('all')">All</button>
+            <button class="filter-btn" data-filter="Completed" onclick="filterOrders('Completed')">Completed</button>
+            <button class="filter-btn" data-filter="Pending" onclick="filterOrders('Pending')">Pending</button>
+        </div>
+        
+        <div class="orders-list" id="ordersList">
+            <div class="empty-state"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    Developed by MD Abdullah Khan | X Order System
+</div>
+
+<div id="messageToast" class="message-bar">
+    <i class="fas fa-bell"></i> <span id="toastMsg"></span>
+</div>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAmg5AagXdej2DgvdQ-q5Dqddbgc3Fu2oA",
+        authDomain: "premium-store-v1.firebaseapp.com",
+        projectId: "premium-store-v1",
+        storageBucket: "premium-store-v1.firebasestorage.app",
+        messagingSenderId: "838970946697",
+        appId: "1:838970946697:web:fcaecf864d91c16967c258"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    // Price Plans
+    const plans = {
+        normal: [
+            { duration: "3 Months", months: 3, price: 6, display: "3 Months - $6" },
+            { duration: "6 Months", months: 6, price: 9, display: "6 Months - $9" }
+        ],
+        plus: [
+            { duration: "3 Months", months: 3, price: 12, display: "3 Months - $12" },
+            { duration: "6 Months", months: 6, price: 16, display: "6 Months - $16" },
+            { duration: "12 Months", months: 12, price: 20, display: "12 Months - $20" }
+        ]
+    };
+    
+    let selectedPackage = null;
+    let selectedPlan = null;
+    let allOrders = [];
+    let currentFilter = 'all';
+    
+    function showMessage(msg, isError = false) {
+        const toast = document.getElementById('messageToast');
+        const span = document.getElementById('toastMsg');
+        span.innerText = msg;
+        toast.style.borderLeftColor = isError ? '#ff4444' : '#00ff9d';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+    
+    // Get today's start time (12:00 AM)
+    function getTodayStart() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today;
+    }
+    
+    // Count today's orders
+    function countTodayOrders() {
+        const todayStart = getTodayStart();
+        let todayCount = 0;
+        
+        allOrders.forEach(order => {
+            if (order.timestampDate && order.timestampDate >= todayStart) {
+                todayCount++;
+            }
+        });
+        
+        document.getElementById('todayCount').innerText = todayCount;
+        return todayCount;
+    }
+    
+    function selectPackage(pkg) {
+        selectedPackage = pkg;
+        selectedPlan = null;
+        
+        // Update UI
+        document.querySelectorAll('.package-card').forEach(card => {
+            if (card.dataset.package === pkg) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+        
+        // Update plan selector
+        const planSelector = document.getElementById('planSelector');
+        planSelector.innerHTML = '';
+        
+        plans[pkg].forEach((plan, index) => {
+            const planDiv = document.createElement('div');
+            planDiv.className = 'plan-card';
+            if (index === 0) {
+                planDiv.classList.add('selected');
+                selectedPlan = plan;
+            }
+            planDiv.innerHTML = `
+                <div class="duration">${plan.duration}</div>
+                <div class="price">$${plan.price}</div>
+            `;
+            planDiv.onclick = () => selectPlan(plan);
+            planSelector.appendChild(planDiv);
+        });
+        
+        updateSelectedInfo();
+    }
+    
+    function selectPlan(plan) {
+        selectedPlan = plan;
+        
+        document.querySelectorAll('.plan-card').forEach(card => {
+            const priceSpan = card.querySelector('.price');
+            if (priceSpan && priceSpan.innerText === `$${plan.price}`) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+        
+        updateSelectedInfo();
+    }
+    
+    function updateSelectedInfo() {
+        const displaySpan = document.getElementById('selectedDisplay');
+        if (selectedPackage && selectedPlan) {
+            const packageName = selectedPackage === 'normal' ? 'X PREMIUM NORMAL' : 'X PREMIUM PLUS';
+            displaySpan.innerHTML = `${packageName}<br>${selectedPlan.duration} - $${selectedPlan.price}`;
+        } else if (selectedPackage) {
+            displaySpan.innerHTML = selectedPackage === 'normal' ? 'X PREMIUM NORMAL (select plan)' : 'X PREMIUM PLUS (select plan)';
+        } else {
+            displaySpan.innerHTML = 'None';
+        }
+    }
+    
+    function setCustomer(name) {
+        document.getElementById('customerName').value = name;
+    }
+    
+    async function quickAddOrder() {
+        if (!selectedPackage) {
+            showMessage("Select X PREMIUM NORMAL or PLUS first", true);
+            return;
+        }
+        if (!selectedPlan) {
+            showMessage("Select duration (3/6/12 months)", true);
+            return;
+        }
+        
+        const customerName = document.getElementById('customerName').value.trim();
+        if (!customerName) {
+            showMessage("Enter Twitter/X username", true);
+            return;
+        }
+        
+        const packageName = selectedPackage === 'normal' ? 'X PREMIUM NORMAL' : 'X PREMIUM PLUS';
+        
+        try {
+            await db.collection('orders').add({
+                productName: packageName,
+                months: selectedPlan.duration,
+                price: selectedPlan.price,
+                customer: customerName,
+                status: 'Completed',
+                notes: `X Order | ${selectedPlan.duration} | $${selectedPlan.price}`,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                orderType: 'x_premium'
+            });
+            
+            showMessage(`✅ Added! ${packageName} - ${selectedPlan.duration} - $${selectedPlan.price}`);
+            document.getElementById('customerName').value = '';
+            await loadOrders();
+            
+            // Highlight today's count briefly
+            const todayDiv = document.querySelector('.today-card .count');
+            todayDiv.style.transform = 'scale(1.1)';
+            setTimeout(() => { todayDiv.style.transform = 'scale(1)'; }, 300);
+            
+        } catch (error) {
+            showMessage("Error: " + error.message, true);
+        }
+    }
+    
+    async function loadOrders() {
+        const ordersList = document.getElementById('ordersList');
+        ordersList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+        
+        try {
+            const snapshot = await db.collection('orders').orderBy('timestamp', 'desc').limit(50).get();
+            allOrders = [];
+            snapshot.forEach(doc => {
+                const order = doc.data();
+                order.id = doc.id;
+                if (order.timestamp) {
+                    order.timestampDate = order.timestamp.toDate();
+                }
+                allOrders.push(order);
+            });
+            
+            document.getElementById('totalOrders').innerText = allOrders.length;
+            countTodayOrders();  // Update today's count
+            displayOrders();
+            
+        } catch (error) {
+            ordersList.innerHTML = '<div class="empty-state">Error loading orders</div>';
+        }
+    }
+    
+    function displayOrders() {
+        const ordersList = document.getElementById('ordersList');
+        let filteredOrders = allOrders;
+        
+        if (currentFilter !== 'all') {
+            filteredOrders = allOrders.filter(order => (order.status || 'Completed') === currentFilter);
+        }
+        
+        if (filteredOrders.length === 0) {
+            ordersList.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><br>No orders found</div>';
+            return;
+        }
+        
+        ordersList.innerHTML = '';
+        
+        filteredOrders.forEach((order, index) => {
+            const date = order.timestampDate ? order.timestampDate.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : 'Just now';
+            
+            const status = order.status || 'Completed';
+            const price = order.price ? `$${order.price}` : '-';
+            
+            const orderDiv = document.createElement('div');
+            orderDiv.className = 'order-item';
+            orderDiv.innerHTML = `
+                <div class="order-header">
+                    <span class="order-product">${escapeHtml(order.productName || 'X Service')}</span>
+                    <span class="order-status status-${status}">${status}</span>
+                </div>
+                <div class="order-details">
+                    <span>📅 ${date}</span>
+                    <span>⏱ ${escapeHtml(order.months || 'Standard')}</span>
+                    <span>💰 ${price}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="order-customer"><i class="fab fa-twitter"></i> ${escapeHtml(order.customer || 'Guest')}</span>
+                    <button class="delete-btn" onclick="deleteOrder('${order.id}')"><i class="fas fa-trash"></i> Del</button>
+                </div>
+            `;
+            ordersList.appendChild(orderDiv);
+        });
+    }
+    
+    function filterOrders(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            if (btn.dataset.filter === filter) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        displayOrders();
+    }
+    
+    async function deleteOrder(orderId) {
+        if (confirm("Delete this order?")) {
+            try {
+                await db.collection('orders').doc(orderId).delete();
+                showMessage("Order deleted!");
+                await loadOrders();
+            } catch(e) {
+                showMessage("Error: " + e.message, true);
+            }
+        }
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Load default
+    window.onload = () => {
+        loadOrders();
+        selectPackage('normal');
+        setInterval(() => loadOrders(), 15000);
+    };
+</script>
+</body>
+</html>
