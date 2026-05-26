@@ -8,687 +8,315 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: #0a0a0a; 
-            color: #fff; 
-            min-height: 100vh;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',sans-serif;background:#0a0a0a;color:#fff;}
         
-        .header {
-            background: #000; 
-            padding: 15px 20px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000;
-            border-bottom: 2px solid #00bfff;
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .logo {
-            font-size: 22px; 
-            font-weight: bold; 
-            color: #00bfff; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px;
-            text-decoration: none;
-        }
-        .logo i { font-size: 26px; color: #00ff9d; }
+        .header{background:#000;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:2px solid #00bfff;}
+        .logo{color:#00bfff;font-size:20px;font-weight:bold;display:flex;align-items:center;gap:8px;text-decoration:none;}
+        .back-btn{background:#1f1f1f;padding:8px 18px;border-radius:40px;color:#fff;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:8px;}
+        .back-btn:hover{background:#00bfff;color:#000;}
         
-        .back-btn {
-            background: #1f1f1f;
-            padding: 10px 20px;
-            border-radius: 40px;
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
-        }
-        .back-btn:hover {
-            background: #00bfff;
-            color: black;
-        }
-        
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        /* Two column layout */
-        .two-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-        
-        @media (max-width: 900px) {
-            .two-columns {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-        }
+        .container{max-width:1200px;margin:0 auto;padding:15px;}
+        .two-columns{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+        @media(max-width:700px){.two-columns{grid-template-columns:1fr;}}
         
         /* Orders Section */
-        .orders-section, .reviews-section {
-            background: #0f0f0f;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid #222;
-        }
+        .orders-section,.reviews-section{background:#0f0f0f;border-radius:20px;padding:18px;border:1px solid #222;}
+        .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;}
+        .section-header h2{color:#00bfff;font-size:18px;}
+        .badge{background:#00bfff;color:#000;padding:4px 12px;border-radius:30px;font-size:12px;}
+        .refresh-btn{background:#00bfff;color:#000;border:none;padding:6px 14px;border-radius:30px;cursor:pointer;font-size:12px;}
+        .filter-bar{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap;}
+        .filter-btn{background:#1f1f1f;border:none;padding:5px 14px;border-radius:30px;color:#aaa;cursor:pointer;font-size:12px;}
+        .filter-btn.active{background:#00bfff;color:#000;}
         
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #222;
-        }
+        .orders-list{max-height:450px;overflow-y:auto;}
+        .order-card{background:#111;border-radius:12px;padding:12px;margin-bottom:10px;border-left:3px solid #00bfff;}
+        .order-header{display:flex;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:5px;}
+        .order-status{padding:3px 10px;border-radius:20px;font-size:10px;}
+        .status-Completed{background:#00ff9d33;color:#00ff9d;}
+        .status-Pending{background:#ffaa0033;color:#ffaa00;}
+        .order-details{font-size:12px;color:#aaa;display:flex;gap:12px;flex-wrap:wrap;}
         
-        .section-header h2 {
-            color: #00bfff;
-            font-size: 22px;
-        }
+        /* Review Form */
+        .review-form{background:#111;border-radius:16px;padding:15px;margin-bottom:18px;}
+        .review-form h3{color:#00ff9d;font-size:15px;margin-bottom:12px;}
+        .review-form input,.review-form textarea{width:100%;padding:12px;background:#1e1e1e;border:1px solid #333;border-radius:12px;color:#fff;margin-bottom:12px;font-size:13px;}
+        .review-form textarea{min-height:80px;resize:vertical;}
+        .rating-stars{margin-bottom:12px;}
+        .star-select{font-size:22px;cursor:pointer;margin-right:5px;color:#555;}
+        .star-select.selected{color:#ffaa00;}
+        .submit-review{background:#00ff9d;color:#000;border:none;padding:12px;border-radius:40px;font-weight:bold;width:100%;cursor:pointer;}
         
-        .badge {
-            background: #00bfff;
-            color: black;
-            padding: 5px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+        /* Reviews List */
+        .reviews-list{max-height:400px;overflow-y:auto;}
+        .review-card{background:#111;border-radius:12px;padding:12px;margin-bottom:10px;border-bottom:1px solid #222;}
+        .review-header{display:flex;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;}
+        .reviewer-name{font-weight:bold;color:#00bfff;font-size:13px;}
+        .review-date{font-size:10px;color:#666;}
+        .review-text{font-size:12px;color:#bbb;margin-top:5px;line-height:1.4;}
+        .review-rating{color:#ffaa00;font-size:12px;margin-top:3px;}
         
-        .refresh-btn {
-            background: #00bfff;
-            color: black;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-        }
-        
-        .filter-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            background: #1f1f1f;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 30px;
-            color: #aaa;
-            cursor: pointer;
-            font-size: 12px;
-            transition: 0.2s;
-        }
-        
-        .filter-btn.active {
-            background: #00bfff;
-            color: black;
-        }
-        
-        .orders-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-        
-        .orders-list::-webkit-scrollbar {
-            width: 5px;
-        }
-        
-        .orders-list::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 10px;
-        }
-        
-        .orders-list::-webkit-scrollbar-thumb {
-            background: #00bfff;
-            border-radius: 10px;
-        }
-        
-        .order-card {
-            background: #111;
-            border-radius: 12px;
-            padding: 12px;
-            transition: 0.2s;
-            border-left: 3px solid #00bfff;
-        }
-        
-        .order-card:hover {
-            background: #161616;
-        }
-        
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .order-id {
-            font-weight: bold;
-            color: #00bfff;
-            font-size: 12px;
-        }
-        
-        .order-status {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-        
-        .status-Pending { background: #ffaa0033; color: #ffaa00; border: 1px solid #ffaa00; }
-        .status-Completed { background: #00ff9d33; color: #00ff9d; border: 1px solid #00ff9d; }
-        .status-Cancelled { background: #ff444433; color: #ff8888; border: 1px solid #ff4444; }
-        
-        .order-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            font-size: 12px;
-            color: #bbb;
-        }
-        
-        .order-details i {
-            width: 14px;
-            color: #00bfff;
-        }
-        
-        /* Reviews Section */
-        .review-form {
-            background: #111;
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 20px;
-            border: 1px solid #222;
-        }
-        
-        .review-form h3 {
-            margin-bottom: 15px;
-            color: #00ff9d;
-            font-size: 16px;
-        }
-        
-        .review-form input, .review-form textarea {
-            width: 100%;
-            padding: 12px;
-            background: #1e1e1e;
-            border: 1px solid #333;
-            border-radius: 12px;
-            color: white;
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
-        
-        .review-form textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        .submit-review {
-            background: #00ff9d;
-            color: black;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        .reviews-list {
-            max-height: 450px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-        
-        .reviews-list::-webkit-scrollbar {
-            width: 5px;
-        }
-        
-        .reviews-list::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 10px;
-        }
-        
-        .reviews-list::-webkit-scrollbar-thumb {
-            background: #00bfff;
-            border-radius: 10px;
-        }
-        
-        .review-card {
-            background: #111;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #222;
-        }
-        
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .reviewer-name {
-            font-weight: bold;
-            color: #00bfff;
-        }
-        
-        .review-date {
-            font-size: 10px;
-            color: #666;
-        }
-        
-        .review-rating {
-            color: #ffaa00;
-            margin-bottom: 8px;
-        }
-        
-        .review-text {
-            font-size: 13px;
-            color: #bbb;
-            line-height: 1.5;
-        }
-        
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .footer-credit {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: #555;
-            border-top: 1px solid #222;
-            margin-top: 30px;
-        }
-        
-        .star {
-            color: #ffaa00;
-            margin-right: 2px;
-        }
-        
-        .info-text {
-            font-size: 11px;
-            color: #666;
-            text-align: center;
-            margin-top: 10px;
-        }
+        .empty-state{text-align:center;padding:30px;color:#666;}
+        .loading{text-align:center;padding:30px;}
+        .footer-credit{text-align:center;padding:15px;font-size:11px;color:#555;border-top:1px solid #222;margin-top:20px;}
+        .toast{position:fixed;bottom:100px;left:20px;right:20px;background:#1f1f1f;border-left:4px solid #00ff9d;padding:12px;border-radius:12px;text-align:center;display:none;z-index:300;font-size:13px;}
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <a href="#" class="logo">
-            <i class="fas fa-crown"></i>
-            Premium Stores
-        </a>
-        <a href="premiumfuture.html" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Shop
-        </a>
-    </div>
+<div class="header">
+    <a href="#" class="logo"><i class="fas fa-crown"></i> Premium Stores</a>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Shop</a>
+</div>
 
-    <div class="container">
-        <div class="two-columns">
-            
-            <!-- LEFT COLUMN: Orders History (Latest 20) -->
-            <div class="orders-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-history"></i> Latest Orders</h2>
-                    <div class="badge">Last 20 Orders</div>
-                </div>
-                
-                <div class="filter-bar">
-                    <button class="filter-btn active" data-filter="all" onclick="filterOrders('all')">All</button>
-                    <button class="filter-btn" data-filter="Pending" onclick="filterOrders('Pending')">Pending</button>
-                    <button class="filter-btn" data-filter="Completed" onclick="filterOrders('Completed')">Completed</button>
-                    <button class="filter-btn" data-filter="Cancelled" onclick="filterOrders('Cancelled')">Cancelled</button>
-                    <button class="refresh-btn" onclick="loadAllOrders()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                </div>
-                
-                <div class="orders-list" id="ordersList">
-                    <div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Loading orders...</p></div>
-                </div>
-                <div class="info-text">
-                    <i class="fas fa-info-circle"></i> Showing latest 20 orders from database
-                </div>
+<div class="container">
+    <div class="two-columns">
+        
+        <!-- LEFT: Orders History (Latest 20) -->
+        <div class="orders-section">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> Latest Orders</h2>
+                <div class="badge">Last 20 Orders</div>
+            </div>
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all" onclick="filterOrders('all')">All</button>
+                <button class="filter-btn" data-filter="Completed" onclick="filterOrders('Completed')">Completed</button>
+                <button class="filter-btn" data-filter="Pending" onclick="filterOrders('Pending')">Pending</button>
+                <button class="refresh-btn" onclick="loadOrders()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+            <div class="orders-list" id="ordersList">
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading orders...</div>
+            </div>
+        </div>
+        
+        <!-- RIGHT: Customer Reviews -->
+        <div class="reviews-section">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> Customer Reviews</h2>
+                <div class="badge" id="reviewCount">0 Reviews</div>
             </div>
             
-            <!-- RIGHT COLUMN: User Reviews -->
-            <div class="reviews-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-star"></i> Customer Reviews</h2>
-                    <div class="badge" id="reviewCount">0 Reviews</div>
+            <!-- Review Form -->
+            <div class="review-form">
+                <h3><i class="fas fa-pen"></i> Share Your Experience</h3>
+                <input type="text" id="reviewerName" placeholder="Your Name *">
+                <div class="rating-stars" id="ratingStars">
+                    <i class="far fa-star star-select" data-rating="1" onclick="setRating(1)"></i>
+                    <i class="far fa-star star-select" data-rating="2" onclick="setRating(2)"></i>
+                    <i class="far fa-star star-select" data-rating="3" onclick="setRating(3)"></i>
+                    <i class="far fa-star star-select" data-rating="4" onclick="setRating(4)"></i>
+                    <i class="far fa-star star-select" data-rating="5" onclick="setRating(5)"></i>
+                    <span style="margin-left:8px;font-size:12px;color:#aaa;">Select Rating</span>
                 </div>
-                
-                <!-- Review Form -->
-                <div class="review-form">
-                    <h3><i class="fas fa-pen"></i> Share Your Experience</h3>
-                    <input type="text" id="reviewerName" placeholder="Your Name *">
-                    <div class="review-rating" id="ratingStars">
-                        <i class="far fa-star star-select" data-rating="1" onclick="setRating(1)"></i>
-                        <i class="far fa-star star-select" data-rating="2" onclick="setRating(2)"></i>
-                        <i class="far fa-star star-select" data-rating="3" onclick="setRating(3)"></i>
-                        <i class="far fa-star star-select" data-rating="4" onclick="setRating(4)"></i>
-                        <i class="far fa-star star-select" data-rating="5" onclick="setRating(5)"></i>
-                        <span style="margin-left: 10px; font-size: 12px; color:#aaa;">Select Rating</span>
-                    </div>
-                    <textarea id="reviewText" placeholder="Write your review about our website and products..."></textarea>
-                    <button class="submit-review" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Submit Review</button>
-                </div>
-                
-                <!-- Reviews List (Latest 30) -->
-                <div class="reviews-list" id="reviewsList">
-                    <div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Loading reviews...</p></div>
-                </div>
-                <div class="info-text">
-                    <i class="fas fa-scroll"></i> Latest 30 reviews - Scroll for more
-                </div>
+                <textarea id="reviewText" placeholder="Write your review about our service..."></textarea>
+                <button class="submit-review" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Submit Review</button>
+            </div>
+            
+            <!-- Reviews List -->
+            <div class="reviews-list" id="reviewsList">
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading reviews...</div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="footer-credit">
-        Developed by MD Abdullah Khan
-    </div>
+<div class="footer-credit">Developed by MD Abdullah Khan</div>
+<div id="toastMsg" class="toast"></div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAmg5AagXdej2DgvdQ-q5Dqddbgc3Fu2oA",
-            authDomain: "premium-store-v1.firebaseapp.com",
-            projectId: "premium-store-v1",
-            storageBucket: "premium-store-v1.firebasestorage.app",
-            messagingSenderId: "838970946697",
-            appId: "1:838970946697:web:fcaecf864d91c16967c258"
-        };
+<script>
+const firebaseConfig={apiKey:"AIzaSyAmg5AagXdej2DgvdQ-q5Dqddbgc3Fu2oA",authDomain:"premium-store-v1.firebaseapp.com",projectId:"premium-store-v1",storageBucket:"premium-store-v1.firebasestorage.app",messagingSenderId:"838970946697",appId:"1:838970946697:web:fcaecf864d91c16967c258"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+let allOrders=[];
+let allReviews=[];
+let currentFilter='all';
+let selectedRating=0;
 
-        let allOrders = [];
-        let allReviews = [];
-        let currentFilter = 'all';
-        let selectedRating = 0;
+function showToast(msg,isError=false){
+    let t=document.getElementById('toastMsg');
+    t.innerText=msg;
+    t.style.borderLeftColor=isError?'#ff4444':'#00ff9d';
+    t.style.display='block';
+    setTimeout(()=>t.style.display='none',2500);
+}
 
-        // ======================= ORDERS (Latest 20 only) =======================
-        async function loadAllOrders() {
-            const ordersList = document.getElementById('ordersList');
-            ordersList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Loading orders...</p></div>';
-            
-            try {
-                // Get only latest 20 orders
-                const snapshot = await db.collection('orders')
-                    .orderBy('timestamp', 'desc')
-                    .limit(20)
-                    .get();
-                
-                allOrders = [];
-                snapshot.forEach(doc => {
-                    allOrders.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-                
-                displayOrders();
-                
-            } catch (error) {
-                console.error("Error:", error);
-                ordersList.innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Error loading orders</p>
-                    </div>
-                `;
-            }
-        }
-        
-        function displayOrders() {
-            const ordersList = document.getElementById('ordersList');
-            let filteredOrders = allOrders;
-            
-            if (currentFilter !== 'all') {
-                filteredOrders = allOrders.filter(order => order.status === currentFilter);
-            }
-            
-            if (filteredOrders.length === 0) {
-                ordersList.innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-inbox"></i>
-                        <p>No orders found</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            ordersList.innerHTML = '';
-            
-            filteredOrders.forEach((order, index) => {
-                const date = order.timestamp ? order.timestamp.toDate().toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }) : 'Recent';
-                
-                const orderCard = document.createElement('div');
-                orderCard.className = 'order-card';
-                orderCard.innerHTML = `
-                    <div class="order-header">
-                        <span class="order-id"><i class="fas fa-hashtag"></i> #${allOrders.length - index}</span>
-                        <span class="order-status status-${order.status || 'Pending'}">${order.status || 'Pending'}</span>
-                    </div>
-                    <div class="order-details">
-                        <span><i class="fas fa-box"></i> ${escapeHtml(order.productName || 'N/A')}</span>
-                        <span><i class="fas fa-calendar-week"></i> ${escapeHtml(order.months || 'Standard')}</span>
-                        <span><i class="fas fa-user"></i> ${escapeHtml(order.customer || 'Guest')}</span>
-                        <span><i class="fas fa-clock"></i> ${escapeHtml(date)}</span>
-                    </div>
-                `;
-                ordersList.appendChild(orderCard);
-            });
-        }
-        
-        function filterOrders(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.dataset.filter === filter) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-            displayOrders();
-        }
+// ========== ORDERS (Latest 20) ==========
+async function loadOrders(){
+    let ordersList=document.getElementById('ordersList');
+    ordersList.innerHTML='<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading orders...</div>';
+    try{
+        let snap=await db.collection('orders').orderBy('timestamp','desc').limit(20).get();
+        allOrders=[];
+        snap.forEach(doc=>{
+            let o=doc.data();
+            o.id=doc.id;
+            if(o.timestamp) o.timestampDate=o.timestamp.toDate();
+            allOrders.push(o);
+        });
+        displayOrders();
+    }catch(e){
+        ordersList.innerHTML='<div class="empty-state">Error loading orders</div>';
+    }
+}
 
-        // ======================= REVIEWS SYSTEM =======================
-        function setRating(rating) {
-            selectedRating = rating;
-            const stars = document.querySelectorAll('.star-select');
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.className = 'fas fa-star star-select';
-                    star.style.color = '#ffaa00';
-                } else {
-                    star.className = 'far fa-star star-select';
-                    star.style.color = '#555';
-                }
-            });
+function displayOrders(){
+    let ordersList=document.getElementById('ordersList');
+    let filtered=currentFilter==='all'?allOrders:allOrders.filter(o=>(o.status||'Completed')===currentFilter);
+    if(filtered.length===0){
+        ordersList.innerHTML='<div class="empty-state">No orders found</div>';
+        return;
+    }
+    ordersList.innerHTML='';
+    filtered.forEach((order,idx)=>{
+        let date=order.timestampDate?order.timestampDate.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'Just now';
+        let status=order.status||'Completed';
+        let price=order.price?`$${order.price}`:'';
+        let div=document.createElement('div');
+        div.className='order-card';
+        div.innerHTML=`
+            <div class="order-header">
+                <span>#${allOrders.length-idx} ${escapeHtml(order.productName||'Product')}</span>
+                <span class="order-status status-${status}">${status}</span>
+            </div>
+            <div class="order-details">
+                <span>📅 ${date}</span>
+                <span>⏱ ${escapeHtml(order.months||'Standard')}</span>
+                ${price?`<span>💰 ${price}</span>`:''}
+                <span>👤 ${escapeHtml(order.customer||'Guest')}</span>
+            </div>
+        `;
+        ordersList.appendChild(div);
+    });
+}
+
+function filterOrders(filter){
+    currentFilter=filter;
+    document.querySelectorAll('.filter-btn').forEach(btn=>{
+        if(btn.dataset.filter===filter) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+    displayOrders();
+}
+
+// ========== REVIEW SYSTEM (FIXED) ==========
+function setRating(rating){
+    selectedRating=rating;
+    let stars=document.querySelectorAll('.star-select');
+    stars.forEach((star,i)=>{
+        if(i<rating){
+            star.className='fas fa-star star-select selected';
+            star.style.color='#ffaa00';
+        }else{
+            star.className='far fa-star star-select';
+            star.style.color='#555';
+        }
+    });
+}
+
+async function submitReview(){
+    let name=document.getElementById('reviewerName').value.trim();
+    let review=document.getElementById('reviewText').value.trim();
+    
+    if(!name){
+        showToast("Please enter your name",true);
+        return;
+    }
+    if(!review){
+        showToast("Please write your review",true);
+        return;
+    }
+    if(selectedRating===0){
+        showToast("Please select a rating",true);
+        return;
+    }
+    
+    try{
+        await db.collection('reviews').add({
+            name:name,
+            review:review,
+            rating:selectedRating,
+            timestamp:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // Clear form
+        document.getElementById('reviewerName').value='';
+        document.getElementById('reviewText').value='';
+        setRating(0);
+        selectedRating=0;
+        
+        showToast("✅ Thank you for your review!");
+        loadReviews();
+        
+    }catch(e){
+        console.error("Error:",e);
+        showToast("Error: "+e.message,true);
+    }
+}
+
+async function loadReviews(){
+    let reviewsList=document.getElementById('reviewsList');
+    reviewsList.innerHTML='<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading reviews...</div>';
+    try{
+        let snap=await db.collection('reviews').orderBy('timestamp','desc').limit(30).get();
+        allReviews=[];
+        snap.forEach(doc=>{
+            let r=doc.data();
+            r.id=doc.id;
+            if(r.timestamp) r.timestampDate=r.timestamp.toDate();
+            allReviews.push(r);
+        });
+        
+        document.getElementById('reviewCount').innerText=allReviews.length+' Reviews';
+        
+        if(allReviews.length===0){
+            reviewsList.innerHTML='<div class="empty-state"><i class="fas fa-comment-dots"></i><br>No reviews yet. Be the first!</div>';
+            return;
         }
         
-        async function submitReview() {
-            const name = document.getElementById('reviewerName').value.trim();
-            const review = document.getElementById('reviewText').value.trim();
-            
-            if (!name) {
-                alert("Please enter your name");
-                return;
+        reviewsList.innerHTML='';
+        allReviews.forEach(rev=>{
+            let date=rev.timestampDate?rev.timestampDate.toLocaleDateString():'Recently';
+            let stars='';
+            for(let i=1;i<=5;i++){
+                stars+=i<=rev.rating?'★':'☆';
             }
-            if (!review) {
-                alert("Please write your review");
-                return;
-            }
-            if (selectedRating === 0) {
-                alert("Please select a rating");
-                return;
-            }
-            
-            try {
-                await db.collection('reviews').add({
-                    name: name,
-                    review: review,
-                    rating: selectedRating,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Clear form
-                document.getElementById('reviewerName').value = '';
-                document.getElementById('reviewText').value = '';
-                selectedRating = 0;
-                setRating(0);
-                
-                alert("Thank you for your review!");
-                loadReviews();
-                
-            } catch (error) {
-                console.error("Error submitting review:", error);
-                alert("Error submitting review. Please try again.");
-            }
-        }
-        
-        async function loadReviews() {
-            const reviewsList = document.getElementById('reviewsList');
-            reviewsList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Loading reviews...</p></div>';
-            
-            try {
-                // Get latest 30 reviews
-                const snapshot = await db.collection('reviews')
-                    .orderBy('timestamp', 'desc')
-                    .limit(30)
-                    .get();
-                
-                allReviews = [];
-                snapshot.forEach(doc => {
-                    allReviews.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-                
-                document.getElementById('reviewCount').innerText = allReviews.length + ' Reviews';
-                
-                if (allReviews.length === 0) {
-                    reviewsList.innerHTML = `
-                        <div class="no-data">
-                            <i class="fas fa-comment-dots"></i>
-                            <p>No reviews yet. Be the first to review!</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                reviewsList.innerHTML = '';
-                
-                allReviews.forEach((review) => {
-                    const date = review.timestamp ? review.timestamp.toDate().toLocaleString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                    }) : 'Recently';
-                    
-                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-                    
-                    const reviewCard = document.createElement('div');
-                    reviewCard.className = 'review-card';
-                    reviewCard.innerHTML = `
-                        <div class="review-header">
-                            <span class="reviewer-name"><i class="fas fa-user-circle"></i> ${escapeHtml(review.name)}</span>
-                            <span class="review-date">${escapeHtml(date)}</span>
-                        </div>
-                        <div class="review-rating">
-                            ${stars}
-                        </div>
-                        <div class="review-text">
-                            "${escapeHtml(review.review)}"
-                        </div>
-                    `;
-                    reviewsList.appendChild(reviewCard);
-                });
-                
-            } catch (error) {
-                console.error("Error loading reviews:", error);
-                reviewsList.innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Error loading reviews</p>
-                    </div>
-                `;
-            }
-        }
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-        
-        // Auto refresh orders every 30 seconds
-        let refreshInterval;
-        function startAutoRefresh() {
-            if (refreshInterval) clearInterval(refreshInterval);
-            refreshInterval = setInterval(() => {
-                loadAllOrders();
-                loadReviews();
-            }, 30000);
-        }
-        
-        window.onload = () => {
-            loadAllOrders();
-            loadReviews();
-            startAutoRefresh();
-        };
-    </script>
+            let div=document.createElement('div');
+            div.className='review-card';
+            div.innerHTML=`
+                <div class="review-header">
+                    <span class="reviewer-name"><i class="fas fa-user-circle"></i> ${escapeHtml(rev.name)}</span>
+                    <span class="review-date">${date}</span>
+                </div>
+                <div class="review-rating">${stars}</div>
+                <div class="review-text">"${escapeHtml(rev.review)}"</div>
+            `;
+            reviewsList.appendChild(div);
+        });
+    }catch(e){
+        console.error("Error loading reviews:",e);
+        reviewsList.innerHTML='<div class="empty-state">Error loading reviews</div>';
+    }
+}
+
+function escapeHtml(s){
+    if(!s) return '';
+    return String(s).replace(/[&<>]/g,function(m){
+        if(m==='&') return '&amp;';
+        if(m==='<') return '&lt;';
+        if(m==='>') return '&gt;';
+        return m;
+    });
+}
+
+// Auto refresh every 20 seconds
+setInterval(()=>{loadOrders();loadReviews();},20000);
+
+window.onload=()=>{
+    loadOrders();
+    loadReviews();
+};
+</script>
 </body>
 </html>
