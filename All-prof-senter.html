@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Proof Center - Premium Stores</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <!-- Twitter Widgets Script - এম্বেড কাজ করার জন্য -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',sans-serif;background:#0a0a0a;color:#fff;}
+        
+        .header{background:#000;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:2px solid #00bfff;position:sticky;top:0;z-index:100;}
+        .logo{color:#00bfff;font-size:20px;font-weight:bold;display:flex;align-items:center;gap:8px;text-decoration:none;}
+        .back-btn{background:#1f1f1f;padding:8px 18px;border-radius:40px;color:#fff;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:8px;}
+        .back-btn:hover{background:#00bfff;color:#000;}
+        
+        .container{max-width:1000px;margin:0 auto;padding:15px;}
+        
+        /* Buy Now Button */
+        .buy-now-btn{background:linear-gradient(45deg,#00ff9d,#00cc77);color:#000;border:none;padding:14px 30px;border-radius:50px;font-weight:bold;font-size:16px;cursor:pointer;width:100%;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;}
+        .buy-now-btn:hover{transform:scale(1.02);}
+        
+        .trust-banner{background:linear-gradient(135deg,#1a2a3a,#0a1a2a);border-radius:20px;padding:20px;text-align:center;margin-bottom:20px;border:1px solid #00ff9d;}
+        .trust-banner h1{color:#00ff9d;font-size:22px;margin-bottom:8px;}
+        .trust-banner p{color:#aaa;font-size:13px;}
+        .trust-badge{display:flex;justify-content:center;gap:15px;margin-top:15px;flex-wrap:wrap;}
+        .badge-item{background:#1a1a1a;padding:6px 14px;border-radius:40px;font-size:11px;}
+        .badge-item i{color:#00ff9d;margin-right:5px;}
+        
+        .section-title{font-size:18px;color:#00bfff;margin:20px 0 12px 0;display:flex;align-items:center;gap:8px;}
+        
+        .twitter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:20px;margin-bottom:25px;}
+        .twitter-card{background:#111;border-radius:16px;overflow:hidden;border:1px solid #222;padding:15px;}
+        .twitter-embed{width:100%;overflow-x:auto;}
+        .twitter-embed blockquote{margin:0!important;}
+        
+        .proof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;margin-bottom:25px;}
+        .proof-card{background:#111;border-radius:16px;overflow:hidden;border:1px solid #222;cursor:pointer;transition:0.3s;}
+        .proof-card:hover{transform:translateY(-5px);border-color:#00bfff;}
+        .proof-img{width:100%;height:200px;object-fit:cover;}
+        .proof-info{padding:12px;}
+        .proof-info h4{font-size:14px;margin-bottom:5px;color:#00bfff;}
+        .proof-info p{font-size:11px;color:#aaa;}
+        
+        .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;margin-bottom:25px;}
+        .video-card{background:#111;border-radius:16px;overflow:hidden;border:1px solid #222;}
+        .video-card video{width:100%;height:180px;object-fit:cover;}
+        .video-info{padding:12px;}
+        .video-info h4{font-size:14px;color:#00bfff;}
+        
+        .loading{text-align:center;padding:40px;}
+        .empty-state{text-align:center;padding:40px;color:#666;}
+        
+        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:1000;}
+        .modal-content{max-width:90%;max-height:90%;}
+        .modal-content img{width:100%;border-radius:16px;}
+        .close-modal{position:absolute;top:20px;right:30px;font-size:40px;cursor:pointer;color:#fff;}
+        
+        .footer-credit{text-align:center;padding:15px;font-size:11px;color:#555;border-top:1px solid #222;margin-top:20px;}
+        
+        @media(max-width:600px){.twitter-grid{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="#" class="logo"><i class="fas fa-crown"></i> Premium Stores</a>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Shop</a>
+</div>
+
+<div class="container">
+    
+    <!-- Buy Now Button - Main Page এ যাবে -->
+    <button class="buy-now-btn" onclick="window.location.href='index.html'">
+        <i class="fas fa-shopping-cart"></i> Buy Now - Shop Main Page
+    </button>
+    
+    <div class="trust-banner">
+        <h1><i class="fas fa-shield-alt"></i> 100% REAL • TRUSTED • SAFE</h1>
+        <p>✨ Instant Delivery • 24/7 Customer Support • Money Back Guarantee ✨</p>
+        <div class="trust-badge">
+            <span class="badge-item"><i class="fas fa-check-circle"></i> 500+ Happy Customers</span>
+            <span class="badge-item"><i class="fas fa-rocket"></i> Instant Delivery</span>
+            <span class="badge-item"><i class="fas fa-lock"></i> Secure Payment</span>
+            <span class="badge-item"><i class="fas fa-headset"></i> 24/7 Support</span>
+        </div>
+    </div>
+    
+    <!-- Twitter/X Posts Section - এম্বেড কোড সরাসরি দেখাবে -->
+    <div class="section-title"><i class="fab fa-twitter"></i> Customer Feedback (Twitter/X)</div>
+    <div class="twitter-grid" id="twitterGrid">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading tweets...</div>
+    </div>
+    
+    <!-- Delivery Proof Section -->
+    <div class="section-title"><i class="fas fa-images"></i> Delivery Proof</div>
+    <div class="proof-grid" id="proofGrid">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading proofs...</div>
+    </div>
+    
+    <!-- Video Proof Section -->
+    <div class="section-title"><i class="fas fa-video"></i> Video Proof</div>
+    <div class="video-grid" id="videoGrid">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading videos...</div>
+    </div>
+    
+</div>
+
+<div class="footer-credit">Developed by MD Abdullah Khan | 100% Trusted Service</div>
+
+<div id="imageModal" class="modal" onclick="closeImageModal()">
+    <span class="close-modal">&times;</span>
+    <div class="modal-content">
+        <img id="modalImage" src="">
+    </div>
+</div>
+
+<script>
+const firebaseConfig={apiKey:"AIzaSyAmg5AagXdej2DgvdQ-q5Dqddbgc3Fu2oA",authDomain:"premium-store-v1.firebaseapp.com",projectId:"premium-store-v1",storageBucket:"premium-store-v1.firebasestorage.app",messagingSenderId:"838970946697",appId:"1:838970946697:web:fcaecf864d91c16967c258"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+function openImage(imgSrc){
+    document.getElementById('modalImage').src=imgSrc;
+    document.getElementById('imageModal').style.display='flex';
+}
+function closeImageModal(){
+    document.getElementById('imageModal').style.display='none';
+}
+
+// Load Twitter/X Embed Posts
+async function loadTwitterPosts(){
+    let grid=document.getElementById('twitterGrid');
+    grid.innerHTML='<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading tweets...</div>';
+    try{
+        let snap=await db.collection('proof_twitter').orderBy('timestamp','desc').get();
+        if(snap.empty){
+            grid.innerHTML='<div class="empty-state"><i class="fab fa-twitter"></i><br>No tweets yet. Add from admin panel!</div>';
+            return;
+        }
+        grid.innerHTML='';
+        snap.forEach(doc=>{
+            let t=doc.data();
+            let div=document.createElement('div');
+            div.className='twitter-card';
+            div.innerHTML=`
+                <div class="twitter-embed" id="tweet-${doc.id}">
+                    ${t.embedCode}
+                </div>
+            `;
+            grid.appendChild(div);
+        });
+        
+        // টুইটার উইজেট রিলোড করতে হবে
+        if(window.twttr && window.twttr.widgets){
+            window.twttr.widgets.load();
+        }
+    }catch(e){
+        grid.innerHTML='<div class="empty-state">Error loading tweets</div>';
+    }
+}
+
+// Load Proof Images
+async function loadProofs(){
+    let grid=document.getElementById('proofGrid');
+    grid.innerHTML='<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading proofs...</div>';
+    try{
+        let snap=await db.collection('proof_images').orderBy('timestamp','desc').get();
+        if(snap.empty){
+            grid.innerHTML='<div class="empty-state">No proof images yet</div>';
+            return;
+        }
+        grid.innerHTML='';
+        snap.forEach(doc=>{
+            let p=doc.data();
+            let div=document.createElement('div');
+            div.className='proof-card';
+            div.onclick=()=>openImage(p.imageUrl);
+            div.innerHTML=`
+                <img class="proof-img" src="${p.imageUrl}" onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found'">
+                <div class="proof-info">
+                    <h4>📦 ${escapeHtml(p.title)}</h4>
+                    <p>${escapeHtml(p.description||'Delivery successful!')}</p>
+                </div>
+            `;
+            grid.appendChild(div);
+        });
+    }catch(e){grid.innerHTML='<div class="empty-state">Error loading</div>';}
+}
+
+// Load Videos
+async function loadVideos(){
+    let grid=document.getElementById('videoGrid');
+    grid.innerHTML='<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading videos...</div>';
+    try{
+        let snap=await db.collection('proof_videos').orderBy('timestamp','desc').get();
+        if(snap.empty){
+            grid.innerHTML='<div class="empty-state">No videos yet</div>';
+            return;
+        }
+        grid.innerHTML='';
+        snap.forEach(doc=>{
+            let v=doc.data();
+            let div=document.createElement('div');
+            div.className='video-card';
+            div.innerHTML=`
+                <video controls preload="metadata">
+                    <source src="${v.videoUrl}" type="video/mp4">
+                </video>
+                <div class="video-info">
+                    <h4>🎥 ${escapeHtml(v.title)}</h4>
+                    <p>${escapeHtml(v.description||'Video proof')}</p>
+                </div>
+            `;
+            grid.appendChild(div);
+        });
+    }catch(e){grid.innerHTML='<div class="empty-state">Error loading</div>';}
+}
+
+function escapeHtml(s){
+    if(!s) return '';
+    return String(s).replace(/[&<>]/g,function(m){
+        if(m==='&') return '&amp;';
+        if(m==='<') return '&lt;';
+        if(m==='>') return '&gt;';
+        return m;
+    });
+}
+
+window.onload=()=>{
+    loadTwitterPosts();
+    loadProofs();
+    loadVideos();
+};
+</script>
+</body>
+</html>
